@@ -9,6 +9,8 @@ export interface Product {
   imageUrl: string;
   imageHint: string;
   stock: number;
+  brand?: string;
+  createdAt: FieldValue | Date;
 }
 
 export interface Promotion {
@@ -44,22 +46,24 @@ export interface CartItem {
 
 export type UserRole = 'customer' | 'rider' | 'admin';
 
-export interface User {
-  id: string; // Corresponds to Firebase Auth UID
-  email: string | null;
-  phoneNumber: string | null;
-  displayName: string | null;
-  photoURL?: string | null;
-  role: UserRole;
-  createdAt: FieldValue | Date;
-}
-
 export interface Address {
   street: string;
   city: string;
   state: string;
   zip: string;
   country: string;
+}
+
+export interface User {
+  id: string; // Corresponds to Firebase Auth UID
+  displayName: string | null;
+  phoneNumber: string | null;
+  address?: Address;
+  role: UserRole;
+  createdAt: FieldValue | Date;
+  // Optional fields from Firebase Auth
+  email?: string | null;
+  photoURL?: string | null;
 }
 
 export interface OrderItem {
@@ -74,17 +78,18 @@ export type OrderStatus = 'placed' | 'preparing' | 'out for delivery' | 'deliver
 export interface Order {
   id: string;
   userId: string;
-  riderId?: string;
   items: OrderItem[];
   total: number;
   status: OrderStatus;
-  deliveryAddress: Address;
-  createdAt: Date;
-  updatedAt: Date;
+  assignedRiderId?: string;
+  createdAt: FieldValue | Date;
+  updatedAt: FieldValue | Date;
 }
 
 export interface Rider {
-  id: string; // Corresponds to a User ID
+  id: string; // Corresponds to a User ID (Auth UID)
+  name: string;
+  phone: string;
   vehicle: {
     type: 'bicycle' | 'scooter' | 'car';
     model: string;
@@ -94,14 +99,13 @@ export interface Rider {
     latitude: number;
     longitude: number;
   };
-  isAvailable: boolean;
-  rating: number;
-  completedDeliveries: number;
-  // KYC documents would be stored securely, likely with pointers here
-  kycStatus: 'pending' | 'verified' | 'rejected';
+  earnings: number;
+  activeStatus: 'active' | 'inactive' | 'on-delivery';
 }
 
 export interface Admin {
-  id:string; // Corresponds to a User ID
-  permissions: string[]; // e.g., ['manage_products', 'manage_users']
+  id: string; // Corresponds to a User ID (Auth UID)
+  name: string;
+  email: string;
+  role: 'admin';
 }
