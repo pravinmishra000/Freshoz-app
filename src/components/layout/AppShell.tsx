@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn, UserCog } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -40,7 +40,7 @@ const navItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { authUser, loading, logout } = useAuth();
+  const { authUser, appUser, loading, logout } = useAuth();
 
   return (
     <SidebarProvider>
@@ -93,6 +93,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                     {appUser?.role === 'admin' && (
+                       <DropdownMenuItem asChild>
+                         <Link href="/admin/orders">
+                          <UserCog className="mr-2 h-4 w-4" />
+                          <span>Admin Dashboard</span>
+                         </Link>
+                       </DropdownMenuItem>
+                     )}
                     <DropdownMenuItem>Profile</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuSeparator />

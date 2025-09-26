@@ -21,6 +21,21 @@ export async function getOrdersForUser(userId: string): Promise<Order[]> {
 }
 
 /**
+ * Fetches all orders from Firestore, intended for admin use.
+ * @returns A promise that resolves to an array of all Order objects.
+ */
+export async function getAllOrders(): Promise<Order[]> {
+    const ordersCollection = collection(db, 'orders');
+    const querySnapshot = await getDocs(ordersCollection);
+    const orders: Order[] = [];
+    querySnapshot.forEach((doc) => {
+        orders.push({ firestoreId: doc.id, ...doc.data() } as Order);
+    });
+    // Sort by creation date, newest first
+    return orders.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+}
+
+/**
  * Fetches a single order from Firestore.
  * @param orderId The ID of the order to fetch.
  * @returns A promise that resolves to the Order object or null if not found.
@@ -54,13 +69,22 @@ export async function getUser(userId: string): Promise<(User & { id: string }) |
 
 /**
  * Updates an order document in Firestore.
- * @param orderId The ID of the order to update.
+ * @param orderId The Firestore document ID of the order to update.
  * @param data The partial data to update the order with.
- * @returns A promise that resolves when the update is complete.
  */
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
   const orderRef = doc(db, 'orders', orderId);
   await updateDoc(orderRef, data);
+}
+
+/**
+ * Updates the status of a specific order.
+ * @param orderId The Firestore document ID of the order.
+ * @param status The new status for the order.
+ */
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+    const orderRef = doc(db, 'orders', orderId);
+    await updateDoc(orderRef, { status: status, updatedAt: serverTimestamp() });
 }
 
 /**
