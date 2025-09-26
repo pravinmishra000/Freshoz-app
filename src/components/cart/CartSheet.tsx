@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
+  SheetClose,
 } from '@/components/ui/sheet';
 import { useCart } from '@/lib/cart/cart-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -86,9 +87,11 @@ export function CartSheet() {
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
               {authUser ? (
-                 <Button className="w-full neon-button text-lg py-6">
-                    Proceed to Checkout
-                </Button>
+                 <SheetClose asChild>
+                    <Button asChild className="w-full neon-button text-lg py-6">
+                        <Link href="/checkout">Proceed to Checkout</Link>
+                    </Button>
+                 </SheetClose>
               ) : (
                 <Button asChild className="w-full neon-button text-lg py-6">
                   <Link href="/login">Login to Checkout</Link>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
-import { orders as mockOrders } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
@@ -9,7 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Order, OrderStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Check, Package, Bike, Home, XCircle } from 'lucide-react';
+import { Check, Package, Bike, Home, XCircle, Loader2 } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { getOrdersForUser } from '@/app/actions/orderActions';
+import Link from 'next/link';
 
 const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementType; color: string } } = {
     placed: { label: 'Placed', icon: Check, color: 'bg-blue-500' },
@@ -20,7 +22,7 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
 };
 
 
-function OrderItem({ order }: { order: Omit<Order, 'address'> }) {
+function OrderItem({ order }: { order: Order }) {
     const StatusIcon = statusMap[order.status].icon;
   return (
     <Card className="glass-card">
@@ -28,7 +30,7 @@ function OrderItem({ order }: { order: Omit<Order, 'address'> }) {
         <div className="flex justify-between items-start">
             <div>
                 <CardTitle className="font-headline text-lg">Order #{order.id}</CardTitle>
-                <CardDescription>Placed on {new Date(order.createdAt).toLocaleDateString()}</CardDescription>
+                <CardDescription>Placed on {new Date(order.createdAt as number).toLocaleDateString()}</CardDescription>
             </div>
             <Badge className={cn("text-white", statusMap[order.status].color)}>
                 <StatusIcon className="mr-1 h-4 w-4" />
@@ -67,26 +69,59 @@ function OrderItem({ order }: { order: Omit<Order, 'address'> }) {
 
 export function OrderHistory() {
   const { authUser } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
 
-  // For now, using mock data.
-  // In a real app, you would fetch this from Firestore based on authUser.uid
-  const userOrders = mockOrders.filter(order => order.userId === 'user1');
+  useEffect(() => {
+    if (authUser?.uid) {
+      startTransition(async () => {
+        setIsLoading(true);
+        const userOrders = await getOrdersForUser(authUser.uid);
+        // Ensure dates are converted properly, firestore timestamps can be tricky
+        const formattedOrders = userOrders.map(o => ({
+            ...o,
+            createdAt: o.createdAt.seconds ? new Date(o.createdAt.seconds * 1000) : new Date(o.createdAt),
+            updatedAt: o.updatedAt.seconds ? new Date(o.updatedAt.seconds * 1000) : new Date(o.updatedAt)
+        }))
+        setOrders(formattedOrders as Order[]);
+        setIsLoading(false);
+      });
+    } else {
+        setIsLoading(false);
+    }
+  }, [authUser]);
+
+
+  if (isLoading) {
+      return (
+          <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+      )
+  }
 
   if (!authUser) {
     return (
       <Card className="glass-card text-center">
-        <CardContent className="p-10">
+        <CardContent className="p-10 space-y-4">
           <p>Please log in to view your order history.</p>
+          <Button asChild>
+            <Link href="/login">Login</Link>
+          </Button>
         </CardContent>
       </Card>
     );
   }
   
-  if (userOrders.length === 0) {
+  if (orders.length === 0) {
       return (
         <Card className="glass-card text-center">
-            <CardContent className="p-10">
+            <CardContent className="p-10 space-y-4">
             <p>You haven't placed any orders yet.</p>
+             <Button asChild>
+                <Link href="/">Start Shopping</Link>
+            </Button>
             </CardContent>
         </Card>
       )
@@ -94,7 +129,7 @@ export function OrderHistory() {
 
   return (
     <div className="space-y-4">
-      {userOrders.map((order) => (
+      {orders.map((order) => (
         <OrderItem key={order.id} order={order} />
       ))}
     </div>

@@ -1,0 +1,200 @@
+'use client';
+
+import { useCart } from '@/lib/cart/cart-context';
+import { useAuth } from '@/lib/firebase/auth-context';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
+import { Loader2, CreditCard } from 'lucide-react';
+import { placeOrder } from '@/app/actions/orderActions';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+
+const addressSchema = z.object({
+  street: z.string().min(3, 'Street address is required.'),
+  city: z.string().min(2, 'City is required.'),
+  state: z.string().min(2, 'State is required.'),
+  zip: z.string().min(5, 'A valid ZIP code is required.').max(10),
+  country: z.string().min(2, 'Country is required.'),
+});
+
+type AddressFormValues = z.infer<typeof addressSchema>;
+
+export function CheckoutFlow() {
+  const { cartItems, cartTotal, clearCart } = useCart();
+  const { authUser, appUser } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const deliveryFee = cartTotal > 0 ? 5.0 : 0;
+  const totalAmount = cartTotal + deliveryFee;
+
+  const form = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      street: appUser?.address?.street || '',
+      city: appUser?.address?.city || '',
+      state: appUser?.address?.state || '',
+      zip: appUser?.address?.zip || '',
+      country: appUser?.address?.country || 'USA',
+    },
+  });
+
+  const onSubmit: SubmitHandler<AddressFormValues> = async (data) => {
+    if (!authUser || cartItems.length === 0) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Cannot place order. Your cart might be empty or you are not logged in.' });
+        return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+        await placeOrder({
+            userId: authUser.uid,
+            address: data,
+            items: cartItems.map(item => ({
+                productId: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+            })),
+            total: totalAmount,
+        });
+
+        toast({
+            title: 'Order Placed!',
+            description: "Thank you for your purchase. We've received your order.",
+        });
+
+        clearCart();
+        router.push('/orders');
+
+    } catch (error) {
+        console.error('Failed to place order:', error);
+        toast({ variant: 'destructive', title: 'Order Failed', description: 'There was a problem placing your order. Please try again.' });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  if (cartItems.length === 0 && !isLoading) {
+    return (
+        <Card className="glass-card text-center">
+            <CardContent className="p-10">
+                <h3 className="font-headline text-xl font-semibold">Your cart is empty!</h3>
+                <p className="text-muted-foreground mt-2">Add some items to your cart before you can checkout.</p>
+                <Button onClick={() => router.push('/')} className="mt-6 neon-button">Continue Shopping</Button>
+            </CardContent>
+        </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div className="md:col-span-2">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl">Shipping Address</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="street"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-2">
+                      <FormLabel>Street Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123 Fresh Lane" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField control={form.control} name="city" render={({ field }) => (
+                    <FormItem><FormLabel>City</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="state" render={({ field }) => (
+                    <FormItem><FormLabel>State / Province</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="zip" render={({ field }) => (
+                    <FormItem><FormLabel>ZIP / Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="country" render={({ field }) => (
+                    <FormItem><FormLabel>Country</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl">Payment Method</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center rounded-md border border-primary bg-primary/10 p-4">
+                  <CreditCard className="mr-4 h-6 w-6 text-primary" />
+                  <div>
+                    <p className="font-semibold">Cash on Delivery (COD)</p>
+                    <p className="text-sm text-muted-foreground">Pay with cash when your order arrives.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+             <Button type="submit" className="w-full text-lg py-6 neon-button" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+              Place Order
+            </Button>
+          </form>
+        </Form>
+      </div>
+
+      <div className="md:col-span-1">
+        <Card className="glass-card sticky top-24">
+          <CardHeader>
+            <CardTitle className="font-headline text-xl">Order Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
+                {cartItems.map(item => (
+                    <div key={item.id} className="flex items-center gap-4">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border">
+                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                             <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.quantity}</span>
+                        </div>
+                        <div className="flex-1">
+                            <p className="font-medium text-sm">{item.name}</p>
+                        </div>
+                        <p className="font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                ))}
+            </div>
+            <Separator />
+            <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                    <p className="text-muted-foreground">Subtotal</p>
+                    <p>${cartTotal.toFixed(2)}</p>
+                </div>
+                 <div className="flex justify-between">
+                    <p className="text-muted-foreground">Delivery Fee</p>
+                    <p>${deliveryFee.toFixed(2)}</p>
+                </div>
+            </div>
+             <Separator />
+             <div className="flex justify-between font-bold text-lg">
+                <p>Total</p>
+                <p>${totalAmount.toFixed(2)}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

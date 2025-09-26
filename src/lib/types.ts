@@ -78,6 +78,7 @@ export type OrderStatus = 'placed' | 'preparing' | 'out for delivery' | 'deliver
 
 export interface Order {
   id: string;
+  firestoreId?: string; // The auto-generated ID from Firestore
   userId: string;
   items: OrderItem[];
   total: number;

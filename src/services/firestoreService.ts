@@ -1,6 +1,7 @@
 import { db } from '@/lib/firebase/client';
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import type { Order, User } from '@/lib/types';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import type { Order, User, OrderStatus } from '@/lib/types';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Fetches a single order from Firestore.
@@ -43,4 +44,22 @@ export async function getUser(userId: string): Promise<(User & { id: string }) |
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
   const orderRef = doc(db, 'orders', orderId);
   await updateDoc(orderRef, data);
+}
+
+/**
+ * Creates a new order in Firestore.
+ * @param orderData The data for the new order.
+ * @returns A promise that resolves to the new order's ID.
+ */
+export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  const ordersCollection = collection(db, 'orders');
+  const newOrderRef = await addDoc(ordersCollection, {
+    ...orderData,
+    id: `FZ-${uuidv4().split('-')[0].toUpperCase()}`, // A more user-friendly ID
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  // Update the document with its own Firestore ID for consistency
+  await updateDoc(newOrderRef, { firestoreId: newOrderRef.id });
+  return newOrderRef.id;
 }
