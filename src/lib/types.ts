@@ -44,7 +44,7 @@ export interface CartItem {
 
 // Firestore Collection Types
 
-export type UserRole = 'customer' | 'rider' | 'admin';
+export type UserRole = 'customer' | 'admin';
 
 export interface Address {
   street: string;
@@ -83,27 +83,8 @@ export interface Order {
   total: number;
   status: OrderStatus;
   address: Address;
-  assignedRiderId?: string;
   createdAt: FieldValue | Date;
   updatedAt: FieldValue | Date;
-}
-
-export interface Rider {
-  id: string; // Corresponds to a User ID (Auth UID)
-  name: string;
-  phone: string;
-  vehicle: {
-    type: 'bicycle' | 'scooter' | 'car';
-    model: string;
-    licensePlate?: string;
-  };
-  currentLocation?: {
-    latitude: number;
-    longitude: number;
-  };
-  earnings: number;
-  activeStatus: 'active' | 'inactive' | 'on-delivery';
-  fcmToken?: string; // For push notifications
 }
 
 export interface Admin {

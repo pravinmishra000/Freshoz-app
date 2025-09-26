@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, Home, MapPin, MessageSquare, LogOut, LogIn } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -30,11 +30,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CartSheet } from '@/components/cart/CartSheet';
+import { Package } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Products', icon: Home },
-  { href: '/track-order', label: 'Track Order', icon: MapPin },
-  { href: '/earnings', label: 'Earnings', icon: BarChart2 },
+  { href: '/orders', label: 'My Orders', icon: Package },
   { href: '/chat', label: 'Support', icon: MessageSquare },
 ];
 

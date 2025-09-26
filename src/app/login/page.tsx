@@ -12,8 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserRole } from '@/lib/types';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 
@@ -33,7 +31,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState<UserRole>('customer');
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
 
@@ -51,7 +48,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setPhoneNumber(data.phone);
     try {
-      const result = await signInWithPhoneNumber(data.phone, role);
+      const result = await signInWithPhoneNumber(data.phone, 'customer');
       setConfirmationResult(result);
       toast({
         title: 'OTP Sent',
@@ -103,15 +100,6 @@ export default function LoginPage() {
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="customer" onValueChange={(value) => setRole(value as UserRole)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="customer">Customer</TabsTrigger>
-              <TabsTrigger value="rider">Rider</TabsTrigger>
-            </TabsList>
-            <TabsContent value="customer" />
-            <TabsContent value="rider" />
-          </Tabs>
-          
           {!confirmationResult ? (
             <Form {...phoneForm}>
               <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-6 pt-4">

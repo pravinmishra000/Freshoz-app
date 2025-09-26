@@ -1,6 +1,6 @@
 import { db } from '@/lib/firebase/client';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import type { Order, Rider, User } from '@/lib/types';
+import type { Order, User } from '@/lib/types';
 
 /**
  * Fetches a single order from Firestore.
@@ -32,23 +32,6 @@ export async function getUser(userId: string): Promise<(User & { id: string }) |
   } else {
     return null;
   }
-}
-
-/**
- * Fetches all riders who are currently active and available.
- * @returns A promise that resolves to an array of available Rider objects.
- */
-export async function getAvailableRiders(): Promise<Rider[]> {
-  const ridersRef = collection(db, 'riders');
-  const q = query(ridersRef, where('activeStatus', '==', 'active'));
-  const querySnapshot = await getDocs(q);
-
-  const riders: Rider[] = [];
-  querySnapshot.forEach((doc) => {
-    riders.push({ id: doc.id, ...doc.data() } as Rider);
-  });
-
-  return riders;
 }
 
 /**
