@@ -1,6 +1,6 @@
 import { db } from '@/lib/firebase/client';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import type { Order, Rider } from '@/lib/types';
+import type { Order, Rider, User } from '@/lib/types';
 
 /**
  * Fetches a single order from Firestore.
@@ -12,8 +12,23 @@ export async function getOrder(orderId: string): Promise<(Order & { id: string }
   const orderSnap = await getDoc(orderRef);
 
   if (orderSnap.exists()) {
-    // Note: The document data needs to be explicitly typed on retrieval.
     return { id: orderSnap.id, ...orderSnap.data() } as Order & { id: string };
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Fetches a single user from Firestore.
+ * @param userId The ID of the user to fetch.
+ * @returns A promise that resolves to the User object or null if not found.
+ */
+export async function getUser(userId: string): Promise<(User & { id: string }) | null> {
+  const userRef = doc(db, 'users', userId);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    return { id: userSnap.id, ...userSnap.data() } as User & { id: string };
   } else {
     return null;
   }

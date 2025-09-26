@@ -27,7 +27,7 @@ export interface EarningPeriod {
 }
 
 export interface Transaction {
-  id: string;
+  id:string;
   status: 'Completed' | 'Pending' | 'Failed';
   amount: number;
   date: string;
@@ -61,6 +61,7 @@ export interface User {
   address?: Address;
   role: UserRole;
   createdAt: FieldValue | Date;
+  fcmToken?: string; // For push notifications
   // Optional fields from Firebase Auth
   email?: string | null;
   photoURL?: string | null;
@@ -102,6 +103,7 @@ export interface Rider {
   };
   earnings: number;
   activeStatus: 'active' | 'inactive' | 'on-delivery';
+  fcmToken?: string; // For push notifications
 }
 
 export interface Admin {
@@ -109,4 +111,5 @@ export interface Admin {
   name: string;
   email: string;
   role: 'admin';
+  fcmToken?: string; // For push notifications
 }

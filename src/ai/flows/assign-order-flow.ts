@@ -9,9 +9,10 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { getOrder, getAvailableRiders, updateOrder } from '@/services/firestoreService';
+import { getOrder, getAvailableRiders, updateOrder, getUser } from '@/services/firestoreService';
 import { getCoordinatesForAddress } from '@/services/geocodingService';
 import { haversineDistance } from '@/services/haversineService';
+import { sendPushNotification } from '@/services/notificationService';
 import { Rider } from '@/lib/types';
 
 
@@ -80,8 +81,21 @@ const assignOrderFlow = ai.defineFlow(
         assignedRiderId: closestRider.id,
         status: 'preparing', // Or 'assigned'
       });
-      // Here you would also send a push notification to the rider.
       console.log(`Assigned order ${orderId} to rider ${closestRider.id} (${minDistance.toFixed(2)} km away).`);
+
+      // Send push notification to the assigned rider
+      const riderUserDoc = await getUser(closestRider.id);
+      if(riderUserDoc && riderUserDoc.fcmToken) {
+        await sendPushNotification(riderUserDoc.fcmToken, {
+            notification: {
+                title: 'New Order Assignment!',
+                body: `You have a new order pickup: #${orderId}.`,
+            },
+            data: {
+                orderId,
+            }
+        });
+      }
 
       return {
         success: true,
