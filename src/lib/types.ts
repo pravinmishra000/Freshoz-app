@@ -10,7 +10,7 @@ export interface Product {
   imageHint: string;
   stock: number;
   brand?: string;
-  createdAt: FieldValue | Date;
+  createdAt?: FieldValue | Date;
 }
 
 export interface Promotion {
@@ -81,6 +81,7 @@ export interface Order {
   items: OrderItem[];
   total: number;
   status: OrderStatus;
+  address: Address;
   assignedRiderId?: string;
   createdAt: FieldValue | Date;
   updatedAt: FieldValue | Date;
