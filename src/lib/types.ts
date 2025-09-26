@@ -29,6 +29,15 @@ export interface Transaction {
   date: string;
 }
 
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
+
+
 // Firestore Collection Types
 
 export type UserRole = 'customer' | 'rider' | 'admin';

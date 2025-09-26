@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { CartSheet } from '@/components/cart/CartSheet';
 
 const navItems = [
   { href: '/', label: 'Products', icon: Home },
@@ -78,6 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
             <div className="flex items-center gap-4">
+               <CartSheet />
               {loading ? (
                 <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
               ) : authUser ? (

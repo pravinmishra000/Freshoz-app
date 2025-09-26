@@ -4,6 +4,7 @@ import './globals.css';
 import { AppShell } from '@/components/layout/AppShell';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/lib/firebase/auth-context';
+import { CartProvider } from '@/lib/cart/cart-context';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
@@ -31,8 +32,10 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
         <AuthProvider>
-          <AppShell>{children}</AppShell>
-          <Toaster />
+          <CartProvider>
+            <AppShell>{children}</AppShell>
+            <Toaster />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

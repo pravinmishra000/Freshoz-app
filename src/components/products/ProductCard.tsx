@@ -1,14 +1,35 @@
+'use client';
+
 import Image from 'next/image';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
+import { useCart } from '@/lib/cart/cart-context';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      imageUrl: product.imageUrl,
+    });
+    toast({
+      title: 'Added to Cart',
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
   return (
     <Card className="glass-card group flex flex-col overflow-hidden">
       <CardHeader className="p-0">
@@ -30,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="neon-button w-full">
+        <Button className="neon-button w-full" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
