@@ -4,6 +4,23 @@ import type { Order, User, OrderStatus } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
+ * Fetches all orders for a specific user from Firestore.
+ * @param userId The ID of the user whose orders to fetch.
+ * @returns A promise that resolves to an array of Order objects.
+ */
+export async function getOrdersForUser(userId: string): Promise<Order[]> {
+    const ordersCollection = collection(db, 'orders');
+    const q = query(ordersCollection, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    const orders: Order[] = [];
+    querySnapshot.forEach((doc) => {
+        orders.push({ firestoreId: doc.id, ...doc.data() } as Order);
+    });
+    // Sort by creation date, newest first
+    return orders.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+}
+
+/**
  * Fetches a single order from Firestore.
  * @param orderId The ID of the order to fetch.
  * @returns A promise that resolves to the Order object or null if not found.
@@ -51,7 +68,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
  * @param orderData The data for the new order.
  * @returns A promise that resolves to the new order's ID.
  */
-export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'firestoreId'>): Promise<string> {
   const ordersCollection = collection(db, 'orders');
   const newOrderRef = await addDoc(ordersCollection, {
     ...orderData,
