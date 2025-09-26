@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase/client';
-import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp, Timestamp, endAt, startAt, orderBy } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp, Timestamp, endAt, startAt, orderBy, runTransaction, increment } from 'firebase/firestore';
 import type { Order, User, OrderStatus } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays } from 'date-fns';
@@ -104,6 +104,20 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'u
   // Update the document with its own Firestore ID for consistency
   await updateDoc(newOrderRef, { firestoreId: newOrderRef.id });
   return newOrderRef.id;
+}
+
+/**
+ * Updates the stock level of a product.
+ * @param productId The ID of the product to update.
+ * @param quantityChange The amount to change the stock by (negative to decrease, positive to increase).
+ */
+export async function updateProductStock(productId: string, quantityChange: number): Promise<void> {
+    const productRef = doc(db, 'products', productId);
+    
+    // Firestore's increment is atomic and safer for concurrent updates.
+    await updateDoc(productRef, {
+        stock: increment(quantityChange)
+    });
 }
 
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { createOrder, getOrdersForUser as getOrdersForUserFromDb } from '@/services/firestoreService';
+import { createOrder, getOrdersForUser as getOrdersForUserFromDb, updateProductStock } from '@/services/firestoreService';
 import type { Address, OrderItem, Order } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
@@ -19,6 +19,19 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderId: str
             status: 'placed',
         });
         
+        // After order is created, decrement stock for each item
+        // In a production app, this should be a single atomic transaction (e.g., using a Cloud Function)
+        // to prevent race conditions or partial failures.
+        for (const item of input.items) {
+            try {
+                await updateProductStock(item.productId, -item.quantity);
+            } catch (stockError) {
+                // Handle stock update error - maybe log it for admin review.
+                // For now, we'll log it to the console. The order is already placed.
+                console.error(`Failed to update stock for product ${item.productId}:`, stockError);
+            }
+        }
+
         // Revalidate the orders page to show the new order
         revalidatePath('/orders');
 
