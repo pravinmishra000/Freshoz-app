@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, Home, MapPin, User, ShoppingCart } from 'lucide-react';
+import { BarChart2, Home, MapPin, User, ShoppingCart, LogOut, LogIn } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -20,6 +20,15 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
+import { useAuth } from '@/lib/firebase/auth-context';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const navItems = [
   { href: '/', label: 'Products', icon: Home },
@@ -29,6 +38,7 @@ const navItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { authUser, loading, logout } = useAuth();
 
   return (
     <SidebarProvider>
@@ -71,10 +81,36 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <ShoppingCart className="h-5 w-5" />
                 <span className="sr-only">Cart</span>
               </Button>
-              <Avatar>
-                <AvatarImage src="https://picsum.photos/seed/user-avatar/40/40" data-ai-hint="person face" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
+              {loading ? (
+                <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+              ) : authUser ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face" />
+                      <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button asChild>
+                  <Link href="/login">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Login
+                  </Link>
+                </Button>
+              )}
             </div>
           </header>
           <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>

@@ -3,6 +3,7 @@ import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/layout/AppShell';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/lib/firebase/auth-context';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
@@ -29,8 +30,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
-        <AppShell>{children}</AppShell>
-        <Toaster />
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
