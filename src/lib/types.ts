@@ -44,7 +44,7 @@ export interface CartItem {
 
 // Firestore Collection Types
 
-export type UserRole = 'customer' | 'admin' | 'rider';
+export type UserRole = 'customer' | 'admin';
 
 export interface Address {
   name: string;
@@ -100,7 +100,8 @@ export interface Rider {
     currentLocation: {
         lat: number;
         lng: number;
-    }
+    },
+    fcmToken?: string;
 }
 
 export interface Admin {

@@ -6,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Order, OrderStatus } from '@/lib/types';
+import { Order, OrderStatus, CartItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Check, Package, Bike, Home, XCircle, Loader2 } from 'lucide-react';
+import { Check, Package, Bike, Home, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 import { getOrdersForUser } from '@/app/actions/orderActions';
 import Link from 'next/link';
+import { useCart } from '@/lib/cart/cart-context';
+import { useToast } from '@/hooks/use-toast';
 
 const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementType; color: string } } = {
     placed: { label: 'Placed', icon: Check, color: 'bg-blue-500' },
@@ -23,10 +25,29 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
 
 
 function OrderItem({ order }: { order: Order }) {
+    const { addToCart } = useCart();
+    const { toast } = useToast();
     const StatusIcon = statusMap[order.status].icon;
     const createdAtDate = order.createdAt instanceof Date 
         ? order.createdAt 
         : new Date((order.createdAt as any).seconds * 1000);
+
+    const handleReorder = () => {
+        order.items.forEach(item => {
+            const cartItem: CartItem = {
+                id: item.productId,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                imageUrl: `https://picsum.photos/seed/${item.productId}/100/100` // Assuming image URL can be constructed
+            };
+            addToCart(cartItem);
+        });
+        toast({
+            title: 'Items Added to Cart',
+            description: `All items from order #${order.id} have been added to your cart.`
+        });
+    }
 
   return (
     <Card className="glass-card">
@@ -64,8 +85,12 @@ function OrderItem({ order }: { order: Order }) {
             <p>Total: ${order.totalAmount.toFixed(2)}</p>
         </div>
       </CardContent>
-      <CardFooter>
-        <Button variant="outline">View Details</Button>
+      <CardFooter className="flex justify-end gap-2">
+        <Button variant="ghost">View Details</Button>
+        <Button onClick={handleReorder} className="neon-button">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Reorder
+        </Button>
       </CardFooter>
     </Card>
   );
