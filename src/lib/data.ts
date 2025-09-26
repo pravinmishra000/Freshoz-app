@@ -145,7 +145,7 @@ export const transactions: Transaction[] = [
   { id: '#3206', status: 'Completed', amount: 35.75, date: '2023-10-24' },
 ];
 
-export const orders: Omit<Order, 'deliveryAddress'>[] = [
+export const orders: Omit<Order, 'address'>[] = [
     {
       id: 'FZ-12345',
       userId: 'user1',
