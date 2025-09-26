@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, Home, MapPin, User, ShoppingCart, LogOut, LogIn } from 'lucide-react';
+import { BarChart2, Home, MapPin, MessageSquare, LogOut, LogIn } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -34,6 +34,7 @@ const navItems = [
   { href: '/', label: 'Products', icon: Home },
   { href: '/track-order', label: 'Track Order', icon: MapPin },
   { href: '/earnings', label: 'Earnings', icon: BarChart2 },
+  { href: '/chat', label: 'Support', icon: MessageSquare },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -77,10 +78,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="sr-only">Cart</span>
-              </Button>
               {loading ? (
                 <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
               ) : authUser ? (
