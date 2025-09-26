@@ -1,3 +1,5 @@
+import { FieldValue } from 'firebase/firestore';
+
 export interface Product {
   id: string;
   name: string;
@@ -44,11 +46,12 @@ export type UserRole = 'customer' | 'rider' | 'admin';
 
 export interface User {
   id: string; // Corresponds to Firebase Auth UID
-  email: string;
-  displayName: string;
-  photoURL?: string;
+  email: string | null;
+  phoneNumber: string | null;
+  displayName: string | null;
+  photoURL?: string | null;
   role: UserRole;
-  createdAt: Date;
+  createdAt: FieldValue | Date;
 }
 
 export interface Address {
@@ -94,9 +97,11 @@ export interface Rider {
   isAvailable: boolean;
   rating: number;
   completedDeliveries: number;
+  // KYC documents would be stored securely, likely with pointers here
+  kycStatus: 'pending' | 'verified' | 'rejected';
 }
 
 export interface Admin {
-  id: string; // Corresponds to a User ID
+  id:string; // Corresponds to a User ID
   permissions: string[]; // e.g., ['manage_products', 'manage_users']
 }
