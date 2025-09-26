@@ -92,5 +92,4 @@ export interface Admin {
   name: string;
   email: string;
   role: 'admin';
-  fcmToken?: string; // For push notifications
 }

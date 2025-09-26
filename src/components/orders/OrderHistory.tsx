@@ -60,7 +60,6 @@ function OrderItem({ order }: { order: Omit<Order, 'address'> }) {
       </CardContent>
       <CardFooter>
         <Button variant="outline">View Details</Button>
-        <Button variant="ghost" className="ml-2">Track Order</Button>
       </CardFooter>
     </Card>
   );
