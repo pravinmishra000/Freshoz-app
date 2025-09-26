@@ -1,10 +1,10 @@
 'use server';
 
-import { getAllOrders as getAllOrdersFromDb, updateOrderStatus as updateOrderStatusInDb, getAnalyticsSummary as getAnalyticsFromDb } from '@/services/firestoreService';
+import { getAllOrders as getAllOrdersFromDb, updateOrderStatus as updateOrderStatusInDb, getAnalyticsSummary as getAnalyticsFromDb, getUser } from '@/services/firestoreService';
 import { Order, OrderStatus } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/firebase/server';
-import { getUser } from '@/services/firestoreService';
+import { sendPushNotification } from '@/services/notificationService';
 
 
 async function verifyAdmin() {
@@ -29,7 +29,23 @@ export async function getAllOrders(): Promise<Order[]> {
 export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<{ success: boolean, message?: string }> {
     try {
         await verifyAdmin();
-        await updateOrderStatusInDb(orderId, status);
+        const order = await updateOrderStatusInDb(orderId, status);
+        
+        // After updating, send a notification
+        if (order && order.userId) {
+            const user = await getUser(order.userId);
+            if (user?.fcmToken) {
+                await sendPushNotification(user.fcmToken, {
+                    notification: {
+                        title: 'Order Status Updated',
+                        body: `Your order #${order.id} is now ${status}.`
+                    }
+                });
+            } else {
+                console.log(`User ${order.userId} does not have an FCM token. Skipping notification.`);
+            }
+        }
+
         revalidatePath('/admin/orders');
         revalidatePath('/orders');
         return { success: true };

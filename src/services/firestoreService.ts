@@ -37,36 +37,38 @@ export async function getAllOrders(): Promise<Order[]> {
 }
 
 /**
- * Fetches a single order from Firestore.
- * @param orderId The ID of the order to fetch.
+ * Fetches a single order from Firestore using its Firestore document ID.
+ * @param orderId The Firestore document ID of the order to fetch.
  * @returns A promise that resolves to the Order object or null if not found.
  */
-export async function getOrder(orderId: string): Promise<(Order & { id: string }) | null> {
+export async function getOrder(orderId: string): Promise<Order | null> {
   const orderRef = doc(db, 'orders', orderId);
   const orderSnap = await getDoc(orderRef);
 
   if (orderSnap.exists()) {
-    return { id: orderSnap.id, ...orderSnap.data() } as Order & { id: string };
+    return { firestoreId: orderSnap.id, ...orderSnap.data() } as Order;
   } else {
     return null;
   }
 }
+
 
 /**
  * Fetches a single user from Firestore.
  * @param userId The ID of the user to fetch.
  * @returns A promise that resolves to the User object or null if not found.
  */
-export async function getUser(userId: string): Promise<(User & { id: string }) | null> {
+export async function getUser(userId: string): Promise<User | null> {
   const userRef = doc(db, 'users', userId);
   const userSnap = await getDoc(userRef);
 
   if (userSnap.exists()) {
-    return { id: userSnap.id, ...userSnap.data() } as User & { id: string };
+    return { id: userSnap.id, ...userSnap.data() } as User;
   } else {
     return null;
   }
 }
+
 
 /**
  * Updates an order document in Firestore.
@@ -79,14 +81,21 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 }
 
 /**
- * Updates the status of a specific order.
+ * Updates the status of a specific order and returns the updated order.
  * @param orderId The Firestore document ID of the order.
  * @param status The new status for the order.
+ * @returns The updated order object.
  */
-export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order | null> {
     const orderRef = doc(db, 'orders', orderId);
     await updateDoc(orderRef, { status: status, updatedAt: serverTimestamp() });
+    const updatedOrderSnap = await getDoc(orderRef);
+    if (updatedOrderSnap.exists()) {
+        return { firestoreId: updatedOrderSnap.id, ...updatedOrderSnap.data() } as Order;
+    }
+    return null;
 }
+
 
 /**
  * Creates a new order in Firestore.
