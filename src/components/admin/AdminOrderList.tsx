@@ -50,13 +50,13 @@ function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, o
         </div>
         <Separator className="my-4"/>
          <div className="flex justify-end font-bold text-lg">
-            <p>Total: ${order.total.toFixed(2)}</p>
+            <p>Total: ${order.totalAmount.toFixed(2)}</p>
         </div>
       </CardContent>
       <CardFooter className="justify-between">
         <div>
             <p className="font-semibold text-sm">Shipping to:</p>
-            <p className="text-sm text-muted-foreground">{order.address.street}, {order.address.city}, {order.address.state} {order.address.zip}</p>
+            <p className="text-sm text-muted-foreground">{order.address.name}, {order.address.street}, {order.address.city}, {order.address.state} {order.address.pincode}</p>
         </div>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -96,8 +96,8 @@ export function AdminOrderList() {
         const allOrders = await getAllOrders();
         const formattedOrders = allOrders.map(o => ({
             ...o,
-            createdAt: o.createdAt.seconds ? new Date(o.createdAt.seconds * 1000) : new Date(o.createdAt),
-            updatedAt: o.updatedAt.seconds ? new Date(o.updatedAt.seconds * 1000) : new Date(o.updatedAt)
+            createdAt: o.createdAt.seconds ? new Date(o.createdAt.seconds * 1000) : new Date(o.createdAt as any),
+            updatedAt: o.updatedAt && o.updatedAt.seconds ? new Date(o.updatedAt.seconds * 1000) : (o.updatedAt ? new Date(o.updatedAt as any) : undefined)
         }))
         setOrders(formattedOrders as Order[]);
         setIsLoading(false);

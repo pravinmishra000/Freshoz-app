@@ -15,13 +15,15 @@ import { Loader2, CreditCard } from 'lucide-react';
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 
 const addressSchema = z.object({
+  name: z.string().min(2, 'Name is required.'),
+  phone: z.string().min(10, 'A valid phone number is required.'),
   street: z.string().min(3, 'Street address is required.'),
   city: z.string().min(2, 'City is required.'),
   state: z.string().min(2, 'State is required.'),
-  zip: z.string().min(5, 'A valid ZIP code is required.').max(10),
-  country: z.string().min(2, 'Country is required.'),
+  pincode: z.string().min(5, 'A valid Pincode is required.').max(10),
 });
 
 type AddressFormValues = z.infer<typeof addressSchema>;
@@ -39,11 +41,12 @@ export function CheckoutFlow() {
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
+      name: appUser?.displayName || '',
+      phone: appUser?.phoneNumber || '',
       street: appUser?.address?.street || '',
       city: appUser?.address?.city || '',
       state: appUser?.address?.state || '',
-      zip: appUser?.address?.zip || '',
-      country: appUser?.address?.country || 'USA',
+      pincode: appUser?.address?.pincode || '',
     },
   });
 
@@ -65,7 +68,8 @@ export function CheckoutFlow() {
                 price: item.price,
                 quantity: item.quantity,
             })),
-            total: totalAmount,
+            totalAmount: totalAmount,
+            paymentMethod: 'Cash on Delivery',
         });
 
         toast({
@@ -108,6 +112,28 @@ export function CheckoutFlow() {
               <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="street"
                   render={({ field }) => (
                     <FormItem className="sm:col-span-2">
@@ -125,11 +151,8 @@ export function CheckoutFlow() {
                 <FormField control={form.control} name="state" render={({ field }) => (
                     <FormItem><FormLabel>State / Province</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <FormField control={form.control} name="zip" render={({ field }) => (
-                    <FormItem><FormLabel>ZIP / Postal Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="country" render={({ field }) => (
-                    <FormItem><FormLabel>Country</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormField control={form.control} name="pincode" render={({ field }) => (
+                    <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </CardContent>
             </Card>

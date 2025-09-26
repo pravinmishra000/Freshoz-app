@@ -145,7 +145,7 @@ export const transactions: Transaction[] = [
   { id: '#3206', status: 'Completed', amount: 35.75, date: '2023-10-24' },
 ];
 
-export const orders: Omit<Order, 'address'>[] = [
+export const orders: Partial<Order>[] = [
     {
       id: 'FZ-12345',
       userId: 'user1',
@@ -153,7 +153,7 @@ export const orders: Omit<Order, 'address'>[] = [
         { productId: '1', name: 'Organic Avocados', price: 4.99, quantity: 2 },
         { productId: '5', name: 'Artisanal Sourdough', price: 6.0, quantity: 1 },
       ],
-      total: 15.98,
+      totalAmount: 15.98,
       status: 'out for delivery',
       createdAt: new Date('2023-10-27T10:00:00Z'),
       updatedAt: new Date('2023-10-27T11:00:00Z'),
@@ -164,7 +164,7 @@ export const orders: Omit<Order, 'address'>[] = [
       items: [
         { productId: '2', name: 'Fresh Strawberries', price: 3.50, quantity: 1 },
       ],
-      total: 3.50,
+      totalAmount: 3.50,
       status: 'delivered',
       createdAt: new Date('2023-10-25T14:30:00Z'),
       updatedAt: new Date('2023-10-25T15:15:00Z'),

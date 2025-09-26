@@ -39,7 +39,7 @@ const getOrderDetails = ai.defineTool(
     outputSchema: z.object({
         id: z.string(),
         status: z.string(),
-        total: z.number(),
+        totalAmount: z.number(),
         createdAt: z.string(),
         items: z.array(z.object({
             name: z.string(),
@@ -55,7 +55,7 @@ const getOrderDetails = ai.defineTool(
     return {
         id: order.id,
         status: order.status,
-        total: order.total,
+        totalAmount: order.totalAmount,
         createdAt: order.createdAt.toISOString(),
         items: order.items.map(i => ({ name: i.name, quantity: i.quantity }))
     };

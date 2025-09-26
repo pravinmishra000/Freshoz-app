@@ -8,7 +8,8 @@ interface PlaceOrderInput {
     userId: string;
     address: Address;
     items: OrderItem[];
-    total: number;
+    totalAmount: number;
+    paymentMethod: string;
 }
 
 export async function placeOrder(input: PlaceOrderInput): Promise<{ orderId: string }> {

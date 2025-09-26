@@ -47,11 +47,13 @@ export interface CartItem {
 export type UserRole = 'customer' | 'admin';
 
 export interface Address {
+  name: string;
+  phone: string;
   street: string;
   city: string;
   state: string;
-  zip: string;
-  country: string;
+  pincode: string;
+  country?: string; // Kept as optional for now
 }
 
 export interface User {
@@ -77,16 +79,18 @@ export interface OrderItem {
 export type OrderStatus = 'placed' | 'preparing' | 'out for delivery' | 'delivered' | 'cancelled';
 
 export interface Order {
-  id: string;
+  id: string; // User-friendly ID
   firestoreId?: string; // The auto-generated ID from Firestore
   userId: string;
   items: OrderItem[];
-  total: number;
+  totalAmount: number;
+  paymentMethod: string;
   status: OrderStatus;
   address: Address;
   createdAt: FieldValue | Date;
-  updatedAt: FieldValue | Date;
+  updatedAt?: FieldValue | Date;
 }
+
 
 export interface Admin {
   id: string; // Corresponds to a User ID (Auth UID)
