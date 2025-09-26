@@ -44,7 +44,7 @@ export interface CartItem {
 
 // Firestore Collection Types
 
-export type UserRole = 'customer' | 'admin';
+export type UserRole = 'customer' | 'admin' | 'rider';
 
 export interface Address {
   name: string;
@@ -87,10 +87,21 @@ export interface Order {
   paymentMethod: string;
   status: OrderStatus;
   address: Address;
-  createdAt: FieldValue | Date;
+  createdAt: { seconds: number, nanoseconds: number } | Date;
   updatedAt?: FieldValue | Date;
+  assignedRiderId?: string;
 }
 
+export interface Rider {
+    id: string; // Corresponds to User ID (Auth UID)
+    name: string;
+    phone: string;
+    isAvailable: boolean;
+    currentLocation: {
+        lat: number;
+        lng: number;
+    }
+}
 
 export interface Admin {
   id: string; // Corresponds to a User ID (Auth UID)

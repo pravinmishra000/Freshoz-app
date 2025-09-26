@@ -24,13 +24,17 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
 
 function OrderItem({ order }: { order: Order }) {
     const StatusIcon = statusMap[order.status].icon;
+    const createdAtDate = order.createdAt instanceof Date 
+        ? order.createdAt 
+        : new Date((order.createdAt as any).seconds * 1000);
+
   return (
     <Card className="glass-card">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
                 <CardTitle className="font-headline text-lg">Order #{order.id}</CardTitle>
-                <CardDescription>Placed on {new Date(order.createdAt as number).toLocaleDateString()}</CardDescription>
+                <CardDescription>Placed on {createdAtDate.toLocaleDateString()}</CardDescription>
             </div>
             <Badge className={cn("text-white", statusMap[order.status].color)}>
                 <StatusIcon className="mr-1 h-4 w-4" />
@@ -78,13 +82,7 @@ export function OrderHistory() {
       startTransition(async () => {
         setIsLoading(true);
         const userOrders = await getOrdersForUser(authUser.uid);
-        // Ensure dates are converted properly, firestore timestamps can be tricky
-        const formattedOrders = userOrders.map(o => ({
-            ...o,
-            createdAt: o.createdAt.seconds ? new Date(o.createdAt.seconds * 1000) : new Date(o.createdAt),
-            updatedAt: o.updatedAt && o.updatedAt.seconds ? new Date(o.updatedAt.seconds * 1000) : (o.updatedAt ? new Date(o.updatedAt as any) : undefined)
-        }))
-        setOrders(formattedOrders as Order[]);
+        setOrders(userOrders as Order[]);
         setIsLoading(false);
       });
     } else {

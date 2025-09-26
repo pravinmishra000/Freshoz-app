@@ -1,6 +1,6 @@
 'use server';
 
-import { getAllOrders as getAllOrdersFromDb, updateOrderStatus as updateOrderStatusInDb } from '@/services/firestoreService';
+import { getAllOrders as getAllOrdersFromDb, updateOrderStatus as updateOrderStatusInDb, getAnalyticsSummary as getAnalyticsFromDb } from '@/services/firestoreService';
 import { Order, OrderStatus } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/firebase/server';
@@ -36,5 +36,22 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
     } catch (error: any) {
         console.error('Error updating order status:', error);
         return { success: false, message: error.message || 'Could not update order status.' };
+    }
+}
+
+export async function getAnalyticsSummary() {
+    try {
+        await verifyAdmin();
+        return await getAnalyticsFromDb();
+    } catch (error) {
+        console.error('Error fetching analytics summary:', error);
+        // Return empty/zeroed data on error to prevent client-side crashes
+        return {
+            totalRevenue: 0,
+            totalOrders: 0,
+            totalUsers: 0,
+            revenueByDay: [],
+            ordersByDay: [],
+        };
     }
 }

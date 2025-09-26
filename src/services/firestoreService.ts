@@ -1,7 +1,8 @@
 import { db } from '@/lib/firebase/client';
-import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp, Timestamp, endAt, startAt, orderBy } from 'firebase/firestore';
 import type { Order, User, OrderStatus } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
+import { format, subDays } from 'date-fns';
 
 /**
  * Fetches all orders for a specific user from Firestore.
@@ -17,7 +18,7 @@ export async function getOrdersForUser(userId: string): Promise<Order[]> {
         orders.push({ firestoreId: doc.id, ...doc.data() } as Order);
     });
     // Sort by creation date, newest first
-    return orders.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+    return orders.sort((a, b) => (b.createdAt as any).seconds - (a.createdAt as any).seconds);
 }
 
 /**
@@ -32,7 +33,7 @@ export async function getAllOrders(): Promise<Order[]> {
         orders.push({ firestoreId: doc.id, ...doc.data() } as Order);
     });
     // Sort by creation date, newest first
-    return orders.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+    return orders.sort((a, b) => (b.createdAt as any).seconds - (a.createdAt as any).seconds);
 }
 
 /**
@@ -103,4 +104,67 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'u
   // Update the document with its own Firestore ID for consistency
   await updateDoc(newOrderRef, { firestoreId: newOrderRef.id });
   return newOrderRef.id;
+}
+
+
+/**
+ * Fetches analytics summary data from Firestore.
+ */
+export async function getAnalyticsSummary() {
+    const ordersCollection = collection(db, 'orders');
+    const usersCollection = collection(db, 'users');
+    
+    // 1. Total Revenue and Total Orders
+    const ordersSnapshot = await getDocs(ordersCollection);
+    let totalRevenue = 0;
+    const totalOrders = ordersSnapshot.size;
+    ordersSnapshot.forEach(doc => {
+        totalRevenue += doc.data().totalAmount;
+    });
+
+    // 2. Total Users (customers)
+    const usersQuery = query(usersCollection, where('role', '==', 'customer'));
+    const usersSnapshot = await getDocs(usersQuery);
+    const totalUsers = usersSnapshot.size;
+
+    // 3. Revenue and Orders for the last 7 days
+    const endDate = new Date();
+    const startDate = subDays(endDate, 6);
+    
+    const recentOrdersQuery = query(
+        ordersCollection,
+        orderBy('createdAt'),
+        startAt(Timestamp.fromDate(startDate)),
+        endAt(Timestamp.fromDate(endDate))
+    );
+    const recentOrdersSnapshot = await getDocs(recentOrdersQuery);
+    
+    const dailyData: { [key: string]: { revenue: number; orders: number } } = {};
+
+    // Initialize last 7 days
+    for (let i = 0; i < 7; i++) {
+        const day = format(subDays(endDate, i), 'MMM d');
+        dailyData[day] = { revenue: 0, orders: 0 };
+    }
+    
+    recentOrdersSnapshot.forEach(doc => {
+        const order = doc.data() as Order;
+        const orderDate = (order.createdAt as Timestamp).toDate();
+        const formattedDate = format(orderDate, 'MMM d');
+        if (dailyData[formattedDate]) {
+            dailyData[formattedDate].revenue += order.totalAmount;
+            dailyData[formattedDate].orders += 1;
+        }
+    });
+
+    const revenueByDay = Object.entries(dailyData).map(([date, { revenue }]) => ({ date, revenue })).reverse();
+    const ordersByDay = Object.entries(dailyData).map(([date, { orders }]) => ({ date, orders })).reverse();
+
+    return {
+        totalRevenue,
+        totalOrders,
+        totalUsers,
+        revenueByDay,
+        ordersByDay,
+    };
 }

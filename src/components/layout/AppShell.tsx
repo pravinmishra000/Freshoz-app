@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn, UserCog } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -94,12 +94,20 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                      {appUser?.role === 'admin' && (
+                      <>
+                       <DropdownMenuItem asChild>
+                         <Link href="/admin/dashboard">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                         </Link>
+                       </DropdownMenuItem>
                        <DropdownMenuItem asChild>
                          <Link href="/admin/orders">
                           <UserCog className="mr-2 h-4 w-4" />
-                          <span>Admin Dashboard</span>
+                          <span>Manage Orders</span>
                          </Link>
                        </DropdownMenuItem>
+                      </>
                      )}
                     <DropdownMenuItem>Profile</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>

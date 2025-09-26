@@ -22,6 +22,9 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
 
 function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, onStatusChange: (orderId: string, newStatus: OrderStatus) => void, isUpdating: boolean }) {
   const StatusIcon = statusMap[order.status].icon;
+  const createdAtDate = order.createdAt instanceof Date 
+        ? order.createdAt 
+        : new Date((order.createdAt as any).seconds * 1000);
 
   return (
     <Card className="glass-card">
@@ -29,7 +32,7 @@ function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, o
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
             <div>
                 <CardTitle className="font-headline text-lg">Order {order.id}</CardTitle>
-                <CardDescription>Placed on {new Date(order.createdAt as number).toLocaleString()}</CardDescription>
+                <CardDescription>Placed on {createdAtDate.toLocaleString()}</CardDescription>
                 <CardDescription>User ID: {order.userId}</CardDescription>
             </div>
             <Badge className={cn("text-white w-fit", statusMap[order.status].color)}>
@@ -94,12 +97,7 @@ export function AdminOrderList() {
     startTransition(async () => {
         setIsLoading(true);
         const allOrders = await getAllOrders();
-        const formattedOrders = allOrders.map(o => ({
-            ...o,
-            createdAt: o.createdAt.seconds ? new Date(o.createdAt.seconds * 1000) : new Date(o.createdAt as any),
-            updatedAt: o.updatedAt && o.updatedAt.seconds ? new Date(o.updatedAt.seconds * 1000) : (o.updatedAt ? new Date(o.updatedAt as any) : undefined)
-        }))
-        setOrders(formattedOrders as Order[]);
+        setOrders(allOrders as Order[]);
         setIsLoading(false);
       });
   }
