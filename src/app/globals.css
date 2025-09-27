@@ -74,11 +74,11 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-border/20 shadow-lg;
+    @apply rounded-xl border border-white/10 bg-white/5 p-4 shadow-lg backdrop-blur-lg;
   }
 
   .dark .glass-card {
-    @apply bg-card/50;
+    @apply border-black/10 bg-black/5;
   }
 
   .neon-button {

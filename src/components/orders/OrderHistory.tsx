@@ -50,7 +50,7 @@ function OrderItem({ order }: { order: Order }) {
     }
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-card transition-all duration-300 hover:scale-[1.02]">
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>

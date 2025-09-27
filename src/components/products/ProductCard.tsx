@@ -31,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="glass-card group flex flex-col overflow-hidden">
+    <Card className="glass-card group flex flex-col overflow-hidden transition-all duration-300 hover:scale-105">
       <CardHeader className="p-0">
         <div className="relative aspect-square w-full">
           <Image
@@ -39,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
             data-ai-hint={product.imageHint}
           />
         </div>
