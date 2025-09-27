@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="relative min-h-screen w-full">
+      <div className="relative flex min-h-screen w-full">
         <Sidebar className="hidden md:flex">
           <SidebarHeader>
             <Link href="/" className="block p-2">
@@ -57,7 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                   <Link href={item.href} passHref>
                     <SidebarMenuButton
-                      isActive={pathname === item.href}
+                      isActive={pathname.startsWith(item.href)}
                       tooltip={item.label}
                     >
                       <item.icon />
@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset>
+        <div className="flex flex-1 flex-col">
           <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="md:hidden" />
@@ -109,6 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                           <span>Manage Orders</span>
                          </Link>
                        </DropdownMenuItem>
+                       <DropdownMenuSeparator />
                       </>
                      )}
                     <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -131,7 +132,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
           <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
-        </SidebarInset>
+        </div>
 
         {/* Mobile Bottom Navigation */}
         <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
