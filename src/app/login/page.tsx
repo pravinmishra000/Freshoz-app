@@ -96,7 +96,7 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
       <Card className="w-full max-w-sm glass-card">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl text-foreground">Welcome to Freshoz</CardTitle>
+          <CardTitle className="font-headline text-2xl text-foreground">Welcome to <span className="text-primary">Freshoz</span></CardTitle>
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>

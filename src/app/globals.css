@@ -74,11 +74,7 @@
 
 @layer components {
   .glass-card {
-    @apply rounded-xl border border-white/10 bg-white/5 shadow-lg backdrop-blur-lg;
-  }
-
-  .dark .glass-card {
-    @apply border-white/10 bg-black/10;
+    @apply rounded-xl border border-white/10 bg-black/10 shadow-lg backdrop-blur-lg;
   }
 
   .neon-button {
@@ -97,14 +93,16 @@
       @apply bg-transparent;
   }
    .phone-input-dark .PhoneInputCountrySelect-arrow {
-     @apply text-foreground;
+     @apply text-foreground opacity-50;
    }
    /* Style the dropdown menu for the phone input */
   .PhoneInputCountrySelect-menu {
-    @apply bg-background border border-border rounded-md shadow-lg glass-card;
+    @apply bg-popover border border-border rounded-md shadow-lg glass-card text-popover-foreground;
+    background-color: hsl(var(--popover));
+    color: hsl(var(--popover-foreground));
   }
   .PhoneInputCountryOption {
-      @apply text-foreground;
+      @apply text-popover-foreground;
   }
   .PhoneInputCountryOption:hover {
       @apply bg-accent/50;
