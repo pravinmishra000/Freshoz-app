@@ -15,7 +15,11 @@ export default function PreHomeScreen() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-md">
         <a href="tel:+91909788255">
           <div className="glass-card p-8 rounded-xl h-full flex flex-col items-center justify-center hover:bg-accent/10 transition-colors cursor-pointer">
-            <Phone className="h-12 w-12 text-primary mb-4" />
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+                    <Phone className="h-8 w-8 text-primary-foreground" />
+                </div>
+            </div>
             <h2 className="font-headline text-2xl font-semibold">Call to Order</h2>
             <p className="text-muted-foreground mt-1">Prefer to order via phone? Call us directly!</p>
           </div>
