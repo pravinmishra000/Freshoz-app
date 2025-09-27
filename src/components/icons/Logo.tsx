@@ -2,17 +2,18 @@ import type { SVGProps } from 'react';
 import Image from 'next/image';
 
 export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?: number }) {
-  const baseHeight = props.height || 60; // Further increased base height for a more prominent logo
-  const baseWidth = props.width || 240; // Adjusted for better proportion
+  // Use fixed base dimensions to ensure consistency between server and client renders
+  const baseHeight = 60;
+  const baseWidth = 240;
 
   return (
     <div className="flex items-center justify-center gap-2">
       <Image
         src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-1800x1800-transparent.png?alt=media&token=c0768076-9cd1-4269-9b65-7ab12b48ea57"
         alt="Freshoz Logo"
-        width={baseHeight} // Make the logo height dynamic
+        width={baseHeight}
         height={baseHeight}
-        className="self-stretch h-auto" // Ensure the image scales with the container
+        className="self-stretch h-auto"
       />
       <div className="flex flex-col items-center justify-center">
         <svg
