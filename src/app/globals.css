@@ -98,9 +98,10 @@
    /* Style the dropdown menu for the phone input */
   .PhoneInputCountrySelect-menu {
     @apply rounded-md shadow-lg glass-card !bg-popover border !border-border text-popover-foreground;
+    background-color: white !important;
   }
   .PhoneInputCountryOption {
-      @apply text-popover-foreground;
+      color: black !important;
   }
   .PhoneInputCountryOption:hover {
       @apply bg-accent/50;
