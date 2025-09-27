@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { products } from '@/lib/data';
+import { products, CATEGORIES } from '@/lib/data';
 import type { Product, Category } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { CategoryCard } from '@/components/freshoz/category-card';
@@ -167,15 +167,7 @@ export default function HomePage() {
     { icon: Star, title: '4.8/5 Rating', description: 'Customer reviews', color: 'text-green-300', bg: 'bg-green-500/20' },
   ];
 
-  const categories: Omit<Category, 'id'>[] = [
-      { name_en: "Vegetables", slug: "vegetables", name_hi: "सब्जियां", display_order: 1, is_active: true },
-      { name_en: "Fruits", slug: "fruits", name_hi: "फल", display_order: 2, is_active: true },
-      { name_en: "Dairy", slug: "dairy", name_hi: "डेयरी", display_order: 3, is_active: true },
-      { name_en: "Bakery", slug: "bakery", name_hi: "बेकरी", display_order: 4, is_active: true },
-      { name_en: "Beverages", slug: "beverages", name_hi: "पेय पदार्थ", display_order: 5, is_active: true },
-  ];
-
-  const displayCategories = categories;
+  const displayCategories = CATEGORIES;
 
   useEffect(() => {
     console.log("📦 Firestore Products:", firestoreProducts);
@@ -417,8 +409,7 @@ export default function HomePage() {
                              category.name_en.includes('Dairy') ? '🥛' :
                              category.name_en.includes('Staples') ? '🍚' :
                              category.name_en.includes('Snacks') ? '🍿' :
-                             category.name_en.includes('Eggs') ? '🥚' :
-                             category.name_en.includes('Chicken') ? '🍗' :
+                             category.name_en.includes('Non-Veg') ? '🍗' :
                              category.name_en.includes('Personal') ? '🧴' :
                              category.name_en.includes('Home') ? '🏠' :
                              category.name_en.includes('Baby') ? '👶' :

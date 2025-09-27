@@ -1,5 +1,142 @@
 
-import type { Product, Promotion, EarningPeriod, Transaction, Order } from './types';
+import type { Product, Promotion, EarningPeriod, Transaction, Order, Category } from './types';
+import { 
+  Carrot, 
+  Milk, 
+  ShoppingCart, 
+  Coffee,
+  Drumstick 
+} from 'lucide-react';
+
+export const CATEGORIES: Category[] = [
+  {
+    id: 'cat-1',
+    name_en: 'Vegetables & Fruits',
+    name_hi: 'Sabji aur Fal',
+    slug: 'vegetables-fruits',
+    icon: Carrot,
+    description: 'Fresh vegetables and fruits from local farms',
+    description_hi: 'Local farms se fresh vegetables aur fruits',
+    image: 'https://picsum.photos/seed/cat-1/400/400',
+    tags: ['fresh', 'organic', 'seasonal', 'local'],
+    is_active: true,
+    display_order: 1,
+    parent_id: null,
+    subCategories: [
+      { name: 'Fresh Vegetables', slug: 'fresh-vegetables' },
+      { name: 'Fresh Fruits', slug: 'fresh-fruits' },
+      { name: 'Organic', slug: 'organic' },
+      { name: 'Exotic Fruits', slug: 'exotic-fruits' },
+      { name: 'Leafy Greens', slug: 'leafy-greens' },
+    ],
+    featured: true,
+    meta_title: 'Fresh Vegetables and Fruits Online',
+    meta_description: 'Buy fresh vegetables and fruits online with quick delivery'
+  },
+  {
+    id: 'cat-2',
+    name_en: 'Dairy & Bakery', 
+    name_hi: 'Doodh aur Bread',
+    slug: 'dairy-bakery',
+    icon: Milk,
+    description: 'Fresh dairy products and bakery items',
+    description_hi: 'Fresh dairy products aur bakery items',
+    image: 'https://picsum.photos/seed/cat-2/400/400',
+    tags: ['fresh', 'daily', 'baked', 'milk'],
+    is_active: true,
+    display_order: 2,
+    parent_id: null,
+    subCategories: [
+      { name: 'Milk', slug: 'milk' },
+      { name: 'Curd & Yogurt', slug: 'curd-yogurt' },
+      { name: 'Cheese', slug: 'cheese' },
+      { name: 'Butter', slug: 'butter' },
+      { name: 'Bread', slug: 'bread' },
+      { name: 'Cakes', slug: 'cakes' },
+      { name: 'Frozen', slug: 'frozen' },
+    ],
+    featured: true,
+    meta_title: 'Dairy and Bakery Products Online',
+    meta_description: 'Fresh dairy and bakery products delivered to your doorstep'
+  },
+  {
+    id: 'cat-3',
+    name_en: 'Snacks & Beverages',
+    name_hi: 'Nashte aur Peene ki Cheezein',
+    slug: 'snacks-beverages', 
+    icon: Coffee,
+    description: 'Snacks and beverages for quick refreshment',
+    description_hi: 'Quick refreshment ke liye snacks aur beverages',
+    image: 'https://picsum.photos/seed/cat-3/400/400',
+    tags: ['snacks', 'beverages', 'drinks', 'refreshment'],
+    is_active: true,
+    display_order: 4,
+    parent_id: null,
+    subCategories: [
+      { name: 'Cookies', slug: 'cookies' },
+      { name: 'Namkeen', slug: 'namkeen' },
+      { name: 'Chips', slug: 'chips' },
+      { name: 'Cold Drinks', slug: 'cold-drinks' },
+      { name: 'Juices', slug: 'juices' },
+      { name: 'Water', slug: 'water' },
+      { name: 'Tea & Coffee', slug: 'tea-coffee' },
+    ],
+    featured: true,
+    meta_title: 'Snacks and Beverages Online',
+    meta_description: 'Wide range of snacks and beverages available'
+  },
+  {
+    id: 'cat-4',
+    name_en: 'Staples & Grocery',
+    name_hi: 'Kirane ka Saman', 
+    slug: 'staples-grocery',
+    icon: ShoppingCart,
+    description: 'Daily essentials and grocery items',
+    description_hi: 'Daily essentials aur grocery items',
+    image: 'https://picsum.photos/seed/cat-4/400/400',
+    tags: ['essentials', 'grocery', 'staples', 'kitchen'],
+    is_active: true,
+    display_order: 3,
+    parent_id: null,
+    subCategories: [
+      { name: 'Pulses', slug: 'pulses' },
+      { name: 'Flour & Atta', slug: 'flour-atta' },
+      { name: 'Rice & Grains', slug: 'rice-grains' },
+      { name: 'Spices', slug: 'spices' },
+      { name: 'Oil & Ghee', slug: 'oil-ghee' },
+      { name: 'Sugar & Salt', slug: 'sugar-salt' },
+    ],
+    featured: true,
+    meta_title: 'Staples and Grocery Items Online',
+    meta_description: 'All your kitchen essentials in one place'
+  },
+  {
+    id: 'cat-5',
+    name_en: 'Non-Veg',
+    name_hi: 'Ande aur Chicken',
+    slug: 'non-veg',
+    icon: Drumstick,
+    description: 'Fresh non-vegetarian products',
+    description_hi: 'Fresh non-vegetarian products',
+    image: 'https://picsum.photos/seed/cat-5/400/400',
+    tags: ['fresh', 'meat', 'chicken', 'fish', 'mutton'],
+    is_active: true,
+    display_order: 5,
+    parent_id: null,
+    subCategories: [
+      { name: 'Eggs', slug: 'eggs' },
+      { name: 'Chicken', slug: 'chicken' },
+      { name: 'Mutton', slug: 'mutton' },
+      { name: 'Fish', slug: 'fish' },
+      { name: 'Seafood', slug: 'seafood' },
+      { name: 'Frozen Meat', slug: 'frozen-meat' },
+    ],
+    featured: true,
+    meta_title: 'Fresh Non-Veg Products Online',
+    meta_description: 'Quality non-vegetarian products with quick delivery'
+  }
+];
+
 
 export const products: Product[] = [
   {
@@ -191,4 +328,5 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
+
 
