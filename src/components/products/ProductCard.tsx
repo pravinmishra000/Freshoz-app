@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
@@ -44,18 +44,18 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-4">
-        <CardTitle className="font-headline text-lg">{product.name}</CardTitle>
-        <p className="mt-2 text-2xl font-semibold text-primary">
-          ${product.price.toFixed(2)}
-        </p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button className="neon-button w-full" onClick={handleAddToCart}>
+      <CardContent className="flex flex-1 flex-col p-4">
+        <div className="flex-1">
+          <CardTitle className="font-headline text-lg">{product.name}</CardTitle>
+          <p className="mt-2 text-2xl font-semibold text-primary">
+            ${product.price.toFixed(2)}
+          </p>
+        </div>
+        <Button className="neon-button mt-4 w-full" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 }
