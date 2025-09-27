@@ -1,40 +1,70 @@
+"use client";
 
-'use client';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, ShoppingCart, Wallet, User, Phone } from "lucide-react";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, Search, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/products', label: 'Products', icon: ShoppingBag },
-  { href: '/search', label: 'Search', icon: Search },
-  { href: '/profile', label: 'Profile', icon: User },
-];
-
-export default function BottomNav() {
+// Named export bana den
+export const BottomNav = () => {
   const pathname = usePathname();
 
+  const navItems = [
+    { href: "/", icon: Home, label: "Home" },
+    { href: "/category", icon: ShoppingCart, label: "Categories" },
+    { href: "/wallet", icon: Wallet, label: "Wallet" },
+    { href: "/profile", icon: User, label: "Profile" },
+    { href: "/contact", icon: Phone, label: "Contact" },
+  ];
+
   return (
-    <nav className="p-2">
-      <div className="flex items-center justify-around">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-colors',
-              pathname === item.href
-                ? 'bg-primary/20 text-primary'
-                : 'text-muted-foreground hover:bg-accent/10'
-            )}
-          >
-            <item.icon className="h-6 w-6" />
-            <span className="text-xs font-medium">{item.label}</span>
-          </Link>
-        ))}
-      </div>
-    </nav>
+    <>
+      {/* Bottom Nav Container */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50">
+        {/* Glass Morphism Background with Dark Green Border */}
+        <div className="backdrop-blur-lg bg-white/10 rounded-t-3xl border-t border-emerald-800/30">
+          <div className="flex justify-around items-center py-3 px-4">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex flex-col items-center space-y-1 transition-all duration-200"
+                >
+                  {/* Icon - Dark Green with Active State */}
+                  <Icon
+                    size={22}
+                    className={`transition-colors duration-200 ${
+                      isActive 
+                        ? "text-emerald-700 scale-110" 
+                        : "text-emerald-800/90"
+                    }`}
+                  />
+                  
+                  {/* Text - Dark Green with Active State */}
+                  <span
+                    className={`text-xs font-medium transition-colors duration-200 ${
+                      isActive 
+                        ? "text-emerald-700 font-semibold" 
+                        : "text-emerald-800/90"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* Bottom Padding for Page Content */}
+      <div className="pb-20" />
+    </>
   );
-}
+};
+
+// Default export bhi maintain karen
+export default BottomNav;
