@@ -8,12 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
 
 interface ProductCardProps {
   product: Product;
+  variant?: 'grid' | 'list';
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, variant = 'grid' }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -31,6 +34,14 @@ export function ProductCard({ product }: ProductCardProps) {
     });
   };
 
+  if (variant === 'list') {
+      return (
+        <Card className="glass-card group flex overflow-hidden hover:scale-105 p-0">
+          {/* List variant implementation */}
+        </Card>
+      );
+  }
+
   return (
     <Card className="glass-card group flex flex-col overflow-hidden hover:scale-105 p-0">
       <CardHeader className="p-0">
@@ -40,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name_en}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
+            className="object-cover rounded-t-3xl"
             data-ai-hint={product.imageHint}
           />
         </div>
