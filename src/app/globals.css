@@ -99,6 +99,19 @@
    .phone-input-dark .PhoneInputCountrySelect-arrow {
      @apply text-foreground;
    }
+   /* Style the dropdown menu for the phone input */
+  .PhoneInputCountrySelect-menu {
+    @apply bg-background border border-border rounded-md shadow-lg glass-card;
+  }
+  .PhoneInputCountryOption {
+      @apply text-foreground;
+  }
+  .PhoneInputCountryOption:hover {
+      @apply bg-accent/50;
+  }
+  .PhoneInputCountryOption[aria-selected="true"] {
+      @apply bg-accent;
+  }
 }
 
 @keyframes neon-pulse {
