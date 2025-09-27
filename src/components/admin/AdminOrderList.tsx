@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
@@ -47,13 +48,13 @@ function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, o
             {order.items.map((item, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
                     <p>{item.name} <span className="text-muted-foreground">x {item.quantity}</span></p>
-                    <p>${(item.price * item.quantity).toFixed(2)}</p>
+                    <p>₹{(item.price * item.quantity).toFixed(2)}</p>
                 </div>
             ))}
         </div>
         <Separator className="my-4"/>
          <div className="flex justify-end font-bold text-lg">
-            <p>Total: ${order.totalAmount.toFixed(2)}</p>
+            <p>Total: ₹{order.totalAmount.toFixed(2)}</p>
         </div>
       </CardContent>
       <CardFooter className="justify-between">

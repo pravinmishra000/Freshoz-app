@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
@@ -47,7 +48,7 @@ function ChartCard({ title, data, dataKey, xKey, loading }: { title: string; dat
                     <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey={xKey} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => (dataKey === 'revenue' ? `$${value}` : value)} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => (dataKey === 'revenue' ? `₹${value}` : value)} />
                     <Tooltip
                         contentStyle={{
                             backgroundColor: 'hsl(var(--background))',
@@ -82,7 +83,7 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard title="Total Revenue" value={`$${analytics?.totalRevenue.toFixed(2) ?? '0.00'}`} icon={DollarSign} loading={isLoading} />
+        <StatCard title="Total Revenue" value={`₹${analytics?.totalRevenue.toFixed(2) ?? '0.00'}`} icon={DollarSign} loading={isLoading} />
         <StatCard title="Total Orders" value={analytics?.totalOrders ?? 0} icon={Package} loading={isLoading} />
         <StatCard title="Total Customers" value={analytics?.totalUsers ?? 0} icon={Users} loading={isLoading} />
       </div>

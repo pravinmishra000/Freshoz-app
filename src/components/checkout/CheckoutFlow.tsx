@@ -223,7 +223,7 @@ export function CheckoutFlow() {
                         <div className="flex-1">
                             <p className="font-medium text-sm">{item.name}</p>
                         </div>
-                        <p className="font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold text-sm">₹{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                 ))}
             </div>
@@ -231,17 +231,17 @@ export function CheckoutFlow() {
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                     <p className="text-muted-foreground">Subtotal</p>
-                    <p>${cartTotal.toFixed(2)}</p>
+                    <p>₹{cartTotal.toFixed(2)}</p>
                 </div>
                  <div className="flex justify-between">
                     <p className="text-muted-foreground">Delivery Fee</p>
-                    <p>${deliveryFee.toFixed(2)}</p>
+                    <p>₹{deliveryFee.toFixed(2)}</p>
                 </div>
             </div>
              <Separator />
              <div className="flex justify-between font-bold text-lg">
                 <p>Total</p>
-                <p>${totalAmount.toFixed(2)}</p>
+                <p>₹{totalAmount.toFixed(2)}</p>
             </div>
           </CardContent>
         </Card>

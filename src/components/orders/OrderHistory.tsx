@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -76,13 +77,13 @@ function OrderItem({ order }: { order: Order }) {
                             <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                     </div>
-                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</p>
                 </div>
             ))}
         </div>
         <Separator/>
         <div className="flex justify-end font-bold text-lg">
-            <p>Total: ${order.totalAmount.toFixed(2)}</p>
+            <p>Total: ₹{order.totalAmount.toFixed(2)}</p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">

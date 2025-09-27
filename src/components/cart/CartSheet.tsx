@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ShoppingCart, Trash2 } from 'lucide-react';
@@ -57,7 +58,7 @@ export function CartSheet() {
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
+                    <p className="text-sm text-muted-foreground">₹{item.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Input
@@ -84,7 +85,7 @@ export function CartSheet() {
             <SheetFooter className="mt-auto space-y-4">
               <div className="flex w-full justify-between text-lg font-semibold">
                 <span>Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>₹{cartTotal.toFixed(2)}</span>
               </div>
               {authUser ? (
                  <SheetClose asChild>

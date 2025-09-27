@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -33,7 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="glass-card group flex flex-col overflow-hidden hover:scale-105 p-0">
       <CardHeader className="p-0">
-        <div className="relative aspect-square w-full">
+        <div className="relative aspect-square w-full overflow-hidden rounded-3xl">
           <Image
             src={product.imageUrl}
             alt={product.name}
@@ -48,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex-1">
           <CardTitle className="font-headline text-lg">{product.name}</CardTitle>
           <p className="mt-2 text-2xl font-semibold text-primary">
-            ${product.price.toFixed(2)}
+            ₹{product.price.toFixed(2)}
           </p>
         </div>
         <Button className="neon-button mt-4 w-full" onClick={handleAddToCart}>
