@@ -27,7 +27,7 @@ function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, o
         : new Date((order.createdAt as any).seconds * 1000);
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-card hover:scale-[1.01]">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
             <div>
