@@ -1,9 +1,10 @@
+
 'use client';
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -33,7 +34,7 @@ import { CartSheet } from '@/components/cart/CartSheet';
 import { Package } from 'lucide-react';
 
 const navItems = [
-  { href: '/', label: 'Products', icon: Home },
+  { href: '/products', label: 'Products', icon: ShoppingBag },
   { href: '/orders', label: 'My Orders', icon: Package },
   { href: '/chat', label: 'Support', icon: MessageSquare },
 ];
@@ -75,7 +76,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-4">
               <SidebarTrigger className="md:hidden" />
               <div className="md:hidden">
-                <Logo />
+                 <Link href="/" className="block">
+                    <Logo />
+                 </Link>
               </div>
             </div>
             <div className="flex items-center gap-4">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCart } from '@/lib/cart/cart-context';
@@ -11,11 +12,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
-import { Loader2, CreditCard } from 'lucide-react';
+import { Loader2, CreditCard, LogIn } from 'lucide-react';
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import Link from 'next/link';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -49,10 +51,25 @@ export function CheckoutFlow() {
       pincode: appUser?.address?.pincode || '',
     },
   });
+  
+  React.useEffect(() => {
+    if (appUser) {
+        form.reset({
+            name: appUser.displayName || '',
+            phone: appUser.phoneNumber || '',
+            street: appUser.address?.street || '',
+            city: appUser.address?.city || '',
+            state: appUser.address?.state || '',
+            pincode: appUser.address?.pincode || '',
+        });
+    }
+  }, [appUser, form]);
+
 
   const onSubmit: SubmitHandler<AddressFormValues> = async (data) => {
     if (!authUser || cartItems.length === 0) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Cannot place order. Your cart might be empty or you are not logged in.' });
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to place an order.' });
+        router.push('/login?redirect=/checkout');
         return;
     }
     
@@ -94,7 +111,7 @@ export function CheckoutFlow() {
             <CardContent className="p-10">
                 <h3 className="font-headline text-xl font-semibold">Your cart is empty!</h3>
                 <p className="text-muted-foreground mt-2">Add some items to your cart before you can checkout.</p>
-                <Button onClick={() => router.push('/')} className="mt-6 neon-button">Continue Shopping</Button>
+                <Button onClick={() => router.push('/products')} className="mt-6 neon-button">Continue Shopping</Button>
             </CardContent>
         </Card>
     );
@@ -171,10 +188,21 @@ export function CheckoutFlow() {
                 </div>
               </CardContent>
             </Card>
-             <Button type="submit" className="w-full text-lg py-6 neon-button" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-              Place Order
-            </Button>
+
+            {authUser ? (
+                 <Button type="submit" className="w-full text-lg py-6 neon-button" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    Place Order
+                 </Button>
+            ) : (
+                <Button asChild className="w-full text-lg py-6 neon-button">
+                    <Link href="/login?redirect=/checkout">
+                        <LogIn className="mr-2 h-5 w-5" />
+                        Login to Place Order
+                    </Link>
+                </Button>
+            )}
+
           </form>
         </Form>
       </div>
