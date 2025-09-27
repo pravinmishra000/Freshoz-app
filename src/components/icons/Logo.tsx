@@ -2,8 +2,8 @@ import type { SVGProps } from 'react';
 import Image from 'next/image';
 
 export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?: number }) {
-  const baseHeight = props.height || 50; // Increased base height for a more prominent logo
-  const baseWidth = props.width || 220; // Adjusted for better proportion
+  const baseHeight = props.height || 60; // Further increased base height for a more prominent logo
+  const baseWidth = props.width || 240; // Adjusted for better proportion
 
   return (
     <div className="flex items-center justify-center gap-2">
@@ -17,7 +17,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
       <div className="flex flex-col items-center justify-center">
         <svg
           viewBox="0 0 220 50" // viewBox adjusted for text
-          height={baseHeight * 0.7} // Scale SVG relative to the logo's total height
+          height={baseHeight * 0.8} // Scale SVG relative to the logo's total height
           width={baseWidth}
           {...props}
           // Remove explicit width/height from props to avoid override
@@ -43,7 +43,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
             FRESHOZ
           </text>
         </svg>
-        <p className="text-sm text-muted-foreground tracking-wider -mt-1">
+        <p className="text-sm text-muted-foreground tracking-wider -mt-2">
           Fresh &amp; Fast
         </p>
       </div>
