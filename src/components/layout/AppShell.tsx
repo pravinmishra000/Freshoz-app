@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package } from 'lucide-react';
+import { MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -142,7 +142,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 href={item.href}
                 className={cn(
                   'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
-                  pathname === item.href
+                  pathname.startsWith(item.href)
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-accent/50'
                 )}
