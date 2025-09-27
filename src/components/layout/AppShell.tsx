@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package } from 'lucide-react';
+import { MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package, Wallet } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -34,6 +34,7 @@ import { CartSheet } from '@/components/cart/CartSheet';
 const navItems = [
   { href: '/products', label: 'Products', icon: ShoppingBag },
   { href: '/orders', label: 'My Orders', icon: Package },
+  { href: '/wallet', label: 'Wallet', icon: Wallet },
   { href: '/chat', label: 'Support', icon: MessageSquare },
 ];
 
