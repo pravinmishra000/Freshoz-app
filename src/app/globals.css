@@ -97,9 +97,7 @@
    }
    /* Style the dropdown menu for the phone input */
   .PhoneInputCountrySelect-menu {
-    @apply bg-popover border border-border rounded-md shadow-lg glass-card text-popover-foreground;
-    background-color: hsl(var(--popover));
-    color: hsl(var(--popover-foreground));
+    @apply rounded-md shadow-lg glass-card !bg-popover border !border-border text-popover-foreground;
   }
   .PhoneInputCountryOption {
       @apply text-popover-foreground;
@@ -107,8 +105,8 @@
   .PhoneInputCountryOption:hover {
       @apply bg-accent/50;
   }
-  .PhoneInputCountryOption[aria-selected="true"] {
-      @apply bg-accent;
+  .PhoneInputCountryOption--selected {
+      @apply !bg-accent !text-accent-foreground;
   }
 }
 
