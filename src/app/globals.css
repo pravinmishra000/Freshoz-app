@@ -74,7 +74,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl;
+    @apply bg-black/20 backdrop-blur-xl rounded-3xl border border-white/10 p-6 shadow-lg;
   }
 
   .neon-button {
