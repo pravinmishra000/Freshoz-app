@@ -20,24 +20,24 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
-      name: product.name,
+      name: product.name_en,
       price: product.price,
       quantity: 1,
-      imageUrl: product.imageUrl,
+      image: product.image,
     });
     toast({
       title: 'Added to Cart',
-      description: `${product.name} has been added to your cart.`,
+      description: `${product.name_en} has been added to your cart.`,
     });
   };
 
   return (
     <Card className="glass-card group flex flex-col overflow-hidden hover:scale-105 p-0">
       <CardHeader className="p-0">
-        <div className="relative aspect-square w-full overflow-hidden rounded-3xl">
+        <div className="relative aspect-square w-full overflow-hidden rounded-t-3xl">
           <Image
-            src={product.imageUrl}
-            alt={product.name}
+            src={product.image}
+            alt={product.name_en}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardHeader>
       <CardContent className="flex flex-1 flex-col p-4">
         <div className="flex-1">
-          <CardTitle className="font-headline text-lg">{product.name}</CardTitle>
+          <CardTitle className="font-headline text-lg">{product.name_en}</CardTitle>
           <p className="mt-2 text-2xl font-semibold text-primary">
             ₹{product.price.toFixed(2)}
           </p>

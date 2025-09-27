@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -56,7 +57,7 @@ const getOrderDetails = ai.defineTool(
         id: order.id,
         status: order.status,
         totalAmount: order.totalAmount,
-        createdAt: order.createdAt.toISOString(),
+        createdAt: (order.createdAt as Date).toISOString(),
         items: order.items.map(i => ({ name: i.name, quantity: i.quantity }))
     };
   }
@@ -78,7 +79,7 @@ const prompt = ai.definePrompt({
   - The user's ID is {{{userId}}}.
   - You have access to the full product catalog and the user's order history.
   
-  Available products: ${JSON.stringify(products.map(p => ({id: p.id, name: p.name, price: p.price, category: p.category})))}
+  Available products: ${JSON.stringify(products.map(p => ({id: p.id, name: p.name_en, price: p.price, category: p.category})))}
   `,
   prompt: `{{#each history}}{{#if (eq role 'user')}}User: {{content}}
 {{else}}FreshoBot: {{content}}

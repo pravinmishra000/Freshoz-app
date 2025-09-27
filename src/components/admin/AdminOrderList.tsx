@@ -60,7 +60,7 @@ function AdminOrderItem({ order, onStatusChange, isUpdating }: { order: Order, o
       <CardFooter className="justify-between">
         <div>
             <p className="font-semibold text-sm">Shipping to:</p>
-            <p className="text-sm text-muted-foreground">{order.address.name}, {order.address.street}, {order.address.city}, {order.address.state} {order.address.pincode}</p>
+            <p className="text-sm text-muted-foreground">{order.deliveryAddress.name}, {order.deliveryAddress.address}, {order.deliveryAddress.city}, {order.deliveryAddress.state} {order.deliveryAddress.pincode}</p>
         </div>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

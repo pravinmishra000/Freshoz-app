@@ -50,7 +50,7 @@ export function CartSheet() {
                 <div key={item.id} className="flex items-center gap-4 py-2">
                   <div className="relative h-16 w-16 overflow-hidden rounded-md">
                     <Image
-                      src={item.imageUrl}
+                      src={item.image}
                       alt={item.name}
                       fill
                       className="object-cover"

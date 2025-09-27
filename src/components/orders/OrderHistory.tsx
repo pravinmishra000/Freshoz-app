@@ -40,7 +40,7 @@ function OrderItem({ order }: { order: Order }) {
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,
-                imageUrl: `https://picsum.photos/seed/${item.productId}/100/100` // Assuming image URL can be constructed
+                image: `https://picsum.photos/seed/${item.productId}/100/100` // Assuming image URL can be constructed
             };
             addToCart(cartItem);
         });

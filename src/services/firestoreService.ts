@@ -1,6 +1,7 @@
+
 import { db } from '@/lib/firebase/client';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where, addDoc, serverTimestamp, Timestamp, endAt, startAt, orderBy, runTransaction, increment } from 'firebase/firestore';
-import type { Order, User, OrderStatus } from '@/lib/types';
+import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays } from 'date-fns';
 
@@ -96,20 +97,33 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
     return null;
 }
 
+interface CreateOrderData {
+    userId: string;
+    items: { productId: string; name: string; price: number; quantity: number; }[];
+    totalAmount: number;
+    paymentMethod: string;
+    status: OrderStatus;
+    address: Address;
+}
 
 /**
  * Creates a new order in Firestore.
  * @param orderData The data for the new order.
  * @returns A promise that resolves to the new order's ID.
  */
-export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'firestoreId'>): Promise<string> {
+export async function createOrder(orderData: CreateOrderData): Promise<string> {
   const ordersCollection = collection(db, 'orders');
-  const newOrderRef = await addDoc(ordersCollection, {
+  
+  const newOrderData = {
     ...orderData,
+    deliveryAddress: orderData.address,
     id: `FZ-${uuidv4().split('-')[0].toUpperCase()}`, // A more user-friendly ID
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  };
+
+  const newOrderRef = await addDoc(ordersCollection, newOrderData);
+
   // Update the document with its own Firestore ID for consistency
   await updateDoc(newOrderRef, { firestoreId: newOrderRef.id });
   return newOrderRef.id;
@@ -121,11 +135,13 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'u
  * @param quantityChange The amount to change the stock by (negative to decrease, positive to increase).
  */
 export async function updateProductStock(productId: string, quantityChange: number): Promise<void> {
+    // Note: The 'products' collection and 'stock_qty' field are based on the new types.
+    // This assumes you have a 'products' collection in Firestore.
     const productRef = doc(db, 'products', productId);
     
     // Firestore's increment is atomic and safer for concurrent updates.
     await updateDoc(productRef, {
-        stock: increment(quantityChange)
+        stock_qty: increment(quantityChange)
     });
 }
 

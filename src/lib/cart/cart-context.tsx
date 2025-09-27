@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
@@ -24,11 +25,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === itemToAdd.id
-            ? { ...item, quantity: item.quantity + itemToAdd.quantity }
+            ? { ...item, quantity: item.quantity + (itemToAdd.quantity || 1) }
             : item
         );
       }
-      return [...prevItems, itemToAdd];
+      return [...prevItems, { ...itemToAdd, quantity: itemToAdd.quantity || 1 }];
     });
   }, []);
 
@@ -52,8 +53,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems([]);
   }, []);
 
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 0), 0);
+  const cartTotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity || 0), 0);
 
   const value = {
     cartItems,

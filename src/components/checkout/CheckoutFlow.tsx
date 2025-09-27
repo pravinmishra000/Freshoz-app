@@ -22,7 +22,7 @@ import Link from 'next/link';
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
   phone: z.string().min(10, 'A valid phone number is required.'),
-  street: z.string().min(3, 'Street address is required.'),
+  address: z.string().min(3, 'Street address is required.'),
   city: z.string().min(2, 'City is required.'),
   state: z.string().min(2, 'State is required.'),
   pincode: z.string().min(5, 'A valid Pincode is required.').max(10),
@@ -45,7 +45,7 @@ export function CheckoutFlow() {
     defaultValues: {
       name: appUser?.displayName || '',
       phone: appUser?.phoneNumber || '',
-      street: appUser?.address?.street || '',
+      address: appUser?.address?.address || '',
       city: appUser?.address?.city || '',
       state: appUser?.address?.state || '',
       pincode: appUser?.address?.pincode || '',
@@ -57,7 +57,7 @@ export function CheckoutFlow() {
         form.reset({
             name: appUser.displayName || '',
             phone: appUser.phoneNumber || '',
-            street: appUser.address?.street || '',
+            address: appUser.address?.address || '',
             city: appUser.address?.city || '',
             state: appUser.address?.state || '',
             pincode: appUser.address?.pincode || '',
@@ -78,7 +78,7 @@ export function CheckoutFlow() {
     try {
         await placeOrder({
             userId: authUser.uid,
-            address: data,
+            deliveryAddress: data,
             items: cartItems.map(item => ({
                 productId: item.id,
                 name: item.name,
@@ -151,7 +151,7 @@ export function CheckoutFlow() {
                 />
                 <FormField
                   control={form.control}
-                  name="street"
+                  name="address"
                   render={({ field }) => (
                     <FormItem className="sm:col-span-2">
                       <FormLabel>Street Address</FormLabel>
@@ -217,7 +217,7 @@ export function CheckoutFlow() {
                 {cartItems.map(item => (
                     <div key={item.id} className="flex items-center gap-4">
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border">
-                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                            <Image src={item.image} alt={item.name} fill className="object-cover" />
                              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.quantity}</span>
                         </div>
                         <div className="flex-1">

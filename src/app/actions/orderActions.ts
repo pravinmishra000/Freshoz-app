@@ -1,3 +1,4 @@
+
 'use server';
 
 import { createOrder, getOrdersForUser as getOrdersForUserFromDb, updateProductStock } from '@/services/firestoreService';
@@ -6,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 interface PlaceOrderInput {
     userId: string;
-    address: Address;
+    deliveryAddress: Address;
     items: OrderItem[];
     totalAmount: number;
     paymentMethod: string;
@@ -16,6 +17,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<{ orderId: str
     try {
         const orderId = await createOrder({
             ...input,
+            address: input.deliveryAddress, // Remapping for createOrder function
             status: 'placed',
         });
         
