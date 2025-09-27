@@ -1,25 +1,30 @@
 
 'use client';
 
-import Link from "next/link";
-import { Logo } from "@/components/icons/Logo";
+import { FreshozLogo } from './freshoz-logo';
+import Link from 'next/link';
 
 export function Footer() {
-    return (
-        <footer className="w-full mt-12 pb-24 relative z-10">
-            <div className="container mx-auto px-4 text-center">
-                <div className="mb-4">
-                    <Logo width={150} height={40} />
-                </div>
-                <p className="text-muted-foreground text-sm">
-                    © {new Date().getFullYear()} Freshoz. All Rights Reserved.
-                </p>
-                <div className="flex justify-center gap-4 mt-4">
-                    <Link href="/about" className="text-sm text-muted-foreground hover:text-primary">About</Link>
-                    <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link>
-                    <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link>
-                </div>
-            </div>
-        </footer>
-    );
+  const storePhoneNumber = '9097882555';
+
+  return (
+    <footer className="glass-card rounded-t-3xl border-t-2 border-white/30 backdrop-blur-lg hidden md:block mt-8">
+      <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex-shrink-0">
+            <FreshozLogo />
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/80">
+            <Link href="/about" className="hover:text-yellow-300 transition-colors">About Us</Link>
+            <a href={`tel:${storePhoneNumber}`} className="hover:text-yellow-300 transition-colors">Contact: {storePhoneNumber}</a>
+            <Link href="/terms" className="hover:text-yellow-300 transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-yellow-300 transition-colors">Privacy Policy</Link>
+          </div>
+        </div>
+        <div className="mt-8 text-center text-sm text-white/60">
+          © {new Date().getFullYear()} Freshoz.in. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  );
 }
