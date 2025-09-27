@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -31,7 +31,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CartSheet } from '@/components/cart/CartSheet';
-import { Package } from 'lucide-react';
 
 const navItems = [
   { href: '/products', label: 'Products', icon: ShoppingBag },
