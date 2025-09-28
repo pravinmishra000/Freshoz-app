@@ -13,7 +13,8 @@ import {
   endAt,
   startAt,
   orderBy,
-  increment
+  increment,
+  setDoc,
 } from 'firebase/firestore';
 import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -86,17 +87,25 @@ export async function getUser(userId: string): Promise<User | null> {
 }
 
 /**
- * Get wallet balance for a user
+ * Get wallet balance from wallets collection
  */
 export async function getWalletBalance(userId: string): Promise<number> {
-  const userRef = doc(db, 'users', userId);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    const userData = userSnap.data();
-    // Assuming the balance is stored in a field named 'balance' or 'walletBalance'
-    return userData.balance ?? userData.walletBalance ?? 0;
+  const walletRef = doc(db, 'wallets', userId);
+  const walletSnap = await getDoc(walletRef);
+  if (walletSnap.exists()) {
+    return walletSnap.data().balance ?? 0;
   }
   return 0;
+}
+
+
+/**
+ * Update wallet balance
+ */
+export async function updateWalletBalance(userId: string, amount: number): Promise<void> {
+  const walletRef = doc(db, 'wallets', userId);
+  // Using increment to avoid race conditions
+  await setDoc(walletRef, { balance: increment(amount), lastUpdated: serverTimestamp() }, { merge: true });
 }
 
 
