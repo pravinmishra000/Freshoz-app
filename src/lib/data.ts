@@ -191,7 +191,7 @@ export const promotions: Promotion[] = [
     id: 'promo-3',
     title: 'Veggie Power',
     description: 'Save ₹400 when you spend ₹2000 on fresh vegetables.',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-3.webp?alt=media&token=2caedabd-2071-4474-ac15-28143980a111',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-1.webp?alt=media&token=4c61242c-b096-49d4-af1d-742aa1dc7f25',
     imageHint: 'vegetables variety',
   },
 ];
