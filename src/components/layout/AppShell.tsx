@@ -163,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       tooltip={item.label}
                     >
                       <item.icon />
-                      <span className="text-white">{item.label}</span>
+                      <span>{item.label}</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -177,7 +177,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       isActive={pathname.startsWith('/profile')}
                     >
                       <User />
-                      <span className="text-white">Profile</span>
+                      <span>Profile</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -191,7 +191,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                      <Link href="/admin/dashboard" passHref>
                         <SidebarMenuButton isActive={pathname.startsWith('/admin/dashboard')}>
                           <LayoutDashboard />
-                          <span className="text-white">Admin Dashboard</span>
+                          <span>Admin Dashboard</span>
                         </SidebarMenuButton>
                       </Link>
                   </SidebarMenuItem>
@@ -204,7 +204,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <SidebarMenuItem>
                     <SidebarMenuButton onClick={logout}>
                       <LogOut />
-                      <span className="text-white">Logout</span>
+                      <span>Logout</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </>
