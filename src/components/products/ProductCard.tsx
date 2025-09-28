@@ -47,16 +47,16 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-semibold text-lg flex-1 text-primary">{product.name_en}</h3>
+        <h3 className="font-semibold text-base md:text-lg flex-1 text-primary">{product.name_en}</h3>
         <div className="mt-2 flex items-baseline gap-2">
-            <p className="text-xl font-bold text-positive">
+            <p className="text-lg md:text-xl font-bold text-positive">
               ₹{product.price.toFixed(2)}
             </p>
              <p className="text-sm text-destructive line-through">
               ₹{product.mrp.toFixed(2)}
             </p>
         </div>
-        <Button className="bg-positive text-white hover:bg-positive/90 mt-4 w-full font-bold" onClick={handleAddToCart}>
+        <Button className="bg-positive text-white hover:bg-positive/90 mt-4 w-full font-bold text-sm md:text-base" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
