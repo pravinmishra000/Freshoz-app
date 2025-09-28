@@ -113,7 +113,7 @@ export default function LoginPage() {
                         <PhoneInput
                           {...field}
                           international
-                          defaultCountry="US"
+                          defaultCountry="IN"
                           className="phone-input-dark"
                         />
                       </FormControl>
