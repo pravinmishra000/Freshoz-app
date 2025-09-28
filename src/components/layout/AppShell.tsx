@@ -125,7 +125,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
          {/* Mobile-only Sidebar */}
-        <Sidebar className="lg:hidden">
+        <Sidebar className="lg:hidden" side="right">
           <SidebarHeader>
             <Link href="/" className="block p-2">
               <Logo />
