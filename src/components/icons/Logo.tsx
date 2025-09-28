@@ -36,7 +36,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
             y="38" // Adjusted y-position for better vertical alignment
             textAnchor="middle" // Anchor text from its center
             fontFamily="var(--font-poppins), sans-serif"
-            fontSize="45" // Slightly increased font size
+            fontSize="50" // Slightly increased font size
             fontWeight="bold"
             fill="url(#logo-gradient)"
             className="font-headline uppercase" // Make text uppercase
