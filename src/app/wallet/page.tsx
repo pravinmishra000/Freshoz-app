@@ -65,7 +65,7 @@ export default function WalletPage() {
                   <Wallet className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold text-white">
+              <CardTitle className="text-2xl font-bold text-white uppercase">
                 Freshoz Wallet
               </CardTitle>
               <CardDescription className="text-white/80 text-base">

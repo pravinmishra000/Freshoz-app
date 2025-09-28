@@ -59,7 +59,7 @@ export default function SplashScreen() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-              className="text-5xl font-black text-center mb-3 text-green-800 tracking-tight"
+              className="text-5xl font-black text-center mb-3 text-primary tracking-tight uppercase"
             >
               FRESHOZ
             </motion.h1>

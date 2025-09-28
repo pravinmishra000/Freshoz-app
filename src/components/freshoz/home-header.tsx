@@ -45,7 +45,7 @@ export default function HomeHeader() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-white font-bold text-2xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">FRESHOZ</span>
+              <span className="text-primary font-bold text-2xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] uppercase">FRESHOZ</span>
               <span className="text-white/95 text-sm font-semibold drop-shadow-md">{'Fresh & Fast'}</span>
             </div>
           </Link>

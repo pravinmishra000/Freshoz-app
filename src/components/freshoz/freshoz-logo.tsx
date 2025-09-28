@@ -33,7 +33,7 @@ export function FreshozLogo({ size = 'lg' }: FreshozLogoProps) {
       {/* Text and Tagline */}
       <div className="flex flex-col justify-center">
         <h1
-          className={`${textSize} font-extrabold tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] leading-none`}
+          className={`${textSize} font-extrabold tracking-tight text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] leading-none uppercase`}
           style={{
             fontFamily: "'Poppins', sans-serif",
             letterSpacing: "-1px",
@@ -41,7 +41,7 @@ export function FreshozLogo({ size = 'lg' }: FreshozLogoProps) {
         >
           FRESHOZ
         </h1>
-        <span className={`${taglineSize} text-white/90 font-medium mt-0.5 text-center drop-shadow-sm`}>
+        <span className={`${taglineSize} text-muted-foreground font-medium mt-0.5 text-center drop-shadow-sm`}>
           Fresh & Fast
         </span>
       </div>

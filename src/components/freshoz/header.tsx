@@ -63,7 +63,7 @@ export function Header({
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-white font-bold text-xl drop-shadow-md">FRESHOZ</span>
+            <span className="text-primary font-bold text-xl drop-shadow-md uppercase">FRESHOZ</span>
             <span className="text-white/100 text-xs font-medium">{'Fresh & Fast'}</span>
           </div>
         </Link>

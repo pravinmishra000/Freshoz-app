@@ -278,7 +278,7 @@ export default function FreshozBuddy({
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Freshoz Buddy</h2>
+                  <h2 className="text-xl font-bold uppercase text-primary">Freshoz Buddy</h2>
                   <p className="text-sm text-muted-foreground">Your AI shopping assistant</p>
                 </div>
               </div>

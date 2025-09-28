@@ -6,7 +6,7 @@ export default function PreHomeScreen() {
   return (
     <div className="flex flex-col min-h-screen vibrant-gradient">
       <header className="glass-app-bar sticky top-0 z-10 p-4">
-        <h1 className="text-center text-2xl font-bold text-foreground">Freshoz</h1>
+        <h1 className="text-center text-2xl font-bold text-primary uppercase">Freshoz</h1>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center p-4 text-center">
