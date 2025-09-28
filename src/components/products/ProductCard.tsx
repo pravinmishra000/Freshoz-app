@@ -4,19 +4,15 @@
 import Image from 'next/image';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-
 
 interface ProductCardProps {
   product: Product;
-  variant?: 'grid' | 'list';
 }
 
-export function ProductCard({ product, variant = 'grid' }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -34,40 +30,37 @@ export function ProductCard({ product, variant = 'grid' }: ProductCardProps) {
     });
   };
 
-  if (variant === 'list') {
-      return (
-        <Card className="glass-card group flex overflow-hidden hover:scale-105 p-0">
-          {/* List variant implementation */}
-        </Card>
-      );
-  }
-
   return (
-    <Card className="glass-card group flex flex-col overflow-hidden hover:scale-105 p-0">
-      <CardHeader className="p-0">
-        <div className="relative aspect-square w-full overflow-hidden rounded-t-3xl">
-          <Image
-            src={product.image}
-            alt={product.name_en}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover rounded-t-3xl"
-            data-ai-hint={product.imageHint}
-          />
+    <div className="glass-card group flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300">
+      <div className="relative aspect-square w-full overflow-hidden">
+        <Image
+          src={product.image}
+          alt={product.name_en}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
+          data-ai-hint={product.imageHint}
+        />
+        <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold text-primary">
+          - {Math.round(((product.mrp - product.price) / product.mrp) * 100)}%
         </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col p-4">
-        <div className="flex-1">
-          <CardTitle className="font-headline text-lg">{product.name_en}</CardTitle>
-          <p className="mt-2 text-2xl font-semibold text-primary">
-            ₹{product.price.toFixed(2)}
-          </p>
+      </div>
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="font-semibold text-lg text-foreground flex-1">{product.name_en}</h3>
+        <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-xl font-bold text-primary">
+              ₹{product.price.toFixed(2)}
+            </p>
+             <p className="text-sm text-muted-foreground line-through">
+              ₹{product.mrp.toFixed(2)}
+            </p>
         </div>
-        <Button className="neon-button mt-4 w-full" onClick={handleAddToCart}>
+        <Button className="bg-primary/20 text-primary hover:bg-primary hover:text-white mt-4 w-full" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
+

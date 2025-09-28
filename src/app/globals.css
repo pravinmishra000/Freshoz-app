@@ -4,33 +4,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 97%; /* #F7F7F7 */
-    --foreground: 222 84% 5%;
+    --background: 210 20% 98%; /* Light grey */
+    --foreground: 224 71% 4%; /* Dark grey */
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card-foreground: 224 71% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
-    --primary: 145 63% 42%; /* #27AE60 */
+    --popover-foreground: 224 71% 4%;
+    --primary: 122 39% 49%; /* Green #4CAF50 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 92%;
-    --secondary-foreground: 222 84% 5%;
-    --muted: 0 0% 92%;
-    --muted-foreground: 222 84% 35%;
-    --accent: 36 91% 51%; /* #F39C12 */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 88%;
-    --input: 0 0% 92%;
-    --ring: 145 63% 42%;
-    --chart-1: 145 70% 40%;
-    --chart-2: 36 90% 55%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
     --radius: 0.75rem;
 
-    --primary-glow: 145 73% 52%;
+    --primary-glow: 122 50% 60%;
   }
 
   .dark {
@@ -53,11 +48,6 @@
     --border: 222 84% 12%;
     --input: 222 84% 12%;
     --ring: 145 63% 47%;
-    --chart-1: 145 70% 50%;
-    --chart-2: 36 90% 55%;
-    --chart-3: 197 37% 34%;
-    --chart-4: 43 74% 56%;
-    --chart-5: 27 87% 57%;
     
     --primary-glow: 145 73% 62%;
   }
@@ -69,5 +59,33 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card style */
+  .glass-card {
+    @apply bg-white/50 backdrop-blur-lg border border-white/30 rounded-2xl shadow-lg;
+    -webkit-backdrop-filter: blur(12px); /* Safari support */
+  }
+
+  /* Vibrant gradient background */
+  .vibrant-gradient {
+    @apply bg-gradient-to-br from-green-100 via-white to-blue-100;
+  }
+
+  /* Button styles */
+  .glass-button {
+    @apply glass-card p-6 text-center font-semibold text-lg text-foreground transition-transform duration-300 ease-out hover:scale-105 active:scale-95;
+  }
+  
+  .glass-icon-button {
+     @apply glass-card p-3 text-center text-foreground transition-transform duration-300 ease-out hover:scale-110 active:scale-95 rounded-full;
+  }
+
+  /* App Bar */
+  .glass-app-bar {
+    @apply bg-white/70 backdrop-blur-md border-b border-white/30;
+    -webkit-backdrop-filter: blur(10px);
   }
 }

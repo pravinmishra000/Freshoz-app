@@ -1,7 +1,7 @@
+
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
-import { AppShell } from '@/components/layout/AppShell';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/lib/firebase/auth-context';
 import { CartProvider } from '@/lib/cart/cart-context';
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -33,7 +33,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
         <AuthProvider>
           <CartProvider>
-            <AppShell>{children}</AppShell>
+            {children}
             <Toaster />
           </CartProvider>
         </AuthProvider>
