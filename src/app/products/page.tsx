@@ -11,6 +11,7 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import Autoplay from "embla-carousel-autoplay";
 import Image from 'next/image';
 import { AppShell } from '@/components/layout/AppShell';
+import Link from 'next/link';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -61,14 +62,16 @@ export default function ProductsPage() {
           <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {CATEGORIES.map((category) => (
-              <div key={category.id} className="glass-card p-4 text-center hover:scale-105 transition-transform cursor-pointer h-40 flex flex-col justify-center items-center">
-                 <div className="text-4xl mb-2">
-                  {category.name_en.includes('Vegetable') ? '🥦' :
-                   category.name_en.includes('Dairy') ? '🥛' :
-                   category.name_en.includes('Snacks') ? '🍿' : '🛒'}
+              <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
+                <div className="glass-card p-4 text-center hover:scale-105 transition-transform cursor-pointer h-40 flex flex-col justify-center items-center">
+                   <div className="text-4xl mb-2">
+                    {category.name_en.includes('Vegetable') ? '🥦' :
+                     category.name_en.includes('Dairy') ? '🥛' :
+                     category.name_en.includes('Snacks') ? '🍿' : '🛒'}
+                  </div>
+                  <h3 className="font-semibold text-foreground">{category.name_en}</h3>
                 </div>
-                <h3 className="font-semibold text-foreground">{category.name_en}</h3>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
