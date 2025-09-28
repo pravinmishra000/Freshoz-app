@@ -1,30 +1,28 @@
+
 import type { SVGProps } from 'react';
 import Image from 'next/image';
 
 export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?: number }) {
-  // Use fixed base dimensions to ensure consistency between server and client renders
   const baseHeight = 60;
   const baseWidth = 240;
 
   return (
     <div className="flex items-center justify-center gap-2">
-      <div className="relative flex-shrink-0">
+      <div className="relative flex-shrink-0 h-[50px] w-[50px]">
         <div className="absolute inset-0 bg-white rounded-full shadow-lg"></div>
         <Image
           src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-1800x1800-transparent.png?alt=media&token=c0768076-9cd1-4269-9b65-7ab12b48ea57"
           alt="Freshoz Logo"
-          width={baseHeight}
-          height={baseHeight}
-          className="relative z-10 rounded-full"
+          fill
+          className="relative z-10 rounded-full object-contain"
         />
       </div>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col">
         <svg
-          viewBox="0 0 220 50" // viewBox adjusted for text
-          height={baseHeight * 0.8} // Scale SVG relative to the logo's total height
-          width={baseWidth}
+          viewBox="0 0 220 50"
+          height={32}
+          width={150}
           {...props}
-          // Remove explicit width/height from props to avoid override
           width={undefined}
           height={undefined}
         >
@@ -35,19 +33,19 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
             </linearGradient>
           </defs>
           <text
-            x="50%" // Center the text
-            y="38" // Adjusted y-position for better vertical alignment
-            textAnchor="middle" // Anchor text from its center
+            x="50%"
+            y="35"
+            textAnchor="middle"
             fontFamily="var(--font-poppins), sans-serif"
-            fontSize="50" // Slightly increased font size
+            fontSize="45"
             fontWeight="bold"
             fill="url(#logo-gradient)"
-            className="font-headline uppercase" // Make text uppercase
+            className="font-headline uppercase"
           >
             FRESHOZ
           </text>
         </svg>
-        <p className="text-sm text-muted-foreground tracking-wider -mt-2">
+        <p className="text-xs text-muted-foreground tracking-wider -mt-2 text-center">
           Fresh &amp; Fast
         </p>
       </div>
