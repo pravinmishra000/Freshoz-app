@@ -8,13 +8,16 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
 
   return (
     <div className="flex items-center justify-center gap-2">
-      <Image
-        src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-1800x1800-transparent.png?alt=media&token=c0768076-9cd1-4269-9b65-7ab12b48ea57"
-        alt="Freshoz Logo"
-        width={baseHeight}
-        height={baseHeight}
-        className="self-stretch h-auto"
-      />
+      <div className="relative flex-shrink-0">
+        <div className="absolute inset-0 bg-white rounded-full shadow-lg"></div>
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-1800x1800-transparent.png?alt=media&token=c0768076-9cd1-4269-9b65-7ab12b48ea57"
+          alt="Freshoz Logo"
+          width={baseHeight}
+          height={baseHeight}
+          className="relative z-10 rounded-full"
+        />
+      </div>
       <div className="flex flex-col items-center justify-center">
         <svg
           viewBox="0 0 220 50" // viewBox adjusted for text
