@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="flex flex-1 flex-col p-3">
         <h3 className="font-semibold text-sm md:text-base flex-grow text-primary">{product.name_en}</h3>
-        <div className="mt-2 flex items-baseline gap-2">
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <p className="text-lg md:text-xl font-bold text-positive">
               ₹{product.price.toFixed(2)}
             </p>
