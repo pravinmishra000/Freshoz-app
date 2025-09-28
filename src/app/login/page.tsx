@@ -16,6 +16,7 @@ import { Loader2 } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const phoneSchema = z.object({
   phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number.' }),
