@@ -1002,8 +1002,11 @@ export const SPICES_PRODUCTS: Product[] = [
   ]
 }
 ]
-index according
-// Export all staples-grocery products
+]];></content>
+  </change>
+  <change>
+    <file>src/lib/products/staples-grocery/index.ts</file>
+    <content><![CDATA[// Export all staples-grocery products
 export * from './flour';
 export * from './pulses';
 export * from './rice';

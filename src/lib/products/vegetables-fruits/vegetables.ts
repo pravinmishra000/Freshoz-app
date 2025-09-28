@@ -627,5 +627,3 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     ]
   }
 ];
-
-make index according
