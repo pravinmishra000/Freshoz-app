@@ -20,7 +20,7 @@ const WalletIcon = () => (
             {/* Top Flap */}
             <path d="M10 42.5C10 36.9772 14.4772 32.5 20 32.5H90V35C90 29.4772 85.5228 25 80 25H20C14.4772 25 10 29.4772 10 35V42.5Z" fill="#FBBF24"/>
             {/* Rupee Symbol */}
-            <text x="35%" y="75%" textAnchor="middle" fill="white" fontSize="24" fontWeight="bold" fontFamily="sans-serif">
+            <text x="50%" y="75%" textAnchor="middle" fill="white" fontSize="32" fontWeight="bold" fontFamily="sans-serif">
               ₹
             </text>
         </g>
