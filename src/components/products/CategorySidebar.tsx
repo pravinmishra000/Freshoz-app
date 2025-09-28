@@ -6,6 +6,7 @@ import Image from 'next/image';
 import type { Category } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CategorySidebarProps {
   categories: Category[];
@@ -14,35 +15,43 @@ interface CategorySidebarProps {
 
 export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps) {
   return (
-    <Card className="glass-card p-4 sticky top-24">
-      <h2 className="text-lg font-semibold mb-4 text-primary font-headline">Categories</h2>
-      <nav className="space-y-2">
-        {categories.map((category) => {
-          const isActive = category.slug === activeSlug;
-          return (
-            <Link
-              key={category.id}
-              href={`/products/category/${category.slug}`}
-              className={cn(
-                'flex items-center gap-3 rounded-lg p-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary/90 text-primary-foreground shadow-md'
-                  : 'text-foreground hover:bg-primary/10'
-              )}
-            >
-              <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-white p-1">
-                <Image
-                    src={category.image || 'https://picsum.photos/seed/placeholder/100/100'}
-                    alt={category.name_en}
-                    fill
-                    className="object-contain"
-                />
-              </div>
-              <span>{category.name_en}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </Card>
+    <ScrollArea className="h-[calc(100vh-8rem)]">
+        <div className="space-y-3 pr-2">
+            {categories.map((category) => {
+            const isActive = category.slug === activeSlug;
+            return (
+                <Link
+                key={category.id}
+                href={`/products/category/${category.slug}`}
+                className="block"
+                >
+                <Card
+                    className={cn(
+                    'glass-card p-2 text-center transition-all duration-300 transform hover:scale-105',
+                    isActive
+                        ? 'border-primary/50 border-2 bg-primary/10 shadow-lg'
+                        : 'border-transparent'
+                    )}
+                >
+                    <div className="relative aspect-square w-full mb-2">
+                    <Image
+                        src={category.image || 'https://picsum.photos/seed/placeholder/100/100'}
+                        alt={category.name_en}
+                        fill
+                        className="object-contain rounded-md"
+                    />
+                    </div>
+                    <p className={cn(
+                        'text-xs font-semibold',
+                        isActive ? 'text-primary' : 'text-muted-foreground'
+                    )}>
+                    {category.name_en}
+                    </p>
+                </Card>
+                </Link>
+            );
+            })}
+        </div>
+    </ScrollArea>
   );
 }
