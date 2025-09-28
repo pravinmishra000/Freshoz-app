@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
+  SidebarSeparator
 } from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -146,6 +147,48 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </Link>
                 </SidebarMenuItem>
               ))}
+
+              {authUser && (
+                <>
+                  <SidebarSeparator />
+                  {appUser?.role === 'admin' && (
+                    <>
+                       <SidebarMenuItem>
+                        <Link href="/admin/dashboard" passHref>
+                          <SidebarMenuButton isActive={pathname.startsWith('/admin/dashboard')}>
+                            <LayoutDashboard />
+                            <span>Dashboard</span>
+                          </SidebarMenuButton>
+                        </Link>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <Link href="/admin/orders" passHref>
+                          <SidebarMenuButton isActive={pathname.startsWith('/admin/orders')}>
+                            <UserCog />
+                            <span>Manage Orders</span>
+                          </SidebarMenuButton>
+                        </Link>
+                      </SidebarMenuItem>
+                       <SidebarSeparator />
+                    </>
+                  )}
+                  <SidebarMenuItem>
+                    <Link href="/profile" passHref>
+                      <SidebarMenuButton isActive={pathname.startsWith('/profile')}>
+                        <User />
+                        <span>Profile</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuButton onClick={logout}>
+                      <LogOut />
+                      <span>Logout</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
+              )}
+
             </SidebarMenu>
           </SidebarContent>
         </Sidebar>
