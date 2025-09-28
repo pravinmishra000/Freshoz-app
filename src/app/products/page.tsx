@@ -23,8 +23,8 @@ export default function HomePage() {
     <div className="vibrant-gradient min-h-screen">
       <header className="glass-app-bar sticky top-0 z-10 py-3 px-4">
         <div className="container mx-auto flex items-center justify-between gap-4">
-          <div className="w-32">
-            <Logo width={120} height={40}/>
+          <div className="w-auto">
+            <Logo />
           </div>
           <div className="relative flex-1 max-w-lg">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -84,4 +84,3 @@ export default function HomePage() {
     </div>
   );
 }
-
