@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import type { Product, Category, Promotion } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Carrot, Apple, Milk, Coffee, ShoppingCart, Drumstick } from 'lucide-react';
 import { products as allProductsData, promotions, CATEGORIES } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
@@ -25,6 +25,15 @@ export default function ProductsPage() {
       .slice(0, 10);
     setBestDeals(sortedDeals);
   }, []);
+
+  const categoryIcons: { [key: string]: React.ElementType } = {
+    'fresh-vegetables': Carrot,
+    'fresh-fruits': Apple,
+    'dairy-bakery': Milk,
+    'snacks-beverages': Coffee,
+    'staples-grocery': ShoppingCart,
+    'non-veg': Drumstick,
+  };
 
   return (
     <AppShell>
@@ -60,19 +69,19 @@ export default function ProductsPage() {
         {/* Category Section */}
         <section className="my-8">
           <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {CATEGORIES.map((category) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {CATEGORIES.map((category) => {
+              const Icon = categoryIcons[category.slug] || ShoppingCart;
+              return (
               <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
                 <div className="glass-card p-4 text-center hover:scale-105 transition-transform cursor-pointer h-40 flex flex-col justify-center items-center">
-                   <div className="text-4xl mb-2">
-                    {category.name_en.includes('Vegetable') ? '🥦' :
-                     category.name_en.includes('Dairy') ? '🥛' :
-                     category.name_en.includes('Snacks') ? '🍿' : '🛒'}
+                   <div className="text-4xl mb-2 text-primary">
+                    <Icon />
                   </div>
-                  <h3 className="font-semibold text-foreground">{category.name_en}</h3>
+                  <h3 className="font-semibold text-foreground text-center text-sm">{category.name_en}</h3>
                 </div>
               </Link>
-            ))}
+            )})}
           </div>
         </section>
 
@@ -106,3 +115,5 @@ export default function ProductsPage() {
     </AppShell>
   );
 }
+
+    

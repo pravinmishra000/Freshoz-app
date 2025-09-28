@@ -5,7 +5,8 @@ import {
   Milk, 
   ShoppingCart, 
   Coffee,
-  Drumstick 
+  Drumstick,
+  Apple
 } from 'lucide-react';
 import { ALL_DAIRY_BAKERY_PRODUCTS } from './products/dairy-bakery';
 import { ALL_NON_VEG_PRODUCTS } from './products/non-veg';
@@ -16,27 +17,47 @@ import { ALL_SNACKS_BEVERAGES_PRODUCTS } from './products/snacks-beverages';
 export const CATEGORIES: Category[] = [
   {
     id: 'cat-1',
-    name_en: 'Vegetables & Fruits',
-    name_hi: 'Sabji aur Fal',
-    slug: 'vegetables-fruits',
+    name_en: 'Fresh Vegetables',
+    name_hi: 'ताजी सब्जियां',
+    slug: 'fresh-vegetables',
     icon: Carrot,
-    description: 'Fresh vegetables and fruits from local farms',
-    description_hi: 'Local farms se fresh vegetables aur fruits',
+    description: 'Farm-fresh vegetables picked daily',
+    description_hi: 'खेतों से प्रतिदिन चुनी गई ताजी सब्जियां',
     image: 'https://picsum.photos/seed/cat-1/400/400',
     tags: ['fresh', 'organic', 'seasonal', 'local'],
     is_active: true,
     display_order: 1,
     parent_id: null,
     subCategories: [
-      { name: 'Fresh Vegetables', slug: 'fresh-vegetables' },
-      { name: 'Fresh Fruits', slug: 'fresh-fruits' },
-      { name: 'Organic', slug: 'organic' },
-      { name: 'Exotic Fruits', slug: 'exotic-fruits' },
       { name: 'Leafy Greens', slug: 'leafy-greens' },
+      { name: 'Root Vegetables', slug: 'root-vegetables' },
+      { name: 'Organic', slug: 'organic-veg' },
     ],
     featured: true,
-    meta_title: 'Fresh Vegetables and Fruits Online',
-    meta_description: 'Buy fresh vegetables and fruits online with quick delivery'
+    meta_title: 'Fresh Vegetables Online',
+    meta_description: 'Buy farm-fresh vegetables online with quick delivery'
+  },
+  {
+    id: 'cat-6',
+    name_en: 'Fresh Fruits',
+    name_hi: 'ताजे फल',
+    slug: 'fresh-fruits',
+    icon: Apple,
+    description: 'A variety of fresh and juicy fruits',
+    description_hi: 'विभिन्न प्रकार के ताजे और रसीले फल',
+    image: 'https://picsum.photos/seed/cat-6/400/400',
+    tags: ['fresh', 'juicy', 'seasonal', 'exotic'],
+    is_active: true,
+    display_order: 2,
+    parent_id: null,
+    subCategories: [
+      { name: 'Seasonal Fruits', slug: 'seasonal-fruits' },
+      { name: 'Exotic Fruits', slug: 'exotic-fruits' },
+      { name: 'Berries', slug: 'berries' },
+    ],
+    featured: true,
+    meta_title: 'Fresh Fruits Online',
+    meta_description: 'Order fresh and juicy fruits for delivery'
   },
   {
     id: 'cat-2',
@@ -49,7 +70,7 @@ export const CATEGORIES: Category[] = [
     image: 'https://picsum.photos/seed/cat-2/400/400',
     tags: ['fresh', 'daily', 'baked', 'milk'],
     is_active: true,
-    display_order: 2,
+    display_order: 3,
     parent_id: null,
     subCategories: [
       { name: 'Milk', slug: 'milk' },
@@ -75,7 +96,7 @@ export const CATEGORIES: Category[] = [
     image: 'https://picsum.photos/seed/cat-3/400/400',
     tags: ['snacks', 'beverages', 'drinks', 'refreshment'],
     is_active: true,
-    display_order: 4,
+    display_order: 5,
     parent_id: null,
     subCategories: [
       { name: 'Cookies', slug: 'cookies' },
@@ -101,7 +122,7 @@ export const CATEGORIES: Category[] = [
     image: 'https://picsum.photos/seed/cat-4/400/400',
     tags: ['essentials', 'grocery', 'staples', 'kitchen'],
     is_active: true,
-    display_order: 3,
+    display_order: 4,
     parent_id: null,
     subCategories: [
       { name: 'Pulses', slug: 'pulses' },
@@ -126,7 +147,7 @@ export const CATEGORIES: Category[] = [
     image: 'https://picsum.photos/seed/cat-5/400/400',
     tags: ['fresh', 'meat', 'chicken', 'fish', 'mutton'],
     is_active: true,
-    display_order: 5,
+    display_order: 6,
     parent_id: null,
     subCategories: [
       { name: 'Eggs', slug: 'eggs' },
@@ -218,3 +239,5 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
+
+    
