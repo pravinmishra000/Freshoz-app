@@ -4,13 +4,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { BackButton } from '@/components/freshoz/BackButton';
-import { History, Plus, RefreshCw, IndianRupee, Settings } from 'lucide-react';
+import { History, Plus, RefreshCw, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/firebase/auth-context';
-import { getWalletBalance } from '@/services/firestoreService';
-
+import { listenToWalletBalance } from '@/services/firestoreService';
 
 const WalletIcon = () => (
     <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,29 +28,38 @@ const WalletIcon = () => (
     </svg>
 );
 
-
 export default function WalletPage() {
   const router = useRouter();
   const { authUser } = useAuth();
   const [balance, setBalance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchBalance = useCallback(async () => {
+  const fetchBalanceManually = useCallback(async () => {
     if (authUser) {
       setIsRefreshing(true);
-      const bal = await getWalletBalance(authUser.uid);
-      setBalance(bal);
+      // This is a placeholder for a manual fetch if needed, 
+      // but onSnapshot handles real-time updates.
+      // We can simulate a refresh for UX purposes.
+      await new Promise(resolve => setTimeout(resolve, 500));
       setIsRefreshing(false);
     }
   }, [authUser]);
 
   useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
+    if (authUser) {
+      setIsLoading(true);
+      const unsubscribe = listenToWalletBalance(authUser.uid, (newBalance) => {
+        setBalance(newBalance);
+        setIsLoading(false);
+      });
 
-  const handleRefresh = async () => {
-    await fetchBalance();
-  };
+      // Cleanup listener on component unmount
+      return () => unsubscribe();
+    } else {
+        setIsLoading(false); // Not logged in, stop loading
+    }
+  }, [authUser]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-300 via-yellow-200 to-yellow-50">
@@ -78,9 +86,13 @@ export default function WalletPage() {
 
             <div className="mt-8 mb-10">
                  <p className="text-gray-600 text-lg">Current Balance</p>
-                 <p className="text-6xl font-bold text-gray-800 mt-1">
-                    <span className="font-sans">₹</span>{balance.toLocaleString('en-IN')}
-                 </p>
+                 {isLoading ? (
+                    <div className="h-16 w-48 bg-gray-300/50 animate-pulse rounded-md mx-auto mt-1"></div>
+                 ) : (
+                    <p className="text-6xl font-bold text-gray-800 mt-1">
+                        <span className="font-sans">₹</span>{balance.toLocaleString('en-IN')}
+                    </p>
+                 )}
             </div>
             
             <div className="space-y-4">
@@ -118,7 +130,7 @@ export default function WalletPage() {
 
              <Button
                 variant="ghost"
-                onClick={handleRefresh}
+                onClick={fetchBalanceManually}
                 disabled={isRefreshing}
                 className="mt-8 text-gray-600"
               >

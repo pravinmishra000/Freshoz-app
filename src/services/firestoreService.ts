@@ -1,3 +1,4 @@
+
 import { db } from '@/lib/firebase/client';
 import {
   collection,
@@ -15,6 +16,7 @@ import {
   orderBy,
   increment,
   setDoc,
+  onSnapshot, Unsubscribe
 } from 'firebase/firestore';
 import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,7 +89,7 @@ export async function getUser(userId: string): Promise<User | null> {
 }
 
 /**
- * Get wallet balance from wallets collection
+ * Get wallet balance from wallets collection (one-time fetch)
  */
 export async function getWalletBalance(userId: string): Promise<number> {
   const walletRef = doc(db, 'wallets', userId);
@@ -95,7 +97,30 @@ export async function getWalletBalance(userId: string): Promise<number> {
   if (walletSnap.exists()) {
     return walletSnap.data().balance ?? 0;
   }
+  // If wallet doesn't exist, create it with 0 balance
+  await setDoc(walletRef, { balance: 0, lastUpdated: serverTimestamp() });
   return 0;
+}
+
+/**
+ * Listen to real-time updates for a user's wallet balance
+ */
+export function listenToWalletBalance(userId: string, callback: (balance: number) => void): Unsubscribe {
+    const walletRef = doc(db, 'wallets', userId);
+
+    const unsubscribe = onSnapshot(walletRef, (doc) => {
+        if (doc.exists()) {
+            callback(doc.data().balance ?? 0);
+        } else {
+            // If the wallet document doesn't exist, we can assume a balance of 0
+            callback(0);
+        }
+    }, (error) => {
+        console.error("Error listening to wallet balance:", error);
+        callback(0); // Report 0 on error
+    });
+
+    return unsubscribe;
 }
 
 
