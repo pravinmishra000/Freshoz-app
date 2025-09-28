@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package, Wallet } from 'lucide-react';
+import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package, User } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -30,12 +30,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CartSheet } from '@/components/cart/CartSheet';
+import { SmartSearchBar } from '../products/SmartSearchBar';
 
 const navItems = [
-  { href: '/products', label: 'Products', icon: ShoppingBag },
-  { href: '/orders', label: 'My Orders', icon: Package },
-  { href: '/wallet', label: 'Wallet', icon: Wallet },
+  { href: '/products', label: 'Home', icon: Home },
+  { href: '/orders', label: 'Orders', icon: Package },
   { href: '/chat', label: 'Support', icon: MessageSquare },
+  { href: '/login', label: 'Profile', icon: User },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -44,8 +45,79 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="relative flex min-h-screen w-full">
-        <Sidebar className="hidden md:flex">
+      <div className="relative flex min-h-screen w-full flex-col">
+        <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center justify-between gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
+           <div className="container mx-auto flex w-full items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="hidden lg:block">
+                  <Link href="/" className="block">
+                      <Logo />
+                  </Link>
+                </div>
+                 <SidebarTrigger className="lg:hidden" />
+              </div>
+
+              <div className="hidden sm:block flex-1 max-w-lg mx-auto">
+                <SmartSearchBar />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <CartSheet />
+                {loading ? (
+                  <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+                ) : authUser ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar className="cursor-pointer">
+                        <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
+                        <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {appUser?.role === 'admin' && (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/dashboard">
+                              <LayoutDashboard className="mr-2 h-4 w-4" />
+                              <span>Dashboard</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/orders">
+                              <UserCog className="mr-2 h-4 w-4" />
+                              <span>Manage Orders</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem>Settings</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button asChild variant="ghost" size="icon" className="glass-icon-button">
+                    <Link href="/login">
+                      <User className="h-5 w-5 text-primary" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+           </div>
+           <div className="sm:hidden w-full px-2">
+                <SmartSearchBar />
+            </div>
+        </header>
+
+         {/* Mobile-only Sidebar */}
+        <Sidebar className="lg:hidden">
           <SidebarHeader>
             <Link href="/" className="block p-2">
               <Logo />
@@ -70,69 +142,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarContent>
         </Sidebar>
 
-        <main className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="md:hidden" />
-              <div className="md:hidden">
-                 <Link href="/" className="block">
-                    <Logo />
-                 </Link>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-               <CartSheet />
-              {loading ? (
-                <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
-              ) : authUser ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Avatar className="cursor-pointer">
-                      <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face" />
-                      <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                     {appUser?.role === 'admin' && (
-                      <>
-                       <DropdownMenuItem asChild>
-                         <Link href="/admin/dashboard">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuItem asChild>
-                         <Link href="/admin/orders">
-                          <UserCog className="mr-2 h-4 w-4" />
-                          <span>Manage Orders</span>
-                         </Link>
-                       </DropdownMenuItem>
-                       <DropdownMenuSeparator />
-                      </>
-                     )}
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Button asChild>
-                  <Link href="/login">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login
-                  </Link>
-                </Button>
-              )}
-            </div>
-          </header>
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</div>
-        </main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
 
         {/* Mobile Bottom Navigation */}
         <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">

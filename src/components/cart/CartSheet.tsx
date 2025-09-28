@@ -27,8 +27,8 @@ export function CartSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <ShoppingCart className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="relative glass-icon-button">
+          <ShoppingCart className="h-5 w-5 text-primary" />
           {cartCount > 0 && (
             <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
               {cartCount}
@@ -37,7 +37,7 @@ export function CartSheet() {
           <span className="sr-only">Open Cart</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex w-full flex-col sm:max-w-lg">
+      <SheetContent className="flex w-full flex-col sm:max-w-lg glass-card">
         <SheetHeader>
           <SheetTitle className="font-headline text-2xl">Shopping Cart</SheetTitle>
         </SheetHeader>
@@ -89,12 +89,12 @@ export function CartSheet() {
               </div>
               {authUser ? (
                  <SheetClose asChild>
-                    <Button asChild className="w-full neon-button text-lg py-6">
+                    <Button asChild className="w-full text-lg py-6">
                         <Link href="/checkout">Proceed to Checkout</Link>
                     </Button>
                  </SheetClose>
               ) : (
-                <Button asChild className="w-full neon-button text-lg py-6">
+                <Button asChild className="w-full text-lg py-6">
                   <Link href="/login">Login to Checkout</Link>
                 </Button>
               )}

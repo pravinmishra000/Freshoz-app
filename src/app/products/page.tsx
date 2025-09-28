@@ -2,56 +2,63 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { products, CATEGORIES } from '@/lib/data';
-import type { Product, Category } from '@/lib/types';
+import type { Product, Category, Promotion } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
-import { HelpCircle, Phone, Search, User } from 'lucide-react';
-import { Logo } from '@/components/icons/Logo';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { HelpCircle } from 'lucide-react';
+import { products as allProductsData, promotions, CATEGORIES } from '@/lib/data';
+import { Card, CardContent } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay";
+import Image from 'next/image';
+import { AppShell } from '@/components/layout/AppShell';
 
-export default function HomePage() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [bestDeals, setBestDeals] = useState<Product[]>([]);
 
   useEffect(() => {
-    // In a real app, you would fetch products from an API
-    setAllProducts(products);
+    setProducts(allProductsData);
+    // Filter products for "Best Deals" (e.g., biggest discount)
+    const sortedDeals = [...allProductsData]
+      .sort((a, b) => (b.mrp - b.price) - (a.mrp - a.price))
+      .slice(0, 10);
+    setBestDeals(sortedDeals);
   }, []);
 
   return (
-    <div className="vibrant-gradient min-h-screen">
-      <header className="glass-app-bar sticky top-0 z-10 py-3 px-4">
-        <div className="container mx-auto flex items-center justify-between gap-4">
-          <div className="w-auto">
-            <Logo />
-          </div>
-          <div className="relative flex-1 max-w-lg">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-              placeholder="Search for Vegetables, Fruits, Atta etc..."
-              className="w-full pl-12 pr-4 py-2 rounded-full bg-white/80 border-2 border-primary/50 focus:border-primary focus:bg-white transition-all"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <a href="tel:9097882555">
-                <Button variant="ghost" size="icon" className="glass-icon-button">
-                    <Phone className="h-5 w-5 text-primary" />
-                </Button>
-            </a>
-            <Link href="/login">
-                <Button variant="ghost" size="icon" className="glass-icon-button">
-                    <User className="h-5 w-5 text-primary" />
-                </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+    <AppShell>
+      <main className="container mx-auto pb-24">
+        {/* Offer Banner Section */}
+        <section className="my-6">
+            <Carousel
+                opts={{ loop: true }}
+                plugins={[Autoplay({ delay: 5000 })]}
+            >
+            <CarouselContent>
+              {promotions.map((promo) => (
+                <CarouselItem key={promo.id}>
+                    <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl glass-card">
+                         <Image
+                            src={promo.imageUrl}
+                            alt={promo.title}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={promo.imageHint}
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-6">
+                            <h3 className="text-white text-2xl font-bold">{promo.title}</h3>
+                            <p className="text-white/90">{promo.description}</p>
+                        </div>
+                    </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </section>
 
-      <main className="container mx-auto p-4">
         {/* Category Section */}
         <section className="my-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Shop by Category</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {CATEGORIES.map((category) => (
               <div key={category.id} className="glass-card p-4 text-center hover:scale-105 transition-transform cursor-pointer h-40 flex flex-col justify-center items-center">
@@ -66,21 +73,33 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Featured Products Section */}
+        {/* Best Deals Section */}
         <section className="my-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Featured Products</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Best Deals</h2>
+            <div className="flex space-x-4 overflow-x-auto pb-4">
+                {bestDeals.map((product) => (
+                    <div key={product.id} className="min-w-[200px] sm:min-w-[240px]">
+                        <ProductCard product={product} />
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        {/* Popular Products Section */}
+        <section className="my-12">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Popular Products</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {allProducts.slice(0, 10).map((product) => (
+            {products.slice(0, 10).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
       </main>
 
-      <button className="glass-icon-button fixed bottom-6 right-6">
+      <button className="glass-icon-button fixed bottom-24 right-6 md:bottom-6">
         <HelpCircle className="h-7 w-7 text-primary" />
         <span className="sr-only">Help & Support</span>
       </button>
-    </div>
+    </AppShell>
   );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition, useCallback } from 'react';
@@ -61,18 +62,18 @@ export function SmartSearchBar() {
     <div className="relative w-full">
       <form onSubmit={handleSearch}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search for fresh groceries..."
-            className="w-full rounded-full bg-background/80 py-6 pl-10 pr-4 text-lg"
+            placeholder="Search grocery & vegetables..."
+            className="w-full rounded-full bg-background/80 py-2 pl-12 pr-4"
             value={query}
             onChange={handleInputChange}
           />
         </div>
       </form>
       {suggestions.length > 0 && (
-        <Card className="glass-card absolute top-full mt-2 w-full overflow-hidden">
+        <Card className="glass-card absolute top-full mt-2 w-full overflow-hidden z-50">
           <CardContent className="p-2">
             <ul className="space-y-1">
               {suggestions.map((suggestion, index) => (

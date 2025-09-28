@@ -7,6 +7,11 @@ import {
   Coffee,
   Drumstick 
 } from 'lucide-react';
+import { ALL_DAIRY_BAKERY_PRODUCTS } from './products/dairy-bakery';
+import { ALL_NON_VEG_PRODUCTS } from './products/non-veg';
+import { ALL_STAPLES_GROCERY_PRODUCTS } from './products/staples-grocery';
+import { ALL_VEGETABLES_FRUITS_PRODUCTS } from './products/vegetables-fruits';
+import { ALL_SNACKS_BEVERAGES_PRODUCTS } from './products/snacks-beverages';
 
 export const CATEGORIES: Category[] = [
   {
@@ -138,7 +143,13 @@ export const CATEGORIES: Category[] = [
 ];
 
 
-export const products: Product[] = [];
+export const products: Product[] = [
+    ...ALL_DAIRY_BAKERY_PRODUCTS,
+    ...ALL_NON_VEG_PRODUCTS,
+    ...ALL_STAPLES_GROCERY_PRODUCTS,
+    ...ALL_VEGETABLES_FRUITS_PRODUCTS,
+    ...ALL_SNACKS_BEVERAGES_PRODUCTS
+];
 
 export const promotions: Promotion[] = [
   {
@@ -207,6 +218,3 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
-
-
-
