@@ -62,6 +62,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
 
               <div className="flex items-center gap-2">
+                <div className="w-full max-w-lg px-2 lg:block hidden">
+                    <SmartSearchBar />
+                </div>
                 <Link href="/wallet">
                     <Button variant="ghost" size="icon" className="glass-icon-button">
                         <Wallet className="h-5 w-5 text-primary" />
@@ -113,10 +116,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                     </Link>
                   </Button>
                 )}
-                <SidebarTrigger className="lg:hidden" />
+                <SidebarTrigger className="lg:hidden glass-icon-button" />
               </div>
            </div>
-           <div className="w-full px-2">
+           <div className="w-full px-2 lg:hidden">
                 <SmartSearchBar />
             </div>
         </header>
