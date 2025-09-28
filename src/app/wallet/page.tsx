@@ -11,12 +11,16 @@ import { cn } from '@/lib/utils';
 
 
 const WalletIcon = () => (
-    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g transform="rotate(-10 50 50)">
+    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="rotate(-10 50 50) scale(1.1)">
+            {/* Shadow Layer */}
+            <path d="M10 37C10 31.4772 14.4772 27 20 27H80C85.5228 27 90 31.4772 90 37V77C90 82.5228 85.5228 87 80 87H20C14.4772 87 10 82.5228 10 77V37Z" fill="rgba(0,0,0,0.15)" />
+            {/* Main Body */}
             <path d="M10 35C10 29.4772 14.4772 25 20 25H80C85.5228 25 90 29.4772 90 35V75C90 80.5228 85.5228 85 80 85H20C14.4772 85 10 80.5228 10 75V35Z" fill="#16A34A"/>
+            {/* Top Flap */}
             <path d="M10 42.5C10 36.9772 14.4772 32.5 20 32.5H90V35C90 29.4772 85.5228 25 80 25H20C14.4772 25 10 29.4772 10 35V42.5Z" fill="#FBBF24"/>
-            <path d="M15 57H40M27.5 57V72M15 64H35" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M15 57H40M27.5 57V72M15 64H35" stroke="rgba(0,0,0,0.2)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+            {/* Rupee Symbol */}
+            <path d="M18 57H43M30.5 57V72M18 64H38" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
         </g>
     </svg>
 );
@@ -60,7 +64,7 @@ export default function WalletPage() {
                 <WalletIcon />
             </div>
 
-            <h1 className="text-4xl font-extrabold text-gray-800 tracking-tighter uppercase">Freshoz MONEY</h1>
+            <h1 className="text-4xl font-extrabold text-green-700 tracking-tighter uppercase">Freshoz MONEY</h1>
             <p className="text-gray-600 mt-1">Your Digital Balance</p>
 
             <div className="mt-8 mb-10">
@@ -117,4 +121,3 @@ export default function WalletPage() {
     </div>
   );
 }
-
