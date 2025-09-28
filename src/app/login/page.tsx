@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
+import { Switch } from '@/components/ui/switch';
 
 const phoneSchema = z.object({
   phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number.' }),
@@ -34,6 +35,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isTestMode, setIsTestMode] = useState(false);
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
@@ -48,6 +50,20 @@ export default function LoginPage() {
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
     setPhoneNumber(data.phone);
+    
+    if (isTestMode) {
+      // Simulate OTP sending in test mode
+      setTimeout(() => {
+        setConfirmationResult({}); // Set a mock confirmation result
+        toast({
+          title: 'Test OTP Sent',
+          description: `Enter the test OTP '123456'.`,
+        });
+        setIsLoading(false);
+      }, 1000);
+      return;
+    }
+
     try {
       const result = await signInWithPhoneNumber(data.phone, 'customer');
       setConfirmationResult(result);
@@ -70,6 +86,28 @@ export default function LoginPage() {
 
   const onOtpSubmit: SubmitHandler<OtpFormValues> = async (data) => {
     setIsLoading(true);
+
+    if (isTestMode) {
+        if (data.otp === '123456') {
+            setTimeout(() => {
+                toast({
+                    title: 'Test Login Successful',
+                    description: "Welcome, Demo User!",
+                });
+                router.push('/');
+                setIsLoading(false);
+            }, 1000);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Login Failed',
+                description: "Invalid test OTP. Please use '123456'.",
+            });
+            setIsLoading(false);
+        }
+        return;
+    }
+
     if (!confirmationResult) {
       toast({ variant: 'destructive', title: 'Error', description: 'Please request an OTP first.' });
       setIsLoading(false);
@@ -94,7 +132,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
+    <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center p-4">
       <Card className="w-full max-w-sm glass-card">
         <CardHeader>
           <CardTitle className="font-headline text-2xl text-foreground">Welcome to <span className="font-black text-positive uppercase">Freshoz</span></CardTitle>
@@ -134,6 +172,7 @@ export default function LoginPage() {
               <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
                  <p className="text-sm text-center text-muted-foreground">
                     Enter the 6-digit code sent to {phoneNumber}.
+                    {isTestMode && <span className="font-bold text-primary block">(Test OTP is 123456)</span>}
                 </p>
                 <FormField
                   control={otpForm.control}
@@ -158,6 +197,18 @@ export default function LoginPage() {
               </form>
             </Form>
           )}
+
+          <div className="mt-6 flex items-center justify-center space-x-2">
+            <Label htmlFor="test-mode" className="text-sm text-muted-foreground">
+              Test Mode
+            </Label>
+            <Switch
+              id="test-mode"
+              checked={isTestMode}
+              onCheckedChange={setIsTestMode}
+              disabled={isLoading}
+            />
+          </div>
 
         </CardContent>
       </Card>
