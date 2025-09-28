@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, User, LayoutDashboard, UserCog, Package, LayoutGrid, ShoppingCart } from 'lucide-react';
+import { Home, LogOut, User, LayoutDashboard, UserCog, Package, LayoutGrid, MessageSquare, Wallet } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -33,10 +33,9 @@ import { CartSheet } from '@/components/cart/CartSheet';
 import { SmartSearchBar } from '../products/SmartSearchBar';
 
 const navItems = [
-  { href: '/products', label: 'Home', icon: Home },
+  { href: '/products', label: 'Products', icon: Package },
   { href: '/orders', label: 'Orders', icon: Package },
   { href: '/chat', label: 'Support', icon: MessageSquare },
-  { href: '/login', label: 'Profile', icon: User },
 ];
 
 const bottomNavItems = [
@@ -63,12 +62,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                  <SidebarTrigger className="lg:hidden" />
               </div>
 
-              <div className="hidden sm:block flex-1 max-w-lg mx-auto">
-                <SmartSearchBar />
-              </div>
-
               <div className="flex items-center gap-2">
-                <CartSheet />
+                <Link href="/wallet">
+                    <Button variant="ghost" size="icon" className="glass-icon-button">
+                        <Wallet className="h-5 w-5 text-primary" />
+                    </Button>
+                </Link>
                 {loading ? (
                   <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
                 ) : authUser ? (
@@ -117,7 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               </div>
            </div>
-           <div className="sm:hidden w-full px-2">
+           <div className="w-full px-2">
                 <SmartSearchBar />
             </div>
         </header>
