@@ -12,21 +12,12 @@ import { cn } from '@/lib/utils';
 
 const WalletIcon = () => (
     <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g transform="rotate(-15 50 50)">
-            <path d="M10 40C10 34.4772 14.4772 30 20 30H80C85.5228 30 90 34.4772 90 40V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V40Z" fill="url(#wallet_gold_gradient)"/>
-            <path d="M10 45C10 39.4772 14.4772 35 20 35H90V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V45Z" fill="url(#wallet_green_gradient)"/>
-            <text x="50" y="62" textAnchor="middle" fontSize="30" fill="white" fontWeight="bold">₹</text>
+        <g transform="rotate(-10 50 50)">
+            <path d="M10 35C10 29.4772 14.4772 25 20 25H80C85.5228 25 90 29.4772 90 35V75C90 80.5228 85.5228 85 80 85H20C14.4772 85 10 80.5228 10 75V35Z" fill="#16A34A"/>
+            <path d="M10 42.5C10 36.9772 14.4772 32.5 20 32.5H90V35C90 29.4772 85.5228 25 80 25H20C14.4772 25 10 29.4772 10 35V42.5Z" fill="#FBBF24"/>
+            <path d="M15 57H40M27.5 57V72M15 64H35" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M15 57H40M27.5 57V72M15 64H35" stroke="rgba(0,0,0,0.2)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
         </g>
-        <defs>
-            <linearGradient id="wallet_gold_gradient" x1="50" y1="30" x2="50" y2="80" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#FDE047"/>
-                <stop offset="1" stopColor="#FBBF24"/>
-            </linearGradient>
-            <linearGradient id="wallet_green_gradient" x1="50" y1="35" x2="50" y2="80" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#16A34A"/>
-                <stop offset="1" stopColor="#15803D"/>
-            </linearGradient>
-        </defs>
     </svg>
 );
 
