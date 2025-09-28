@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -96,7 +97,7 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
       <Card className="w-full max-w-sm glass-card">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl text-foreground">Welcome to <span className="text-primary uppercase">Freshoz</span></CardTitle>
+          <CardTitle className="font-headline text-2xl text-foreground">Welcome to <span className="font-black text-positive uppercase">Freshoz</span></CardTitle>
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,7 +123,7 @@ export default function LoginPage() {
                   )}
                 />
                  <div id="recaptcha-container"></div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Send OTP
                 </Button>
@@ -147,7 +148,7 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Verify &amp; Sign In
                 </Button>
