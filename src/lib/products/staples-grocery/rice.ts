@@ -24,6 +24,10 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'rice-1-1', pack_size: '1 kg', mrp: 130, price: 120, stock_qty: 50 },
+      { id: 'rice-1-2', pack_size: '5 kg', mrp: 640, price: 590, stock_qty: 50 },
     ]
   },
   {
@@ -49,6 +53,10 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-2-1', pack_size: '5 kg', mrp: 300, price: 275, stock_qty: 80 },
+        { id: 'rice-2-2', pack_size: '10 kg', mrp: 580, price: 540, stock_qty: 70 },
     ]
   },
   {
@@ -74,6 +82,10 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'rice-3-1', pack_size: '1 kg', mrp: 90, price: 85, stock_qty: 40 },
+      { id: 'rice-3-2', pack_size: '2 kg', mrp: 175, price: 165, stock_qty: 40 },
     ]
   },
   {
@@ -99,6 +111,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+        { id: 'rice-4-1', pack_size: '1 kg', mrp: 130, price: 120, stock_qty: 60 },
     ]
   },
   {
@@ -124,6 +139,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-5-1', pack_size: '5 kg', mrp: 350, price: 325, stock_qty: 90 },
     ]
   },
   {
@@ -149,6 +167,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-6-1', pack_size: '10 kg', mrp: 700, price: 660, stock_qty: 60 },
     ]
   },
   {
@@ -174,6 +195,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 80 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-7-1', pack_size: '5 kg', mrp: 500, price: 470, stock_qty: 80 },
     ]
   },
   {
@@ -199,6 +223,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-8-1', pack_size: '25 kg', mrp: 2500, price: 2350, stock_qty: 40 },
     ]
   },
   {
@@ -224,6 +251,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 75 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-9-1', pack_size: '10 kg', mrp: 550, price: 510, stock_qty: 75 },
     ]
   },
   {
@@ -249,6 +279,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 100 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-10-1', pack_size: '25 kg', mrp: 1250, price: 1180, stock_qty: 100 },
     ]
   },
   {
@@ -274,6 +307,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 70 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-11-1', pack_size: '10 kg', mrp: 600, price: 560, stock_qty: 70 },
     ]
   },
   {
@@ -299,6 +335,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 85 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-12-1', pack_size: '5 kg', mrp: 300, price: 280, stock_qty: 85 },
     ]
   },
   {
@@ -324,6 +363,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-13-1', pack_size: '25 kg', mrp: 1750, price: 1650, stock_qty: 30 },
     ]
   },
   {
@@ -349,6 +391,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 95 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-14-1', pack_size: '10 kg', mrp: 500, price: 470, stock_qty: 95 },
     ]
   },
   {
@@ -374,6 +419,9 @@ export const RICE_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'rice-15-1', pack_size: '5 kg', mrp: 280, price: 260, stock_qty: 60 },
     ]
   }
 ];

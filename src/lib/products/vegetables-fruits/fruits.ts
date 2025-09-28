@@ -24,6 +24,10 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 40 },
       { warehouse_id: 'khagaria', stock: 30 }
+    ],
+    variants: [
+        { id: 'fruit-1-1', pack_size: '6 pieces', mrp: 25, price: 22, stock_qty: 60 },
+        { id: 'fruit-1-2', pack_size: '12 pieces', mrp: 45, price: 40, stock_qty: 60 },
     ]
   },
   {
@@ -49,6 +53,10 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 20 }
+    ],
+    variants: [
+        { id: 'fruit-2-1', pack_size: '500 g', mrp: 60, price: 55, stock_qty: 40 },
+        { id: 'fruit-2-2', pack_size: '1 kg', mrp: 120, price: 110, stock_qty: 40 },
     ]
   },
   {
@@ -74,6 +82,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 30 },
       { warehouse_id: 'khagaria', stock: 25 }
+    ],
+    variants: [
+        { id: 'fruit-3-1', pack_size: '1 kg', mrp: 80, price: 70, stock_qty: 95 },
     ]
   },
   {
@@ -99,6 +110,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+        { id: 'fruit-4-1', pack_size: '1 kg', mrp: 90, price: 80, stock_qty: 60 },
     ]
   },
   {
@@ -124,6 +138,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+        { id: 'fruit-5-1', pack_size: '1 piece (approx 1kg)', mrp: 40, price: 35, stock_qty: 45 },
     ]
   },
   {
@@ -149,6 +166,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+        { id: 'fruit-6-1', pack_size: '1 kg', mrp: 50, price: 45, stock_qty: 55 },
     ]
   },
   {
@@ -174,6 +194,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+        { id: 'fruit-7-1', pack_size: '1 kg', mrp: 100, price: 90, stock_qty: 40 },
     ]
   },
   {
@@ -199,6 +222,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-8-1', pack_size: '500 g', mrp: 70, price: 65, stock_qty: 35 },
     ]
   },
   {
@@ -224,6 +250,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 8 },
       { warehouse_id: 'khagaria', stock: 7 }
+    ],
+    variants: [
+        { id: 'fruit-9-1', pack_size: '1 piece (approx 3kg)', mrp: 30, price: 25, stock_qty: 25 },
     ]
   },
   {
@@ -249,6 +278,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-10-1', pack_size: '1 piece (approx 1kg)', mrp: 35, price: 30, stock_qty: 30 },
     ]
   },
   {
@@ -274,6 +306,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 8 },
       { warehouse_id: 'bhagalpur', stock: 7 },
       { warehouse_id: 'khagaria', stock: 5 }
+    ],
+    variants: [
+        { id: 'fruit-11-1', pack_size: '1 piece', mrp: 45, price: 40, stock_qty: 20 },
     ]
   },
   {
@@ -299,6 +334,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 8 },
       { warehouse_id: 'khagaria', stock: 7 }
+    ],
+    variants: [
+        { id: 'fruit-12-1', pack_size: '500 g', mrp: 80, price: 75, stock_qty: 25 },
     ]
   },
   {
@@ -324,6 +362,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-13-1', pack_size: '500 g', mrp: 60, price: 55, stock_qty: 35 },
     ]
   },
   {
@@ -349,6 +390,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-14-1', pack_size: '500 g', mrp: 90, price: 85, stock_qty: 30 },
     ]
   },
   {
@@ -374,6 +418,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+        { id: 'fruit-15-1', pack_size: '1 kg', mrp: 70, price: 65, stock_qty: 40 },
     ]
   },
   {
@@ -399,6 +446,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 9 },
       { warehouse_id: 'khagaria', stock: 7 }
+    ],
+    variants: [
+        { id: 'fruit-16-1', pack_size: '500 g', mrp: 85, price: 80, stock_qty: 28 },
     ]
   },
   {
@@ -424,6 +474,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 9 },
       { warehouse_id: 'bhagalpur', stock: 7 },
       { warehouse_id: 'khagaria', stock: 6 }
+    ],
+    variants: [
+        { id: 'fruit-17-1', pack_size: '6 pieces', mrp: 150, price: 140, stock_qty: 22 },
     ]
   },
   {
@@ -449,6 +502,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 7 },
       { warehouse_id: 'bhagalpur', stock: 6 },
       { warehouse_id: 'khagaria', stock: 5 }
+    ],
+    variants: [
+        { id: 'fruit-18-1', pack_size: '250 g', mrp: 120, price: 110, stock_qty: 18 },
     ]
   },
   {
@@ -474,6 +530,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 6 },
       { warehouse_id: 'bhagalpur', stock: 5 },
       { warehouse_id: 'khagaria', stock: 4 }
+    ],
+    variants: [
+        { id: 'fruit-19-1', pack_size: '250 g', mrp: 200, price: 185, stock_qty: 15 },
     ]
   },
   {
@@ -499,6 +558,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 18 },
       { warehouse_id: 'khagaria', stock: 12 }
+    ],
+    variants: [
+        { id: 'fruit-20-1', pack_size: '1 piece', mrp: 35, price: 30, stock_qty: 50 },
     ]
   },
   {
@@ -524,6 +586,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 8 },
       { warehouse_id: 'khagaria', stock: 7 }
+    ],
+    variants: [
+        { id: 'fruit-21-1', pack_size: '200 g', mrp: 130, price: 120, stock_qty: 25 },
     ]
   },
   {
@@ -549,6 +614,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 8 },
       { warehouse_id: 'bhagalpur', stock: 7 },
       { warehouse_id: 'khagaria', stock: 5 }
+    ],
+    variants: [
+        { id: 'fruit-22-1', pack_size: '1 basket (approx 2kg)', mrp: 250, price: 225, stock_qty: 20 },
     ]
   },
   {
@@ -574,6 +642,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-23-1', pack_size: '1 box (approx 1.5kg)', mrp: 180, price: 160, stock_qty: 30 },
     ]
   },
   {
@@ -599,6 +670,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+        { id: 'fruit-24-1', pack_size: '500 g', mrp: 100, price: 90, stock_qty: 40 },
     ]
   },
   {
@@ -624,6 +698,9 @@ export const FRUITS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+        { id: 'fruit-25-1', pack_size: '250 g', mrp: 300, price: 280, stock_qty: 35 },
     ]
   }
 ];

@@ -25,6 +25,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 70 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-1-1', pack_size: '100 g', mrp: 70, price: 60, stock_qty: 200 },
     ]
   },
   {
@@ -50,6 +53,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-2-1', pack_size: '100 g', mrp: 90, price: 80, stock_qty: 180 },
     ]
   },
   {
@@ -75,6 +81,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 45 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-3-1', pack_size: '100 g', mrp: 75, price: 68, stock_qty: 150 },
     ]
   },
   {
@@ -100,6 +109,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-4-1', pack_size: '100 g', mrp: 110, price: 100, stock_qty: 140 },
     ]
   },
   {
@@ -125,6 +137,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-5-1', pack_size: '100 g', mrp: 180, price: 160, stock_qty: 90 },
     ]
   },
   {
@@ -150,6 +165,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-6-1', pack_size: '100 g', mrp: 85, price: 78, stock_qty: 160 },
     ]
   },
   {
@@ -175,6 +193,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-7-1', pack_size: '100 g', mrp: 120, price: 110, stock_qty: 130 },
     ]
   },
   {
@@ -200,6 +221,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-8-1', pack_size: '100 g', mrp: 95, price: 88, stock_qty: 120 },
     ]
   },
   {
@@ -225,6 +249,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-9-1', pack_size: '100 g', mrp: 100, price: 92, stock_qty: 110 },
     ]
   },
   {
@@ -250,6 +277,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-10-1', pack_size: '100 g', mrp: 95, price: 88, stock_qty: 100 },
     ]
   },
   {
@@ -275,6 +305,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-11-1', pack_size: '50 g', mrp: 140, price: 130, stock_qty: 80 },
     ]
   },
   {
@@ -300,6 +333,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-12-1', pack_size: '50 g', mrp: 220, price: 200, stock_qty: 60 },
     ]
   },
   {
@@ -325,6 +361,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-13-1', pack_size: '50 g', mrp: 190, price: 175, stock_qty: 70 },
     ]
   },
   {
@@ -350,6 +389,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-14-1', pack_size: '25 g', mrp: 450, price: 420, stock_qty: 40 },
     ]
   },
   {
@@ -375,6 +417,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-15-1', pack_size: '20 g', mrp: 80, price: 74, stock_qty: 120 },
     ]
   },
   {
@@ -400,6 +445,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-16-1', pack_size: '25 g', mrp: 240, price: 220, stock_qty: 45 },
     ]
   },
   {
@@ -425,6 +473,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-17-1', pack_size: '100 g', mrp: 95, price: 88, stock_qty: 130 },
     ]
   },
   {
@@ -450,6 +501,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-18-1', pack_size: '100 g', mrp: 110, price: 100, stock_qty: 95 },
     ]
   },
   {
@@ -475,6 +529,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-19-1', pack_size: '50 g', mrp: 160, price: 150, stock_qty: 60 },
     ]
   },
   {
@@ -500,6 +557,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 4 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-20-1', pack_size: '1 g', mrp: 1200, price: 1150, stock_qty: 12 },
     ]
   },
   {
@@ -525,6 +585,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-21-1', pack_size: '100 g', mrp: 45, price: 42, stock_qty: 60 },
     ]
   },
   {
@@ -550,6 +613,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-22-1', pack_size: '200 g', mrp: 120, price: 110, stock_qty: 40 },
     ]
   },
   {
@@ -575,6 +641,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-23-1', pack_size: '500 g', mrp: 95, price: 90, stock_qty: 50 },
     ]
   },
   {
@@ -600,6 +669,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 55 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-24-1', pack_size: '100 g', mrp: 80, price: 75, stock_qty: 55 },
     ]
   },
   {
@@ -625,6 +697,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 70 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-25-1', pack_size: '1 kg', mrp: 180, price: 160, stock_qty: 70 },
     ]
   },
   {
@@ -650,6 +725,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 45 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-26-1', pack_size: '100 g', mrp: 85, price: 80, stock_qty: 45 },
     ]
   },
   {
@@ -675,6 +753,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-27-1', pack_size: '200 g', mrp: 120, price: 115, stock_qty: 40 },
     ]
   },
   {
@@ -700,6 +781,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-28-1', pack_size: '100 g', mrp: 70, price: 65, stock_qty: 60 },
     ]
   },
   {
@@ -725,6 +809,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-29-1', pack_size: '200 g', mrp: 110, price: 100, stock_qty: 35 },
     ]
   },
   {
@@ -750,6 +837,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 90 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-30-1', pack_size: '500 g', mrp: 70, price: 65, stock_qty: 90 },
     ]
   },
   {
@@ -775,6 +865,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-31-1', pack_size: '1 kg', mrp: 320, price: 300, stock_qty: 60 },
     ]
   },
   {
@@ -800,6 +893,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 150 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-32-1', pack_size: '100 g', mrp: 85, price: 78, stock_qty: 150 },
     ]
   },
   {
@@ -825,6 +921,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 100 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-33-1', pack_size: '200 g', mrp: 120, price: 110, stock_qty: 100 },
     ]
   },
   {
@@ -850,6 +949,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 180 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-34-1', pack_size: '500 g', mrp: 160, price: 150, stock_qty: 180 },
     ]
   },
   {
@@ -875,6 +977,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 140 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-35-1', pack_size: '200 g', mrp: 70, price: 65, stock_qty: 140 },
     ]
   },
   {
@@ -900,6 +1005,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-36-1', pack_size: '1 kg', mrp: 320, price: 300, stock_qty: 60 },
     ]
   },
   {
@@ -925,6 +1033,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 170 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-37-1', pack_size: '100 g', mrp: 85, price: 78, stock_qty: 170 },
     ]
   },
   {
@@ -950,6 +1061,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 130 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-38-1', pack_size: '100 g', mrp: 95, price: 88, stock_qty: 130 },
     ]
   },
   {
@@ -975,6 +1089,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 160 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-39-1', pack_size: '100 g', mrp: 90, price: 82, stock_qty: 160 },
     ]
   },
   {
@@ -1000,6 +1117,9 @@ export const SPICES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 140 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'spice-40-1', pack_size: '50 g', mrp: 65, price: 60, stock_qty: 140 },
     ]
   }
 ];

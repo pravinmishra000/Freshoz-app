@@ -24,6 +24,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 18 },
       { warehouse_id: 'khagaria', stock: 12 }
+    ],
+    variants: [
+      { id: 'flour-1-1', pack_size: '1 kg', mrp: 75, price: 70, stock_qty: 55 },
     ]
   },
   {
@@ -49,6 +52,11 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 40 },
       { warehouse_id: 'khagaria', stock: 30 }
+    ],
+    variants: [
+      { id: 'flour-2-1', pack_size: '1 kg', mrp: 50, price: 45, stock_qty: 60 },
+      { id: 'flour-2-2', pack_size: '5 kg', mrp: 240, price: 220, stock_qty: 40 },
+      { id: 'flour-2-3', pack_size: '10 kg', mrp: 450, price: 430, stock_qty: 20 },
     ]
   },
   {
@@ -74,6 +82,10 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 30 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+      { id: 'flour-3-1', pack_size: '1 kg', mrp: 35, price: 30, stock_qty: 40 },
+      { id: 'flour-3-2', pack_size: '2 kg', mrp: 60, price: 55, stock_qty: 40 },
     ]
   },
   {
@@ -99,6 +111,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 20 }
+    ],
+    variants: [
+        { id: 'flour-4-1', pack_size: '1 kg', mrp: 55, price: 50, stock_qty: 65 },
     ]
   },
   {
@@ -124,6 +139,10 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'flour-5-1', pack_size: '1 kg', mrp: 45, price: 42, stock_qty: 25 },
+      { id: 'flour-5-2', pack_size: '2 kg', mrp: 85, price: 80, stock_qty: 20 },
     ]
   },
   {
@@ -149,6 +168,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 18 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'flour-6-1', pack_size: '500 g', mrp: 95, price: 90, stock_qty: 40 },
     ]
   },
   {
@@ -174,6 +196,10 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 35 },
       { warehouse_id: 'khagaria', stock: 25 }
+    ],
+    variants: [
+      { id: 'flour-7-1', pack_size: '500 g', mrp: 35, price: 32, stock_qty: 50 },
+      { id: 'flour-7-2', pack_size: '1 kg', mrp: 65, price: 60, stock_qty: 50 },
     ]
   },
   {
@@ -199,6 +225,10 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 25 }
+    ],
+    variants: [
+      { id: 'flour-8-1', pack_size: '500 g', mrp: 90, price: 85, stock_qty: 40 },
+      { id: 'flour-8-2', pack_size: '1 kg', mrp: 170, price: 160, stock_qty: 30 },
     ]
   },
   {
@@ -224,6 +254,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'flour-9-1', pack_size: '1 kg', mrp: 110, price: 105, stock_qty: 35 },
     ]
   },
   {
@@ -249,6 +282,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+       { id: 'flour-10-1', pack_size: '1 kg', mrp: 70, price: 65, stock_qty: 60 },
     ]
   },
   {
@@ -274,6 +310,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+       { id: 'flour-11-1', pack_size: '1 kg', mrp: 80, price: 75, stock_qty: 50 },
     ]
   },
   {
@@ -299,6 +338,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'flour-12-1', pack_size: '500 g', mrp: 95, price: 90, stock_qty: 30 },
     ]
   },
   {
@@ -324,6 +366,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'flour-13-1', pack_size: '500 g', mrp: 105, price: 100, stock_qty: 40 },
     ]
   },
   {
@@ -349,6 +394,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+       { id: 'flour-14-1', pack_size: '1 kg', mrp: 85, price: 80, stock_qty: 55 },
     ]
   },
   {
@@ -374,6 +422,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'flour-15-1', pack_size: '500 g', mrp: 95, price: 90, stock_qty: 35 },
     ]
   },
   {
@@ -399,6 +450,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 8 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'flour-17-1', pack_size: '500 g', mrp: 100, price: 95, stock_qty: 28 },
     ]
   },
   {
@@ -424,6 +478,9 @@ export const FLOUR_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 5 },
       { warehouse_id: 'bhagalpur', stock: 8 },
       { warehouse_id: 'khagaria', stock: 7 }
+    ],
+    variants: [
+       { id: 'flour-18-1', pack_size: '500 g', mrp: 150, price: 140, stock_qty: 20 },
     ]
   }
 ];

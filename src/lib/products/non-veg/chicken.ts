@@ -24,6 +24,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 10 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-1-1', pack_size: '500 g', mrp: 110, price: 100, stock_qty: 15 },
+      { id: 'chicken-1-2', pack_size: '1 kg', mrp: 220, price: 199, stock_qty: 10 },
     ]
   },
   {
@@ -49,6 +53,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 7 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-2-1', pack_size: '250 g', mrp: 140, price: 130, stock_qty: 10 },
+      { id: 'chicken-2-2', pack_size: '500 g', mrp: 280, price: 259, stock_qty: 8 },
     ]
   },
   {
@@ -74,6 +82,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 8 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-3-1', pack_size: '500 g', mrp: 120, price: 110, stock_qty: 12 },
+      { id: 'chicken-3-2', pack_size: '1 kg', mrp: 240, price: 219, stock_qty: 8 },
     ]
   },
   {
@@ -99,6 +111,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 6 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-4-1', pack_size: '250 g', mrp: 130, price: 120, stock_qty: 8 },
+      { id: 'chicken-4-2', pack_size: '500 g', mrp: 260, price: 239, stock_qty: 7 },
     ]
   },
   {
@@ -124,6 +140,9 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 5 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-5-1', pack_size: '1.2-1.5 kg', mrp: 210, price: 189, stock_qty: 12 },
     ]
   },
   {
@@ -149,6 +168,9 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 9 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-6-1', pack_size: '500 g', mrp: 190, price: 175, stock_qty: 22 },
     ]
   },
   {
@@ -174,6 +196,9 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 7 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+       { id: 'chicken-7-1', pack_size: '500 g', mrp: 150, price: 135, stock_qty: 18 },
     ]
   },
   {
@@ -199,6 +224,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 6 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-8-1', pack_size: '500 g', mrp: 115, price: 105, stock_qty: 8 },
+      { id: 'chicken-8-2', pack_size: '1 kg', mrp: 230, price: 209, stock_qty: 8 },
     ]
   },
   {
@@ -224,6 +253,10 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 5 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-9-1', pack_size: '500 g', mrp: 113, price: 103, stock_qty: 7 },
+      { id: 'chicken-9-2', pack_size: '1 kg', mrp: 225, price: 205, stock_qty: 7 },
     ]
   },
   {
@@ -249,6 +282,9 @@ export const CHICKEN_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 8 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'chicken-10-1', pack_size: '400 g', mrp: 180, price: 165, stock_qty: 20 },
     ]
   }
 ];

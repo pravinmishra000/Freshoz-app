@@ -24,6 +24,10 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'pulse-1-1', pack_size: '500 g', mrp: 70, price: 65, stock_qty: 50 },
+      { id: 'pulse-1-2', pack_size: '1 kg', mrp: 140, price: 130, stock_qty: 50 },
     ]
   },
   {
@@ -49,6 +53,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-2-1', pack_size: '1 kg', mrp: 110, price: 100, stock_qty: 90 },
     ]
   },
   {
@@ -74,6 +81,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-3-1', pack_size: '1 kg', mrp: 120, price: 115, stock_qty: 85 },
     ]
   },
   {
@@ -99,6 +109,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-4-1', pack_size: '1 kg', mrp: 100, price: 95, stock_qty: 80 },
     ]
   },
   {
@@ -124,6 +137,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-5-1', pack_size: '1 kg', mrp: 130, price: 120, stock_qty: 70 },
     ]
   },
   {
@@ -149,6 +165,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-6-1', pack_size: '1 kg', mrp: 150, price: 140, stock_qty: 65 },
     ]
   },
   {
@@ -174,6 +193,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-7-1', pack_size: '1 kg', mrp: 95, price: 90, stock_qty: 75 },
     ]
   },
   {
@@ -199,6 +221,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-8-1', pack_size: '1 kg', mrp: 110, price: 105, stock_qty: 60 },
     ]
   },
   {
@@ -224,6 +249,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-9-1', pack_size: '1 kg', mrp: 160, price: 150, stock_qty: 70 },
     ]
   },
   {
@@ -249,6 +277,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-10-1', pack_size: '1 kg', mrp: 140, price: 130, stock_qty: 55 },
     ]
   },
   {
@@ -274,6 +305,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-11-1', pack_size: '1 kg', mrp: 120, price: 115, stock_qty: 65 },
     ]
   },
   {
@@ -299,6 +333,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-12-1', pack_size: '1 kg', mrp: 90, price: 85, stock_qty: 70 },
     ]
   },
   {
@@ -324,6 +361,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-13-1', pack_size: '1 kg', mrp: 80, price: 75, stock_qty: 50 },
     ]
   },
   {
@@ -349,6 +389,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-14-1', pack_size: '1 kg', mrp: 85, price: 80, stock_qty: 60 },
     ]
   },
   {
@@ -374,6 +417,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-15-1', pack_size: '1 kg', mrp: 95, price: 90, stock_qty: 65 },
     ]
   },
   {
@@ -399,6 +445,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-16-1', pack_size: '1 kg', mrp: 125, price: 120, stock_qty: 60 },
     ]
   },
   {
@@ -424,6 +473,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-17-1', pack_size: '1 kg', mrp: 90, price: 85, stock_qty: 70 },
     ]
   },
   {
@@ -449,6 +501,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-18-1', pack_size: '1 kg', mrp: 80, price: 75, stock_qty: 55 },
     ]
   },
   {
@@ -474,6 +529,9 @@ export const PULSES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'pulse-19-1', pack_size: '1 kg', mrp: 85, price: 80, stock_qty: 60 },
     ]
   }
 ];

@@ -103,6 +103,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 25 }
+    ],
+    variants: [
+        { id: 'veg-4-1', pack_size: '1 piece (approx 500g)', mrp: 35, price: 30, stock_qty: 80 },
     ]
   },
   {
@@ -128,6 +131,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+        { id: 'veg-5-1', pack_size: '1 piece (approx 500g)', mrp: 20, price: 15, stock_qty: 60 },
     ]
   },
   {
@@ -153,6 +159,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+        { id: 'veg-6-1', pack_size: '500 g', mrp: 23, price: 20, stock_qty: 35 },
+        { id: 'veg-6-2', pack_size: '1 kg', mrp: 45, price: 40, stock_qty: 35 },
     ]
   },
   {
@@ -178,6 +188,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-7-1', pack_size: '500 g', mrp: 25, price: 23, stock_qty: 30 },
+      { id: 'veg-7-2', pack_size: '1 kg', mrp: 50, price: 45, stock_qty: 25 },
     ]
   },
   {
@@ -203,6 +217,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 30 },
       { warehouse_id: 'khagaria', stock: 20 }
+    ],
+    variants: [
+      { id: 'veg-8-1', pack_size: '1 bunch (approx 250g)', mrp: 25, price: 20, stock_qty: 90 },
     ]
   },
   {
@@ -228,6 +245,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-9-1', pack_size: '100 g', mrp: 25, price: 22, stock_qty: 25 },
+      { id: 'veg-9-2', pack_size: '250 g', mrp: 60, price: 55, stock_qty: 20 },
     ]
   },
   {
@@ -253,6 +274,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-10-1', pack_size: '500 g', mrp: 35, price: 33, stock_qty: 20 },
+      { id: 'veg-10-2', pack_size: '1 kg', mrp: 70, price: 65, stock_qty: 20 },
     ]
   },
   {
@@ -278,6 +303,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+      { id: 'veg-11-1', pack_size: '500 g', mrp: 20, price: 18, stock_qty: 35 },
+      { id: 'veg-11-2', pack_size: '1 kg', mrp: 40, price: 35, stock_qty: 30 },
     ]
   },
   {
@@ -303,6 +332,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-12-1', pack_size: '1 kg', mrp: 30, price: 25, stock_qty: 50 },
     ]
   },
   {
@@ -328,6 +360,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+      { id: 'veg-13-1', pack_size: '1 kg', mrp: 35, price: 30, stock_qty: 75 },
     ]
   },
   {
@@ -353,6 +388,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-14-1', pack_size: '1 piece (approx 1kg)', mrp: 25, price: 20, stock_qty: 60 },
     ]
   },
   {
@@ -378,6 +416,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+      { id: 'veg-15-1', pack_size: '1 kg', mrp: 45, price: 40, stock_qty: 35 },
     ]
   },
   {
@@ -403,6 +444,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 20 },
       { warehouse_id: 'bhagalpur', stock: 15 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-16-1', pack_size: '1 kg', mrp: 30, price: 25, stock_qty: 45 },
     ]
   },
   {
@@ -428,6 +472,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-17-1', pack_size: '1 kg', mrp: 55, price: 50, stock_qty: 40 },
     ]
   },
   {
@@ -453,6 +500,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 12 },
       { warehouse_id: 'bhagalpur', stock: 10 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+      { id: 'veg-18-1', pack_size: '1 kg', mrp: 65, price: 60, stock_qty: 30 },
     ]
   },
   {
@@ -478,6 +528,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 30 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+      { id: 'veg-19-1', pack_size: '1 bunch', mrp: 20, price: 15, stock_qty: 85 },
     ]
   },
   {
@@ -503,6 +556,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 15 }
+    ],
+    variants: [
+      { id: 'veg-20-1', pack_size: '1 bunch', mrp: 25, price: 20, stock_qty: 70 },
     ]
   },
   {
@@ -528,6 +584,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 35 },
       { warehouse_id: 'khagaria', stock: 20 }
+    ],
+    variants: [
+      { id: 'veg-21-1', pack_size: '4 pieces', mrp: 18, price: 15, stock_qty: 50 },
+      { id: 'veg-21-2', pack_size: '12 pieces', mrp: 50, price: 45, stock_qty: 45 },
     ]
   },
   {
@@ -553,6 +613,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 20 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'veg-22-1', pack_size: '250 g', mrp: 20, price: 19, stock_qty: 55 },
     ]
   },
   {
@@ -578,6 +641,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 25 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+       { id: 'veg-23-1', pack_size: '250 g', mrp: 18, price: 16, stock_qty: 65 },
     ]
   },
   {
@@ -603,6 +669,9 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 18 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 10 }
+    ],
+    variants: [
+      { id: 'veg-24-1', pack_size: '1 kg', mrp: 35, price: 30, stock_qty: 40 },
     ]
   },
   {
@@ -628,7 +697,11 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 15 },
       { warehouse_id: 'bhagalpur', stock: 12 },
       { warehouse_id: 'khagaria', stock: 8 }
+    ],
+    variants: [
+       { id: 'veg-25-1', pack_size: '1 bunch', mrp: 40, price: 35, stock_qty: 35 },
     ]
   }
 ];
+
 

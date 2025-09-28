@@ -24,6 +24,10 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 80 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'egg-1-1', pack_size: '6 pieces', mrp: 30, price: 28, stock_qty: 100 },
+      { id: 'egg-1-2', pack_size: '12 pieces', mrp: 60, price: 55, stock_qty: 100 },
     ]
   },
   {
@@ -49,6 +53,10 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'egg-2-1', pack_size: '6 pieces', mrp: 40, price: 38, stock_qty: 75 },
+      { id: 'egg-2-2', pack_size: '12 pieces', mrp: 80, price: 75, stock_qty: 75 },
     ]
   },
   {
@@ -74,6 +82,10 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 75 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'egg-3-1', pack_size: '12 pieces', mrp: 55, price: 50, stock_qty: 90 },
+      { id: 'egg-3-2', pack_size: '30 pieces (Tray)', mrp: 135, price: 125, stock_qty: 90 },
     ]
   },
   {
@@ -99,6 +111,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'egg-4-1', pack_size: '12 pieces', mrp: 70, price: 65, stock_qty: 120 },
     ]
   },
   {
@@ -124,6 +139,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'egg-5-1', pack_size: '30 pieces', mrp: 210, price: 200, stock_qty: 90 },
     ]
   },
   {
@@ -149,6 +167,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 70 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+      { id: 'egg-6-1', pack_size: '12 pieces', mrp: 50, price: 45, stock_qty: 160 },
     ]
   },
   {
@@ -174,6 +195,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+       { id: 'egg-7-1', pack_size: '12 pieces', mrp: 390, price: 370, stock_qty: 10 },
     ]
   },
   {
@@ -199,6 +223,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+       { id: 'egg-8-1', pack_size: '12 pieces', mrp: 100, price: 90, stock_qty: 70 },
     ]
   },
   {
@@ -224,6 +251,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+       { id: 'egg-9-1', pack_size: '30 pieces', mrp: 140, price: 130, stock_qty: 100 },
     ]
   }
 ];

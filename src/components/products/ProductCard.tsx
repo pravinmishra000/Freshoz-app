@@ -18,24 +18,29 @@ export function ProductCard({ product }: ProductCardProps) {
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const { toast } = useToast();
   
+  // Initialize with the first variant, or null if there are no variants
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    product.variants && product.variants.length > 0 ? product.variants[0] : null
+    (product.variants && product.variants.length > 0) ? product.variants[0] : null
   );
 
+  // Determine current display values based on selected variant or product defaults
   const currentPrice = selectedVariant?.price ?? product.price;
   const currentMrp = selectedVariant?.mrp ?? product.mrp;
   const currentPackSize = selectedVariant?.pack_size ?? product.pack_size;
   const currentVariantId = selectedVariant?.id ?? 'default';
 
+  // Create a unique ID for the cart item based on product and variant
   const cartItemId = `${product.id}-${currentVariantId}`;
   const itemInCart = cartItems.find(item => item.id === cartItemId);
 
   const handleAddToCart = () => {
+    // Only add to cart if there's a valid pack size
     if (!currentPackSize) return;
+
     addToCart({
       productId: product.id,
       variantId: currentVariantId,
-      id: cartItemId,
+      id: cartItemId, // Use the unique combined ID
       name: product.name_en,
       price: currentPrice,
       mrp: currentMrp,
@@ -59,10 +64,12 @@ export function ProductCard({ product }: ProductCardProps) {
     if (itemInCart && itemInCart.quantity > 1) {
       updateQuantity(cartItemId, itemInCart.quantity - 1);
     } else if (itemInCart) {
+      // If quantity is 1, remove it from the cart
       removeFromCart(cartItemId);
     }
   };
 
+  // Calculate discount percentage
   const discount = currentMrp > currentPrice 
     ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
     : 0;

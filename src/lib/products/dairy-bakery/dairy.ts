@@ -24,6 +24,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'milk-1-1', pack_size: '500 ml', mrp: 30, price: 28, stock_qty: 50 },
+        { id: 'milk-1-2', pack_size: '1 L', mrp: 60, price: 56, stock_qty: 50 },
     ]
   },
   {
@@ -49,6 +53,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 70 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'milk-2-1', pack_size: '500 ml', mrp: 28, price: 26, stock_qty: 100 },
+        { id: 'milk-2-2', pack_size: '1 L', mrp: 55, price: 52, stock_qty: 50 },
     ]
   },
   {
@@ -74,6 +82,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'curd-1-1', pack_size: '200 g', mrp: 22, price: 20, stock_qty: 40 },
+        { id: 'curd-1-2', pack_size: '400 g', mrp: 40, price: 38, stock_qty: 40 },
     ]
   },
   {
@@ -99,6 +111,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 45 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'curd-2-1', pack_size: '200 g', mrp: 23, price: 21, stock_qty: 45 },
+        { id: 'curd-2-2', pack_size: '400 g', mrp: 42, price: 40, stock_qty: 45 },
     ]
   },
   {
@@ -124,6 +140,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 30 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'paneer-1-1', pack_size: '200 g', mrp: 90, price: 85, stock_qty: 30 },
+        { id: 'paneer-1-2', pack_size: '500 g', mrp: 220, price: 210, stock_qty: 30 },
     ]
   },
   {
@@ -149,6 +169,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'butter-1-1', pack_size: '100 g', mrp: 55, price: 52, stock_qty: 60 },
+        { id: 'butter-1-2', pack_size: '500 g', mrp: 270, price: 260, stock_qty: 60 },
     ]
   },
   {
@@ -174,6 +198,9 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 35 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'butter-2-1', pack_size: '100 g', mrp: 60, price: 57, stock_qty: 70 },
     ]
   },
   {
@@ -199,6 +226,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 50 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'cheese-1-1', pack_size: '100 g', mrp: 75, price: 70, stock_qty: 50 },
+        { id: 'cheese-1-2', pack_size: '400 g', mrp: 140, price: 135, stock_qty: 50 },
     ]
   },
   {
@@ -224,6 +255,10 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'cheese-2-1', pack_size: '10 slices', mrp: 80, price: 75, stock_qty: 40 },
+        { id: 'cheese-2-2', pack_size: '20 slices', mrp: 150, price: 145, stock_qty: 40 },
     ]
   },
   {
@@ -249,6 +284,11 @@ export const DAIRY_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 25 },
       { warehouse_id: 'bhagalpur', stock: 0 },
       { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'ghee-1-1', pack_size: '200 ml', mrp: 110, price: 105, stock_qty: 25 },
+        { id: 'ghee-1-2', pack_size: '500 ml', mrp: 220, price: 210, stock_qty: 15 },
+        { id: 'ghee-1-3', pack_size: '1 L', mrp: 430, price: 410, stock_qty: 10 },
     ]
   }
 ];
