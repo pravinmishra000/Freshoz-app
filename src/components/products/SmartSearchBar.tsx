@@ -2,10 +2,12 @@
 'use client';
 
 import { useState, useTransition, useCallback } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Mic } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { generateSearchSuggestions } from '@/ai/flows/smart-search-suggestions';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 // Debounce function
 const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
@@ -23,6 +25,7 @@ export function SmartSearchBar() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isListening, setIsListening] = useState(false);
 
   const getSuggestions = useCallback(async (searchQuery: string) => {
     if (searchQuery.length < 2) {
@@ -57,6 +60,12 @@ export function SmartSearchBar() {
       console.log(`Searching for: ${query}`);
     }
   };
+  
+  const handleVoiceSearch = () => {
+      setIsListening(true);
+      // Placeholder for voice search logic
+      setTimeout(() => setIsListening(false), 3000);
+  }
 
   return (
     <div className="relative w-full">
@@ -66,10 +75,20 @@ export function SmartSearchBar() {
           <Input
             type="search"
             placeholder="Search grocery & vegetables..."
-            className="w-full rounded-full bg-background/80 py-2 pl-12 pr-4"
+            className="w-full rounded-full bg-background/80 py-2 pl-12 pr-12"
             value={query}
             onChange={handleInputChange}
           />
+          <Button 
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleVoiceSearch}
+            className={cn("absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full", isListening && "animate-pulse")}
+          >
+              <Mic className={cn("h-5 w-5", isListening ? "text-primary" : "text-muted-foreground")} />
+              <span className="sr-only">Search by voice</span>
+          </Button>
         </div>
       </form>
       {suggestions.length > 0 && (
