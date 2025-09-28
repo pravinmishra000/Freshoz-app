@@ -37,7 +37,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
             y="35"
             textAnchor="middle"
             fontFamily="var(--font-poppins), sans-serif"
-            fontSize="45"
+            fontSize="50"
             fontWeight="bold"
             fill="url(#logo-gradient)"
             className="font-headline uppercase"
