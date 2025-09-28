@@ -177,7 +177,7 @@ export const promotions: Promotion[] = [
     id: 'promo-1',
     title: 'Weekly Special',
     description: 'Get 20% off all organic berries!',
-    imageUrl: 'https://picsum.photos/seed/promo-berries/600/400',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-1.webp?alt=media&token=4c61242c-b096-49d4-af1d-742aa1dc7f25',
     imageHint: 'berries fruit',
   },
   {
