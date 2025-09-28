@@ -28,8 +28,8 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
         >
           <defs>
             <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))' }} />
-              <stop offset="100%" style={{ stopColor: 'hsl(var(--primary-glow))' }} />
+              <stop offset="0%" style={{ stopColor: 'hsl(var(--positive))' }} />
+              <stop offset="100%" style={{ stopColor: 'hsl(var(--positive))' }} />
             </linearGradient>
           </defs>
           <text
