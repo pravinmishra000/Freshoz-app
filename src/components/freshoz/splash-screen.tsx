@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
@@ -25,7 +26,7 @@ export default function SplashScreen() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8 }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center 
-                    bg-gradient-to-b from-green-500 to-white"
+                    bg-gradient-to-b from-green-50 to-white"
         >
           {/* Main content container with centering */}
           <div className="flex flex-col items-center justify-center w-full h-full">
@@ -34,10 +35,10 @@ export default function SplashScreen() {
               initial={{ scale: 0.9, opacity: 0.8 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut" }}
-              className="relative mb-4 p-6 rounded-2xl bg-gradient-to-b from-green-500 to-white"
+              className="relative mb-4"
             >
               <motion.div 
-                className="relative flex items-center justify-center w-32 h-32"
+                className="relative flex items-center justify-center w-32 h-32 bg-white rounded-full shadow-lg"
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
                 transition={{ 
@@ -46,10 +47,12 @@ export default function SplashScreen() {
                   delay: 0.3
                 }}
               >
-                <img 
-                  src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-all-size%2Flogo-transparent-128x128.png?alt=media&token=06ed7ff4-43d2-418b-9472-21d8ff33bab8" 
-                  alt="Freshoz Logo" 
-                  className="w-full h-full object-contain"
+                <Image 
+                  src="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-1800x1800-transparent.png?alt=media&token=c0768076-9cd1-4269-9b65-7ab12b48ea57"
+                  alt="Freshoz Logo"
+                  width={110}
+                  height={110}
+                  className="object-contain"
                 />
               </motion.div>
             </motion.div>
@@ -59,7 +62,7 @@ export default function SplashScreen() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-              className="text-5xl font-black text-center mb-3 text-primary tracking-tight uppercase"
+              className="text-5xl font-black text-center mb-3 text-positive tracking-tight uppercase"
             >
               FRESHOZ
             </motion.h1>
@@ -69,10 +72,10 @@ export default function SplashScreen() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-              className="text-2xl font-medium text-center mb-6 text-green-800 tracking-wide relative"
+              className="text-2xl font-medium text-center mb-6 text-primary/80 tracking-wide relative"
             >
               Fresh & Fast
-              <span className="absolute bottom-[-5px] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-800 to-transparent"></span>
+              <span className="absolute bottom-[-5px] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></span>
             </motion.p>
             
             {/* Progress bar */}
@@ -83,7 +86,7 @@ export default function SplashScreen() {
               className="w-64 h-1.5 bg-gray-200 rounded-full overflow-hidden mb-6"
             >
               <motion.div 
-                className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full"
+                className="h-full bg-gradient-to-r from-positive to-green-600 rounded-full"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 2.5, ease: "easeInOut", delay: 1 }}

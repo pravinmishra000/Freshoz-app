@@ -6,7 +6,7 @@ export default function PreHomeScreen() {
   return (
     <div className="flex flex-col min-h-screen vibrant-gradient">
       <header className="glass-app-bar sticky top-0 z-10 p-4">
-        <h1 className="text-center text-2xl font-bold text-primary uppercase">Freshoz</h1>
+        <h1 className="text-center text-2xl font-black text-positive uppercase">Freshoz</h1>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center p-4 text-center">
@@ -17,13 +17,13 @@ export default function PreHomeScreen() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-lg">
           <a href="tel:9097882555" className="glass-button flex flex-col items-center justify-center">
-            <Phone className="h-10 w-10 text-primary mb-3" />
-            <span>Call Us</span>
+            <Phone className="h-10 w-10 text-positive mb-3" />
+            <span className="text-primary font-semibold">Call Us</span>
           </a>
 
           <Link href="/products" className="glass-button flex flex-col items-center justify-center">
-            <ShoppingCart className="h-10 w-10 text-primary mb-3" />
-            <span>Shop Now</span>
+            <ShoppingCart className="h-10 w-10 text-positive mb-3" />
+            <span className="text-primary font-semibold">Shop Now</span>
           </Link>
         </div>
       </main>
