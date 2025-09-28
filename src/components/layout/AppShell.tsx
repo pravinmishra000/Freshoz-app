@@ -62,8 +62,8 @@ const adminNavItems = [
     { href: '/admin/orders', label: 'Orders Management', icon: Package },
     { href: '/admin/products', label: 'Products Management', icon: ShoppingCart },
     { href: '/admin/users', label: 'Users / Customers', icon: Users },
-    { href: '/admin/analytics', label: 'Analytics / Reports', icon: AreaChart },
-    { href: '/admin/settings', label: 'Settings', icon: Settings },
+    // { href: '/admin/analytics', label: 'Analytics / Reports', icon: AreaChart },
+    // { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -163,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       tooltip={item.label}
                     >
                       <item.icon />
-                      <span>{item.label}</span>
+                      <span className="text-white">{item.label}</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -177,7 +177,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       isActive={pathname.startsWith('/profile')}
                     >
                       <User />
-                      <span>Profile</span>
+                      <span className="text-white">Profile</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -191,7 +191,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                      <Link href="/admin/dashboard" passHref>
                         <SidebarMenuButton isActive={pathname.startsWith('/admin/dashboard')}>
                           <LayoutDashboard />
-                          <span>Admin Dashboard</span>
+                          <span className="text-white">Admin Dashboard</span>
                         </SidebarMenuButton>
                       </Link>
                   </SidebarMenuItem>
@@ -204,7 +204,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <SidebarMenuItem>
                     <SidebarMenuButton onClick={logout}>
                       <LogOut />
-                      <span>Logout</span>
+                      <span className="text-white">Logout</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </>
@@ -221,7 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center justify-center gap-2">
             {[
               { href: '/products', label: 'Home', icon: Home },
-              { href: '/categories', label: 'Categories', icon: Tag },
+              { href: '/offers', label: 'Offers', icon: Tag },
               { href: '/chat', label: 'Chat', icon: MessageSquare },
             ].map((item) => (
               <Link

@@ -120,7 +120,7 @@ export function ChatInterface() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-                placeholder="Ask about your order..."
+                placeholder={authUser ? "Ask about your order..." : "Please log in to use chat"}
                 className="pr-12"
                 disabled={isLoading || !authUser}
             />
@@ -135,7 +135,7 @@ export function ChatInterface() {
                 <span className="sr-only">Send</span>
             </Button>
             </div>
-             {!authUser && <p className="text-xs text-center text-muted-foreground mt-2">Please log in to chat with support.</p>}
+             {!authUser && <p className="text-xs text-center text-muted-foreground mt-2">Please log in to chat with support for personal queries.</p>}
         </div>
     </Card>
   );
