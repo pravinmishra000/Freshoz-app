@@ -31,12 +31,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
-        <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster />
-          </CartProvider>
-        </AuthProvider>
+        <div className="fixed inset-0 bg-gradient-to-r from-purple-200 via-pink-100 to-blue-200 filter blur-3xl opacity-40 z-0"></div>
+        <div className="relative z-10">
+          <AuthProvider>
+            <CartProvider>
+              {children}
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
+        </div>
       </body>
     </html>
   );
