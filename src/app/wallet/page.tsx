@@ -66,7 +66,7 @@ export default function WalletPage() {
                 <WalletIcon />
             </div>
 
-            <h1 className="text-4xl font-extrabold text-green-700 tracking-tighter uppercase">Freshoz MONEY</h1>
+            <h1 className="text-5xl font-extrabold text-green-700 tracking-tighter uppercase">Freshoz MONEY</h1>
             <p className="text-gray-600 mt-1">Your Digital Balance</p>
 
             <div className="mt-8 mb-10">
