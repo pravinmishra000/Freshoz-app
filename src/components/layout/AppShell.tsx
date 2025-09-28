@@ -54,12 +54,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center justify-between gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
            <div className="container mx-auto flex w-full items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="hidden lg:block">
+                <div className="lg:block">
                   <Link href="/" className="block">
                       <Logo />
                   </Link>
                 </div>
-                 <SidebarTrigger className="lg:hidden" />
               </div>
 
               <div className="flex items-center gap-2">
@@ -114,6 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     </Link>
                   </Button>
                 )}
+                <SidebarTrigger className="lg:hidden" />
               </div>
            </div>
            <div className="w-full px-2">
