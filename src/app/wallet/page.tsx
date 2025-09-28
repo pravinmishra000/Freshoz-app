@@ -58,7 +58,7 @@ export default function WalletPage() {
         {/* Main Content */}
         <div className="max-w-md mx-auto">
           {/* Wallet Header Card */}
-          <Card className="glass-card rounded-3xl border-2 border-white/30 backdrop-blur-lg mb-6">
+          <Card className="glass-card rounded-3xl mb-6">
             <CardHeader className="text-center pb-4">
               <div className="flex justify-center mb-3">
                 <div className="p-3 bg-gradient-to-r from-green-400 to-yellow-300 rounded-2xl">
@@ -75,7 +75,7 @@ export default function WalletPage() {
           </Card>
 
           {/* Balance Card */}
-          <Card className="glass-card rounded-3xl border-2 border-white/30 backdrop-blur-lg mb-6">
+          <Card className="glass-card rounded-3xl mb-6">
             <CardContent className="text-center p-6">
               <div className="flex items-center justify-center mb-2">
                 <IndianRupee className="w-6 h-6 text-white/80 mr-1" />
@@ -120,7 +120,7 @@ export default function WalletPage() {
           </div>
 
           {/* Quick Stats */}
-          <Card className="glass-card rounded-2xl border-2 border-white/20 backdrop-blur-lg mt-6">
+          <Card className="glass-card mt-6">
             <CardContent className="p-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
