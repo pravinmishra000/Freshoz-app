@@ -33,15 +33,12 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
         <SplashScreen />
-        <div className="fixed inset-0 bg-gradient-to-r from-purple-300 via-pink-200 to-blue-300 filter blur-2xl opacity-50 z-0"></div>
-        <div className="relative z-10">
-          <AuthProvider>
-            <CartProvider>
-              {children}
-              <Toaster />
-            </CartProvider>
-          </AuthProvider>
-        </div>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <Toaster />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
