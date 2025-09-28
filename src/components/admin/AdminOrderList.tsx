@@ -17,7 +17,7 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
   placed: { label: 'Placed', icon: Check, color: 'bg-blue-500' },
   preparing: { label: 'Preparing', icon: Package, color: 'bg-yellow-500' },
   'out for delivery': { label: 'Out for Delivery', icon: Bike, color: 'bg-orange-500' },
-  delivered: { label: 'Delivered', icon: Home, color: 'bg-primary' },
+  delivered: { label: 'Delivered', icon: Home, color: 'bg-[hsl(var(--positive))]' },
   cancelled: { label: 'Cancelled', icon: XCircle, color: 'bg-destructive' },
 };
 

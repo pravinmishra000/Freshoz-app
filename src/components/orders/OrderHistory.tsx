@@ -20,7 +20,7 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
     placed: { label: 'Placed', icon: Check, color: 'bg-blue-500' },
     preparing: { label: 'Preparing', icon: Package, color: 'bg-yellow-500' },
     'out for delivery': { label: 'Out for Delivery', icon: Bike, color: 'bg-orange-500' },
-    delivered: { label: 'Delivered', icon: Home, color: 'bg-primary' },
+    delivered: { label: 'Delivered', icon: Home, color: 'bg-[hsl(var(--positive))]' },
     cancelled: { label: 'Cancelled', icon: XCircle, color: 'bg-destructive' },
 };
 
@@ -40,13 +40,13 @@ function OrderItem({ order }: { order: Order }) {
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,
-                image: `https://picsum.photos/seed/${item.productId}/100/100` // Assuming image URL can be constructed
+                image: `https://picsum.photos/seed/${'${item.productId}'}/100/100` // Assuming image URL can be constructed
             };
             addToCart(cartItem);
         });
         toast({
             title: 'Items Added to Cart',
-            description: `All items from order #${order.id} have been added to your cart.`
+            description: `All items from order #${'${order.id}'} have been added to your cart.`
         });
     }
 
@@ -70,7 +70,7 @@ function OrderItem({ order }: { order: Order }) {
                 <div key={index} className="flex items-center justify-between py-2">
                     <div className="flex items-center gap-4">
                         <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                            <Image src={`https://picsum.photos/seed/${item.productId}/100/100`} alt={item.name} fill className="object-cover"/>
+                            <Image src={`https://picsum.photos/seed/${'${item.productId}'}/100/100`} alt={item.name} fill className="object-cover"/>
                         </div>
                         <div>
                             <p className="font-medium">{item.name}</p>
