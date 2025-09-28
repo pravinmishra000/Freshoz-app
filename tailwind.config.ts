@@ -72,6 +72,9 @@ const config = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+         positive: {
+          DEFAULT: 'hsl(var(--positive))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
