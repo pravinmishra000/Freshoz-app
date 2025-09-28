@@ -29,6 +29,9 @@ const otpSchema = z.object({
 type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
+const TEST_PHONE_NUMBER = '+919097882555';
+const TEST_OTP = '123456';
+
 export default function LoginPage() {
   const { signInWithPhoneNumber, confirmOtp } = useAuth();
   const router = useRouter();
@@ -52,13 +55,13 @@ export default function LoginPage() {
     setIsLoading(true);
     setPhoneNumber(data.phone);
     
-    if (isTestMode) {
-      // Simulate OTP sending in test mode
+    // Check for the specific test number OR if generic test mode is on
+    if (data.phone === TEST_PHONE_NUMBER || isTestMode) {
       setTimeout(() => {
         setConfirmationResult({}); // Set a mock confirmation result
         toast({
           title: 'Test OTP Sent',
-          description: `Enter the test OTP '123456'.`,
+          description: `Enter the test OTP '${TEST_OTP}'.`,
         });
         setIsLoading(false);
       }, 1000);
@@ -88,8 +91,10 @@ export default function LoginPage() {
   const onOtpSubmit: SubmitHandler<OtpFormValues> = async (data) => {
     setIsLoading(true);
 
-    if (isTestMode) {
-        if (data.otp === '123456') {
+    const isSpecificTestNumber = phoneNumber === TEST_PHONE_NUMBER;
+
+    if (isSpecificTestNumber || isTestMode) {
+        if (data.otp === TEST_OTP) {
             setTimeout(() => {
                 toast({
                     title: 'Test Login Successful',
@@ -102,7 +107,7 @@ export default function LoginPage() {
             toast({
                 variant: 'destructive',
                 title: 'Login Failed',
-                description: "Invalid test OTP. Please use '123456'.",
+                description: `Invalid test OTP. Please use '${TEST_OTP}'.`,
             });
             setIsLoading(false);
         }
@@ -173,7 +178,7 @@ export default function LoginPage() {
               <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
                  <p className="text-sm text-center text-muted-foreground">
                     Enter the 6-digit code sent to {phoneNumber}.
-                    {isTestMode && <span className="font-bold text-primary block">(Test OTP is 123456)</span>}
+                    {(isTestMode || phoneNumber === TEST_PHONE_NUMBER) && <span className="font-bold text-primary block">(Test OTP is {TEST_OTP})</span>}
                 </p>
                 <FormField
                   control={otpForm.control}
