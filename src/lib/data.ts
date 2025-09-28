@@ -184,7 +184,7 @@ export const promotions: Promotion[] = [
     id: 'promo-2',
     title: 'Bakery Bonanza',
     description: 'Buy one, get one free on all sourdough bread.',
-    imageUrl: 'https://picsum.photos/seed/promo-bread/600/400',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-2.webp?alt=media&token=e87d815b-fd88-4150-bf65-afdc825c1a44',
     imageHint: 'fresh bread',
   },
   {
@@ -239,5 +239,7 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
+
+    
 
     
