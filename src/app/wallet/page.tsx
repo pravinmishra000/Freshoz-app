@@ -4,9 +4,32 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BackButton } from '@/components/freshoz/BackButton';
-import { Wallet, Plus, History, RefreshCw, IndianRupee, Sparkles } from 'lucide-react';
+import { History, Plus, RefreshCw, IndianRupee, Settings } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+
+const WalletIcon = () => (
+    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="rotate(-15 50 50)">
+            <path d="M10 40C10 34.4772 14.4772 30 20 30H80C85.5228 30 90 34.4772 90 40V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V40Z" fill="url(#wallet_gold_gradient)"/>
+            <path d="M10 45C10 39.4772 14.4772 35 20 35H90V70C90 75.5228 85.5228 80 80 80H20C14.4772 80 10 75.5228 10 70V45Z" fill="url(#wallet_green_gradient)"/>
+            <text x="50" y="62" textAnchor="middle" fontSize="30" fill="white" fontWeight="bold">₹</text>
+        </g>
+        <defs>
+            <linearGradient id="wallet_gold_gradient" x1="50" y1="30" x2="50" y2="80" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#FDE047"/>
+                <stop offset="1" stopColor="#FBBF24"/>
+            </linearGradient>
+            <linearGradient id="wallet_green_gradient" x1="50" y1="35" x2="50" y2="80" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#16A34A"/>
+                <stop offset="1" stopColor="#15803D"/>
+            </linearGradient>
+        </defs>
+    </svg>
+);
+
 
 export default function WalletPage() {
   const router = useRouter();
@@ -14,131 +37,93 @@ export default function WalletPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    // Mock balance
     setBalance(1250.75);
   }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    // Simulate a network request
     await new Promise(resolve => setTimeout(resolve, 800));
+    // You might fetch the new balance here
     setIsRefreshing(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-yellow-50 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute top-10 left-10 w-72 h-72 bg-green-200/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-background/10 rounded-full blur-2xl"></div>
-
-      {/* Sparkles Effect */}
-      <div className="absolute top-20 right-20 animate-bounce">
-        <Sparkles className="w-6 h-6 text-yellow-400" />
-      </div>
-      <div className="absolute bottom-20 left-20 animate-bounce delay-300">
-        <Sparkles className="w-4 h-4 text-primary" />
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-b from-yellow-300 via-yellow-200 to-yellow-50">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <BackButton />
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="glass-card rounded-2xl border-2 border-primary/20 text-primary p-3 hover:bg-primary/10 transition-all duration-300"
-            >
-              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </Button>
+             <Button variant="ghost" size="icon" className="text-gray-700 hover:bg-black/10 rounded-full">
+                <Settings className="w-6 h-6" />
+             </Button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-md mx-auto">
-          {/* Wallet Header Card */}
-          <Card className="glass-card rounded-3xl mb-6">
-            <CardHeader className="text-center pb-4">
-              <div className="flex justify-center mb-3">
-                <div className="p-3 bg-gradient-to-r from-green-400 to-yellow-300 rounded-2xl">
-                  <Wallet className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <CardTitle className="text-2xl font-bold text-primary uppercase">
-                Freshoz Wallet
-              </CardTitle>
-              <CardDescription className="text-primary/80 text-base">
-                Your Digital Balance
-              </CardDescription>
-            </CardHeader>
-          </Card>
+        <div className="max-w-md mx-auto text-center">
 
-          {/* Balance Card */}
-          <Card className="glass-card rounded-3xl mb-6">
-            <CardContent className="text-center p-6">
-              <div className="flex items-center justify-center mb-2">
-                <IndianRupee className="w-6 h-6 text-primary/80 mr-1" />
-                <span className="text-primary/80 text-lg">Current Balance</span>
-              </div>
-              <div className="text-5xl font-bold text-primary mb-2 drop-shadow-lg">
-                ₹{balance.toLocaleString()}
-              </div>
-              <div className="text-green-600 text-sm font-medium">
-                💫 Ready to use instantly
-              </div>
-            </CardContent>
-          </Card>
+            <div className="flex justify-center mb-4">
+                <WalletIcon />
+            </div>
 
-          {/* Actions Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Add Money Button */}
-            <Button
-              onClick={() => router.push('/wallet/add-money')}
-              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-green-500/40 h-24 hover:scale-105 transition-all duration-300 group"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <div className="p-2 bg-green-500/20 rounded-full group-hover:bg-green-500/30 transition-colors">
-                  <Plus className="w-6 h-6 text-green-700" />
-                </div>
-                <span className="font-semibold text-sm">Add Money</span>
-              </div>
+            <h1 className="text-4xl font-extrabold text-gray-800 tracking-tighter uppercase">Freshoz MONEY</h1>
+            <p className="text-gray-600 mt-1">Your Digital Balance</p>
+
+            <div className="mt-8 mb-10">
+                 <p className="text-gray-600 text-lg">Current Balance</p>
+                 <p className="text-6xl font-bold text-gray-800 mt-1">
+                    <span className="font-sans">₹</span>{balance.toLocaleString('en-IN')}
+                 </p>
+            </div>
+            
+            <div className="space-y-4">
+                <Card 
+                    className="bg-white/70 backdrop-blur-sm border-gray-200/50 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => router.push('/wallet/add-money')}
+                >
+                    <CardContent className="p-5 flex items-center gap-5">
+                        <div className="bg-green-100 p-3 rounded-xl">
+                            <Plus className="w-6 h-6 text-green-700"/>
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-bold text-lg text-gray-800">Add Money</h3>
+                            <p className="text-gray-600 text-sm">Instantly top up your wallet balance.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                 <Card 
+                    className="bg-white/70 backdrop-blur-sm border-gray-200/50 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => router.push('/wallet/transactions')}
+                >
+                    <CardContent className="p-5 flex items-center gap-5">
+                        <div className="bg-blue-100 p-3 rounded-xl">
+                            <History className="w-6 h-6 text-blue-700"/>
+                        </div>
+                        <div className="text-left">
+                            <h3 className="font-bold text-lg text-gray-800">Transaction History</h3>
+                            <p className="text-gray-600 text-sm">View all your past transactions.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+
+             <Button
+                variant="ghost"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="mt-8 text-gray-600"
+              >
+                <RefreshCw className={cn("w-4 h-4 mr-2", isRefreshing && 'animate-spin')} />
+                Refresh Balance
             </Button>
-
-            {/* Transactions Button */}
-            <Button
-              onClick={() => router.push('/wallet/transactions')}
-              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-green-500/40 h-24 hover:scale-105 transition-all duration-300 group"
-            >
-              <div className="flex flex-col items-center gap-2">
-                <div className="p-2 bg-yellow-500/20 rounded-full group-hover:bg-yellow-500/30 transition-colors">
-                  <History className="w-6 h-6 text-yellow-700" />
-                </div>
-                <span className="font-semibold text-sm">Transactions</span>
-              </div>
-            </Button>
-          </div>
-
-          {/* Quick Stats */}
-          <Card className="glass-card mt-6">
-            <CardContent className="p-4">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <div className="text-primary font-bold text-lg">5</div>
-                  <div className="text-primary/60 text-xs">Transactions</div>
-                </div>
-                <div>
-                  <div className="text-primary font-bold text-lg">₹500</div>
-                  <div className="text-primary/60 text-xs">Avg. Spend</div>
-                </div>
-                <div>
-                  <div className="text-primary font-bold text-lg">30d</div>
-                  <div className="text-primary/60 text-xs">Active</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
   );
 }
+
