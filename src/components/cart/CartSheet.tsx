@@ -19,23 +19,35 @@ import Image from 'next/image';
 import { Input } from '../ui/input';
 import { useAuth } from '@/lib/firebase/auth-context';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export function CartSheet() {
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart } = useCart();
   const { authUser } = useAuth();
+  const pathname = usePathname();
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative glass-icon-button">
-          <ShoppingCart className="h-5 w-5 text-primary" />
+        <button
+          className={cn(
+            'relative glass-icon-button', // Base style for desktop
+            'md:flex',
+            'md:h-10 md:w-10',
+            // Mobile-specific styles (from bottom nav)
+            'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors md:relative md:glass-icon-button',
+            'text-muted-foreground hover:bg-accent/50'
+          )}
+        >
+          <ShoppingCart className="h-5 w-5 md:text-primary" />
           {cartCount > 0 && (
             <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
               {cartCount}
             </span>
           )}
           <span className="sr-only">Open Cart</span>
-        </Button>
+        </button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col sm:max-w-lg glass-card">
         <SheetHeader>

@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, LogOut, LogIn, UserCog, LayoutDashboard, ShoppingBag, Package, User } from 'lucide-react';
+import { Home, MessageSquare, LogOut, User, LayoutDashboard, UserCog, Package, LayoutGrid, ShoppingCart } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -37,6 +37,12 @@ const navItems = [
   { href: '/orders', label: 'Orders', icon: Package },
   { href: '/chat', label: 'Support', icon: MessageSquare },
   { href: '/login', label: 'Profile', icon: User },
+];
+
+const bottomNavItems = [
+  { href: '/products', label: 'Home', icon: Home },
+  { href: '/categories', label: 'Categories', icon: LayoutGrid },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -142,12 +148,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarContent>
         </Sidebar>
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto pb-24 md:pb-0">{children}</main>
 
         {/* Mobile Bottom Navigation */}
         <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
           <div className="flex items-center justify-center gap-2">
-            {navItems.map((item) => (
+            {bottomNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -162,6 +168,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="sr-only">{item.label}</span>
               </Link>
             ))}
+             <CartSheet />
           </div>
         </nav>
       </div>
