@@ -1,13 +1,15 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { BackButton } from '@/components/freshoz/BackButton';
 import { History, Plus, RefreshCw, IndianRupee, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/lib/firebase/auth-context';
+import { getWalletBalance } from '@/services/firestoreService';
 
 
 const WalletIcon = () => (
@@ -30,20 +32,25 @@ const WalletIcon = () => (
 
 export default function WalletPage() {
   const router = useRouter();
+  const { authUser } = useAuth();
   const [balance, setBalance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const fetchBalance = useCallback(async () => {
+    if (authUser) {
+      setIsRefreshing(true);
+      const bal = await getWalletBalance(authUser.uid);
+      setBalance(bal);
+      setIsRefreshing(false);
+    }
+  }, [authUser]);
+
   useEffect(() => {
-    // Mock balance
-    setBalance(1250.75);
-  }, []);
+    fetchBalance();
+  }, [fetchBalance]);
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    // Simulate a network request
-    await new Promise(resolve => setTimeout(resolve, 800));
-    // You might fetch the new balance here
-    setIsRefreshing(false);
+    await fetchBalance();
   };
 
   return (

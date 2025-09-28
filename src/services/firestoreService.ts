@@ -86,6 +86,21 @@ export async function getUser(userId: string): Promise<User | null> {
 }
 
 /**
+ * Get wallet balance for a user
+ */
+export async function getWalletBalance(userId: string): Promise<number> {
+  const userRef = doc(db, 'users', userId);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    const userData = userSnap.data();
+    // Assuming the balance is stored in a field named 'balance' or 'walletBalance'
+    return userData.balance ?? userData.walletBalance ?? 0;
+  }
+  return 0;
+}
+
+
+/**
  * Update an order
  */
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
