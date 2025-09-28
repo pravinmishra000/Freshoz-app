@@ -6,7 +6,7 @@ import type { CartItem } from '@/lib/types';
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems, isLoaded]);
 
-  const addToCart = useCallback((itemToAdd: CartItem) => {
+  const addToCart = useCallback((itemToAdd: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === itemToAdd.id);
       if (existingItem) {

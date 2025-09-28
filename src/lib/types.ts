@@ -45,7 +45,7 @@ export interface MenuSection {
 
 // ✅ Legal section for footer or policy links
 export interface LegalItem {
-  label: string;
+  label:string;
   href: string;
 }
 
@@ -125,25 +125,34 @@ export interface Review {
   date?: string;
 }
 
+export interface ProductVariant {
+    id: string;
+    pack_size: string;
+    price: number;
+    mrp: number;
+    stock_qty: number;
+}
+
 export interface Product {
     id: string;
     name_en: string;
     name_hi?: string;
     description?: string;
-    image: string; // Changed from optional
+    image: string;
     images?: string[];
     imageHint: string;
     slug?: string;
     category_slug?: string;
     subCategory_slug?: string;
-    pack_size?: string;
-    price: number;
-    mrp: number;
+    price: number; // Default price
+    mrp: number; // Default MRP
+    pack_size?: string; // Default pack size
+    variants?: ProductVariant[];
     category?: string;
     category_id?: string;
     tags?: string[];
     brand: string;
-    stock_qty: number; // Changed from stock
+    stock_qty: number;
     inStock?: boolean;
     weight?: string;
     delivery_mode?: 'ecom' | 'quick' | 'standard';
@@ -170,7 +179,9 @@ export interface Promotion {
 
 // ✅ ADDED: CartItem interface for shopping cart
 export interface CartItem {
-  id: string;
+  id: string; // This should be a combination of product id and variant id, e.g., "prod1-var2"
+  productId: string;
+  variantId: string;
   name: string;
   price: number;
   mrp?: number;

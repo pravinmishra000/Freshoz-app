@@ -12,9 +12,6 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     price: 35,
     stock_qty: 100,
     unit: 'kg',
-    pack_size: '1 kg',
-    is_veg: true,
-    delivery_mode: 'quick',
     image: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fvegetables%2Fproducts%2Ftomato.webp?alt=media&token=8b5bae88-9422-485c-bdb8-f47364321f95',
     imageHint: 'fresh tomatoes',
     tags: ['vegetable', 'tomato', 'fresh', 'local'],
@@ -24,6 +21,11 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 40 },
       { warehouse_id: 'bhagalpur', stock: 35 },
       { warehouse_id: 'khagaria', stock: 25 }
+    ],
+    variants: [
+        { id: 'veg-1-1', pack_size: '250 g', mrp: 10, price: 9, stock_qty: 100 },
+        { id: 'veg-1-2', pack_size: '500 g', mrp: 20, price: 18, stock_qty: 50 },
+        { id: 'veg-1-3', pack_size: '1 kg', mrp: 40, price: 35, stock_qty: 30 },
     ]
   },
   {
@@ -37,9 +39,6 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     price: 20,
     stock_qty: 200,
     unit: 'kg',
-    pack_size: '1 kg',
-    is_veg: true,
-    delivery_mode: 'quick',
     image: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fvegetables%2Fproducts%2Fpotato.webp?alt=media&token=09d9dec8-44ed-417a-8bad-cbd5d1bd4f7c',
     imageHint: 'fresh potatoes',
     tags: ['vegetable', 'potato', 'staple', 'fresh'],
@@ -49,6 +48,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 80 },
       { warehouse_id: 'bhagalpur', stock: 70 },
       { warehouse_id: 'khagaria', stock: 50 }
+    ],
+    variants: [
+        { id: 'veg-2-1', pack_size: '1 kg', mrp: 25, price: 20, stock_qty: 100 },
+        { id: 'veg-2-2', pack_size: '5 kg', mrp: 125, price: 95, stock_qty: 20 },
     ]
   },
   {
@@ -62,9 +65,6 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     price: 25,
     stock_qty: 150,
     unit: 'kg',
-    pack_size: '1 kg',
-    is_veg: true,
-    delivery_mode: 'quick',
     image: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fvegetables%2Fproducts%2Fonion.webp?alt=media&token=76cbca61-7b3a-477e-9ad7-67bfdddea852',
     imageHint: 'fresh onions',
     tags: ['vegetable', 'onion', 'essential', 'fresh'],
@@ -74,6 +74,10 @@ export const VEGETABLES_PRODUCTS: Product[] = [
       { warehouse_id: 'sultanganj', stock: 60 },
       { warehouse_id: 'bhagalpur', stock: 50 },
       { warehouse_id: 'khagaria', stock: 40 }
+    ],
+    variants: [
+        { id: 'veg-3-1', pack_size: '500 g', mrp: 15, price: 13, stock_qty: 80 },
+        { id: 'veg-3-2', pack_size: '1 kg', mrp: 30, price: 25, stock_qty: 70 },
     ]
   },
   {
@@ -627,3 +631,4 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     ]
   }
 ];
+
