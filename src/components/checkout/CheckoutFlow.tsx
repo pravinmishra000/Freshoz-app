@@ -107,7 +107,7 @@ export function CheckoutFlow() {
 
   if (cartItems.length === 0 && !isLoading) {
     return (
-        <Card className="glass-card text-center hover:scale-105">
+        <Card className="glass-card text-center">
             <CardContent className="p-10">
                 <h3 className="font-headline text-xl font-semibold">Your cart is empty!</h3>
                 <p className="text-muted-foreground mt-2">Add some items to your cart before you can checkout.</p>
@@ -122,7 +122,7 @@ export function CheckoutFlow() {
       <div className="md:col-span-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Card className="glass-card hover:scale-105">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Shipping Address</CardTitle>
               </CardHeader>
@@ -174,7 +174,7 @@ export function CheckoutFlow() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:scale-105">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Payment Method</CardTitle>
               </CardHeader>
@@ -208,7 +208,7 @@ export function CheckoutFlow() {
       </div>
 
       <div className="md:col-span-1">
-        <Card className="glass-card sticky top-24 hover:scale-105">
+        <Card className="glass-card sticky top-24">
           <CardHeader>
             <CardTitle className="font-headline text-xl">Order Summary</CardTitle>
           </CardHeader>

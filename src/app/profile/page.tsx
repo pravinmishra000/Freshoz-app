@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { User, MapPin, LogOut } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
+import React from 'react';
 
 // This is a placeholder page. In a real application, you would fetch user data.
 

@@ -16,7 +16,8 @@ import {
   Users,
   AreaChart,
   Settings,
-  ShoppingCart
+  ShoppingCart,
+  Menu
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -52,7 +53,6 @@ const customerNavItems = [
   { href: '/orders', label: 'My Orders', icon: Package },
   { href: '/offers', label: 'Offers & Discounts', icon: Tag },
   { href: '/wallet', label: 'Wallet', icon: Wallet },
-  { href: '/profile', label: 'Profile', icon: User },
   { href: '/chat', label: 'Help & Support', icon: MessageSquare },
 ];
 
@@ -168,6 +168,35 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </Link>
                 </SidebarMenuItem>
               ))}
+               {authUser && (
+                <>
+                <SidebarSeparator/>
+                 <SidebarMenuItem>
+                  <Link href="/profile" passHref>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith('/profile')}
+                    >
+                      <User />
+                      <span>Profile</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                </>
+               )}
+
+              {isAdmin && (
+                <>
+                  <SidebarSeparator />
+                  <SidebarMenuItem>
+                     <Link href="/admin/dashboard" passHref>
+                        <SidebarMenuButton isActive={pathname.startsWith('/admin/dashboard')}>
+                          <LayoutDashboard />
+                          <span>Admin Dashboard</span>
+                        </SidebarMenuButton>
+                      </Link>
+                  </SidebarMenuItem>
+                </>
+              )}
 
               {authUser && (
                 <>

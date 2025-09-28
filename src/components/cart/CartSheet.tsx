@@ -32,17 +32,16 @@ export function CartSheet() {
       <SheetTrigger asChild>
         <button
           className={cn(
-            'relative glass-icon-button', // Base style for desktop
-            'md:flex',
-            'md:h-10 md:w-10',
-            // Mobile-specific styles (from bottom nav)
-            'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors md:relative md:glass-icon-button',
-            'text-muted-foreground hover:bg-accent/50'
+            'relative',
+            'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
+            pathname.startsWith('/cart')
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-accent/50'
           )}
         >
-          <ShoppingCart className="h-5 w-5 md:text-primary" />
+          <ShoppingCart className="h-5 w-5" />
           {cartCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
               {cartCount}
             </span>
           )}
