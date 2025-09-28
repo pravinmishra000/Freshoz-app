@@ -191,7 +191,7 @@ export const promotions: Promotion[] = [
     id: 'promo-3',
     title: 'Veggie Power',
     description: 'Save ₹400 when you spend ₹2000 on fresh vegetables.',
-    imageUrl: 'https://picsum.photos/seed/promo-veggies/600/400',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-3.webp?alt=media&token=2caedabd-2071-4474-ac15-28143980a111',
     imageHint: 'vegetables variety',
   },
 ];
