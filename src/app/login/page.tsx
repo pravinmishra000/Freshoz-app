@@ -95,7 +95,7 @@ export default function LoginPage() {
                     title: 'Test Login Successful',
                     description: "Welcome, Demo User!",
                 });
-                router.push('/');
+                router.push('/products');
                 setIsLoading(false);
             }, 1000);
         } else {
@@ -120,7 +120,7 @@ export default function LoginPage() {
         title: 'Login Successful',
         description: "Welcome!",
       });
-      router.push('/');
+      router.push('/products');
     } catch (error: any) {
       toast({
         variant: 'destructive',
