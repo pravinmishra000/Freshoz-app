@@ -4,7 +4,20 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LogOut, User, LayoutDashboard, UserCog, Package, LayoutGrid, MessageSquare, Wallet } from 'lucide-react';
+import { 
+  Home, 
+  LogOut, 
+  User, 
+  LayoutDashboard, 
+  Package, 
+  MessageSquare, 
+  Wallet,
+  Tag,
+  Users,
+  AreaChart,
+  Settings,
+  ShoppingCart
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
@@ -30,24 +43,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { CartSheet } from '@/components/cart/CartSheet';
+import { CartSheet } from '../cart/CartSheet';
 import { SmartSearchBar } from '../products/SmartSearchBar';
 
-const navItems = [
-  { href: '/products', label: 'Products', icon: Package },
-  { href: '/orders', label: 'Orders', icon: Package },
-  { href: '/chat', label: 'Support', icon: MessageSquare },
+// Customer navigation items
+const customerNavItems = [
+  { href: '/products', label: 'Home / Shop', icon: Home },
+  { href: '/orders', label: 'My Orders', icon: Package },
+  { href: '/offers', label: 'Offers & Discounts', icon: Tag },
+  { href: '/wallet', label: 'Wallet', icon: Wallet },
+  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/chat', label: 'Help & Support', icon: MessageSquare },
 ];
 
-const bottomNavItems = [
-  { href: '/products', label: 'Home', icon: Home },
-  { href: '/categories', label: 'Categories', icon: LayoutGrid },
-  { href: '/chat', label: 'Chat', icon: MessageSquare },
-];
+// Admin navigation items
+const adminNavItems = [
+    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/orders', label: 'Orders Management', icon: Package },
+    { href: '/admin/products', label: 'Products Management', icon: ShoppingCart },
+    { href: '/admin/users', label: 'Users / Customers', icon: Users },
+    { href: '/admin/analytics', label: 'Analytics / Reports', icon: AreaChart },
+    { href: '/admin/settings', label: 'Settings', icon: Settings },
+]
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { authUser, appUser, loading, logout } = useAuth();
+  
+  const isAdmin = appUser?.role === 'admin';
+  const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (
     <SidebarProvider>
@@ -84,7 +108,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      {appUser?.role === 'admin' && (
+                        <DropdownMenuItem asChild>
+                           <Link href="/profile">
+                              <User className="mr-2 h-4 w-4" />
+                              <span>Profile</span>
+                            </Link>
+                        </DropdownMenuItem>
+                       {isAdmin && (
                         <>
                           <DropdownMenuItem asChild>
                             <Link href="/admin/dashboard">
@@ -92,17 +122,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                               <span>Dashboard</span>
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href="/admin/orders">
-                              <UserCog className="mr-2 h-4 w-4" />
-                              <span>Manage Orders</span>
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
                         </>
                       )}
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Settings</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={logout}>
                         <LogOut className="mr-2 h-4 w-4" />
@@ -151,36 +172,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {authUser && (
                 <>
                   <SidebarSeparator />
-                  {appUser?.role === 'admin' && (
-                    <>
-                       <SidebarMenuItem>
-                        <Link href="/admin/dashboard" passHref>
-                          <SidebarMenuButton isActive={pathname.startsWith('/admin/dashboard')}>
-                            <LayoutDashboard />
-                            <span>Dashboard</span>
-                          </SidebarMenuButton>
-                        </Link>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <Link href="/admin/orders" passHref>
-                          <SidebarMenuButton isActive={pathname.startsWith('/admin/orders')}>
-                            <UserCog />
-                            <span>Manage Orders</span>
-                          </SidebarMenuButton>
-                        </Link>
-                      </SidebarMenuItem>
-                       <SidebarSeparator />
-                    </>
-                  )}
                   <SidebarMenuItem>
-                    <Link href="/profile" passHref>
-                      <SidebarMenuButton isActive={pathname.startsWith('/profile')}>
-                        <User />
-                        <span>Profile</span>
-                      </SidebarMenuButton>
-                    </Link>
-                  </SidebarMenuItem>
-                   <SidebarMenuItem>
                     <SidebarMenuButton onClick={logout}>
                       <LogOut />
                       <span>Logout</span>
@@ -198,7 +190,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Mobile Bottom Navigation */}
         <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
           <div className="flex items-center justify-center gap-2">
-            {bottomNavItems.map((item) => (
+            {[
+              { href: '/products', label: 'Home', icon: Home },
+              { href: '/categories', label: 'Categories', icon: Tag },
+              { href: '/chat', label: 'Chat', icon: MessageSquare },
+            ].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
