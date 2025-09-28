@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, CreditCard, Smartphone, Eye, EyeOff, Shield, Zap, Wallet } from 'lucide-react';
+import { ChevronLeft, CreditCard, Smartphone, Eye, EyeOff, Shield, Zap, Wallet, CheckCircle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const quickAmounts = [100, 200, 500, 1000, 2000, 5000];
 
@@ -25,6 +26,37 @@ export default function AddMoneyPage() {
   });
   const [upiId, setUpiId] = useState('');
   const [showCvv, setShowCvv] = useState(false);
+  const [isUpiVerified, setIsUpiVerified] = useState(false);
+  const [isVerifyingUpi, setIsVerifyingUpi] = useState(false);
+  const [upiError, setUpiError] = useState('');
+
+
+  const handleUpiIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpiId(e.target.value);
+    setIsUpiVerified(false);
+    setUpiError('');
+  };
+
+  const handleVerifyUpi = async () => {
+    if (!upiId || !upiId.includes('@')) {
+      setUpiError('Please enter a valid UPI ID (e.g., yourname@okbank).');
+      return;
+    }
+    setIsVerifyingUpi(true);
+    setUpiError('');
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+    
+    // Mock verification logic
+    if (upiId.length > 5) {
+      setIsUpiVerified(true);
+      setUpiError('');
+    } else {
+      setIsUpiVerified(false);
+      setUpiError('Could not verify UPI ID. Please check and try again.');
+    }
+    setIsVerifyingUpi(false);
+  };
+
 
   const handleAddMoney = async () => {
     if (!amount || parseFloat(amount) <= 0) {
@@ -44,9 +76,15 @@ export default function AddMoneyPage() {
       }
     }
 
-    if (paymentMethod === 'upi' && !upiId) {
-      alert("Please enter UPI ID");
-      return;
+    if (paymentMethod === 'upi') {
+      if(!upiId){
+        alert("Please enter UPI ID");
+        return;
+      }
+      if(!isUpiVerified) {
+        alert("Please verify your UPI ID before proceeding.");
+        return;
+      }
     }
 
     setIsProcessing(true);
@@ -292,18 +330,43 @@ export default function AddMoneyPage() {
                   <Label htmlFor="upiId" className="text-sm font-medium text-gray-700">
                     UPI ID
                   </Label>
-                  <Input
-                    id="upiId"
-                    placeholder="yourname@upi"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-gray-600 mt-2">
-                    Enter your UPI ID or we'll redirect you to your UPI app
-                  </p>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      id="upiId"
+                      placeholder="yourname@upi"
+                      value={upiId}
+                      onChange={handleUpiIdChange}
+                      disabled={isUpiVerified || isVerifyingUpi}
+                    />
+                    {!isUpiVerified && (
+                      <Button
+                        onClick={handleVerifyUpi}
+                        disabled={isVerifyingUpi || !upiId}
+                        className="w-28"
+                      >
+                        {isVerifyingUpi ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          'Verify'
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                  {isUpiVerified && (
+                    <div className="mt-2 text-sm flex items-center text-green-600">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      <span>Verified! You can now proceed to pay.</span>
+                    </div>
+                  )}
+                   {upiError && (
+                    <div className="mt-2 text-sm flex items-center text-red-600">
+                      <XCircle className="h-4 w-4 mr-1" />
+                      <span>{upiError}</span>
+                    </div>
+                  )}
                 </div>
               )}
+
 
               {paymentMethod === 'netbanking' && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
@@ -332,7 +395,7 @@ export default function AddMoneyPage() {
           <Button 
             onClick={handleAddMoney}
             className="w-full h-14 bg-gradient-to-r from-green-600 to-yellow-500 hover:from-green-700 hover:to-yellow-600 text-white text-lg rounded-xl shadow-lg font-semibold transition-all duration-200"
-            disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
+            disabled={!amount || parseFloat(amount) <= 0 || isProcessing || (paymentMethod === 'upi' && !isUpiVerified)}
           >
             {isProcessing ? (
               <div className="flex items-center space-x-2">
