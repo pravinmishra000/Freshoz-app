@@ -95,26 +95,26 @@ export default function WalletPage() {
             {/* Add Money Button */}
             <Button 
               onClick={() => router.push('/wallet/add-money')}
-              className="glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
+              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
             >
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2 bg-green-500/20 rounded-full group-hover:bg-green-500/30 transition-colors">
-                  <Plus className="w-6 h-6 text-white" />
+                  <Plus className="w-6 h-6 text-green-700" />
                 </div>
-                <span className="text-white font-semibold text-sm">Add Money</span>
+                <span className="font-semibold text-sm">Add Money</span>
               </div>
             </Button>
 
             {/* Transactions Button */}
             <Button 
               onClick={() => router.push('/wallet/transactions')}
-              className="glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
+              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
             >
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2 bg-yellow-500/20 rounded-full group-hover:bg-yellow-500/30 transition-colors">
-                  <History className="w-6 h-6 text-white" />
+                  <History className="w-6 h-6 text-yellow-700" />
                 </div>
-                <span className="text-white font-semibold text-sm">Transactions</span>
+                <span className="font-semibold text-sm">Transactions</span>
               </div>
             </Button>
           </div>
