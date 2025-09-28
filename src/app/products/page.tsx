@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react';
 import { products, CATEGORIES } from '@/lib/data';
 import type { Product, Category } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
-import { HelpCircle, Search } from 'lucide-react';
+import { HelpCircle, Phone, Search, User } from 'lucide-react';
 import { Logo } from '@/components/icons/Logo';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function HomePage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -27,9 +29,21 @@ export default function HomePage() {
           <div className="relative flex-1 max-w-lg">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input 
-              placeholder="Search for anything..."
-              className="w-full pl-12 pr-4 py-2 rounded-full bg-white/80 border-2 border-transparent focus:border-primary focus:bg-white transition-all"
+              placeholder="Search for Vegetables, Fruits, Atta etc..."
+              className="w-full pl-12 pr-4 py-2 rounded-full bg-white/80 border-2 border-primary/50 focus:border-primary focus:bg-white transition-all"
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <a href="tel:9097882555">
+                <Button variant="ghost" size="icon" className="glass-icon-button">
+                    <Phone className="h-5 w-5 text-primary" />
+                </Button>
+            </a>
+            <Link href="/login">
+                <Button variant="ghost" size="icon" className="glass-icon-button">
+                    <User className="h-5 w-5 text-primary" />
+                </Button>
+            </Link>
           </div>
         </div>
       </header>
