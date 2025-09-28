@@ -54,10 +54,10 @@ export default function AddMoneyPage() {
     try {
       const amountValue = parseFloat(amount);
 
-      console.log(`Processing ₹${'${amountValue}'} via ${'${paymentMethod}'}`);
+      console.log(`Processing ₹${amountValue} via ${paymentMethod}`);
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      alert(`₹${'${amountValue}'} added successfully to your wallet!`);
+      alert(`₹${amountValue} added successfully to your wallet!`);
       router.push('/wallet');
 
     } catch (error: any) {
@@ -79,7 +79,7 @@ export default function AddMoneyPage() {
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
+    const match = (matches && matches[0]) || '';
     const parts = [];
     
     for (let i = 0; i < match.length; i += 4) {
@@ -92,7 +92,7 @@ export default function AddMoneyPage() {
   const formatExpiry = (value: string) => {
     const v = value.replace(/\D/g, '').substring(0, 4);
     if (v.length >= 3) {
-      return `${'${v.substring(0, 2)}'}/${'${v.substring(2)}'}`;
+      return `${v.substring(0, 2)}/${v.substring(2)}`;
     }
     return v;
   };
@@ -195,7 +195,7 @@ export default function AddMoneyPage() {
                           : 'border-gray-200 hover:border-green-300'
                       }`}
                     >
-                      <method.icon className={`h-6 w-6 ${'${method.color}'}`} />
+                      <method.icon className={`h-6 w-6 ${method.color}`} />
                       <div className="flex-1">
                         <div className="font-semibold text-gray-900">{method.name}</div>
                         <div className="text-sm text-gray-600">{method.description}</div>
@@ -340,7 +340,7 @@ export default function AddMoneyPage() {
                 <span>Processing Payment...</span>
               </div>
             ) : (
-              `Add ₹${'${amount || '0'}'} to Wallet`
+              `Add ₹${amount || '0'} to Wallet`
             )}
           </Button>
 
