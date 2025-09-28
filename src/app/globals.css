@@ -113,8 +113,10 @@
 
   /* Glassmorphism App Bar */
   .glass-app-bar {
-    @apply bg-white/70 backdrop-blur-md border-b border-white/30;
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    background: rgba(255, 255, 255, 0.7); /* 70% white transparent */
+    backdrop-filter: blur(10px);          /* glass blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* Safari support */
+    @apply border-b border-white/30;
   }
 
   /* Icon Button with Glass Effect */
