@@ -59,7 +59,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-transparent text-foreground;
+    @apply bg-background text-foreground;
   }
 }
 
@@ -67,8 +67,8 @@
   .glass-card {
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     @apply rounded-2xl shadow-lg overflow-hidden relative;
   }
 
@@ -78,7 +78,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 80%);
+    background: linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 80%);
     transform: rotate(25deg) translateX(-150%);
     animation: lightMove 4s ease-in-out 1;
     pointer-events: none;
@@ -97,6 +97,6 @@
 
   /* Icon Button with Glass Effect */
   .glass-icon-button {
-     @apply bg-white/50 backdrop-blur-lg border border-white/30 rounded-full shadow-lg p-3 text-center text-primary transition-transform duration-300 ease-out hover:scale-110 active:scale-95;
+     @apply bg-primary/10 backdrop-blur-lg border border-primary/20 rounded-full shadow-lg p-3 text-center text-primary transition-transform duration-300 ease-out hover:scale-110 active:scale-95;
   }
 }

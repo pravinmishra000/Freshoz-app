@@ -14,9 +14,9 @@ const QuickActionButton = ({ icon: Icon, label, href }: { icon: React.ElementTyp
   <Link href={href} className="flex flex-col items-center justify-center gap-2 p-3 text-center transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
     <div className="glass-card flex h-16 w-16 items-center justify-center rounded-2xl">
       <div className="light-ray"></div>
-      <Icon className="h-8 w-8 text-white" />
+      <Icon className="h-8 w-8 text-primary" />
     </div>
-    <span className="text-sm font-semibold text-white">{label}</span>
+    <span className="text-sm font-semibold text-primary">{label}</span>
   </Link>
 );
 
@@ -77,7 +77,7 @@ export default function HomePage() {
     const featuredProducts = products.filter(p => p.rating && p.rating > 4.5).slice(0, 10);
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen">
       {/* Top Bar */}
       <header className="glass-app-bar sticky top-0 z-20 p-4">
         <div className="container mx-auto flex items-center justify-between gap-4">
@@ -87,15 +87,15 @@ export default function HomePage() {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full rounded-full border border-transparent bg-white/30 py-2 pl-9 pr-4 text-sm text-white placeholder-white/70 backdrop-blur-sm focus:border-white/50 focus:outline-none focus:ring-1 focus:ring-white/50"
+              className="w-full rounded-full border border-transparent bg-white/30 py-2 pl-9 pr-4 text-sm text-foreground placeholder-foreground/70 backdrop-blur-sm focus:border-white/50 focus:outline-none focus:ring-1 focus:ring-white/50"
             />
           </div>
           <div className="flex items-center gap-2">
             <Link href="/cart" className="glass-icon-button">
-              <ShoppingCart className="h-5 w-5 text-white" />
+              <ShoppingCart className="h-5 w-5" />
             </Link>
             <Link href="/profile" className="glass-icon-button">
-              <User className="h-5 w-5 text-white" />
+              <User className="h-5 w-5" />
             </Link>
           </div>
         </div>
@@ -107,9 +107,9 @@ export default function HomePage() {
            <Link href="/products" className="flex flex-col items-center justify-center gap-2 p-3 text-center transition-transform duration-300 ease-out hover:scale-105 active:scale-95">
                 <div className="glass-card flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
                     <div className="light-ray"></div>
-                    <ChevronRight className="h-8 w-8 text-white" />
+                    <ChevronRight className="h-8 w-8 text-primary" />
                 </div>
-                <span className="text-sm font-semibold text-white">Shop All</span>
+                <span className="text-sm font-semibold text-primary">Shop All</span>
             </Link>
           {quickActions.map(action => (
             <QuickActionButton key={action.label} {...action} />
@@ -119,8 +119,8 @@ export default function HomePage() {
         {/* Featured Products */}
         <section>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white">Featured Products</h2>
-            <Link href="/products" className="flex items-center text-sm font-semibold text-white/80 hover:underline">
+            <h2 className="text-2xl font-bold text-primary">Featured Products</h2>
+            <Link href="/products" className="flex items-center text-sm font-semibold text-primary/80 hover:underline">
               <span>See All</span>
               <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
@@ -136,15 +136,15 @@ export default function HomePage() {
         
         {/* Category Grid */}
         <section>
-            <h2 className="text-2xl font-bold text-white mb-4">Shop by Category</h2>
+            <h2 className="text-2xl font-bold text-primary mb-4">Shop by Category</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {CATEGORIES.slice(0, 8).map(category => (
                 <Link key={category.id} href={`/products?category=${category.slug}`} className="block">
                     <div className="glass-card group relative h-40 overflow-hidden rounded-2xl p-4 text-center transition-transform hover:scale-105">
                         <div className="light-ray"></div>
-                        <Image src={category.image || ''} alt={category.name_en} fill className="object-cover opacity-20 transition-opacity group-hover:opacity-30" data-ai-hint={category.name_en.toLowerCase()}/>
+                        <Image src={category.image || ''} alt={category.name_en} fill className="object-cover opacity-10 transition-opacity group-hover:opacity-20" data-ai-hint={category.name_en.toLowerCase()}/>
                         <div className="relative z-10 flex h-full flex-col items-center justify-center">
-                            <h3 className="text-lg font-bold text-white">{category.name_en}</h3>
+                            <h3 className="text-lg font-bold text-primary">{category.name_en}</h3>
                         </div>
                     </div>
                 </Link>
@@ -154,16 +154,16 @@ export default function HomePage() {
 
         {/* Daily Deals */}
         <section>
-            <div className="glass-card flex flex-col items-center justify-between gap-6 rounded-2xl bg-gradient-to-r from-purple-500/30 to-pink-500/30 p-6 text-white sm:flex-row">
+            <div className="glass-card flex flex-col items-center justify-between gap-6 rounded-2xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-6 sm:flex-row">
                 <div className="light-ray"></div>
                 <div className="text-center sm:text-left">
-                    <h2 className="text-3xl font-extrabold">Daily Deals</h2>
-                    <p className="mt-1">Limited time offers, grab them now!</p>
+                    <h2 className="text-3xl font-extrabold text-primary">Daily Deals</h2>
+                    <p className="mt-1 text-primary/80">Limited time offers, grab them now!</p>
                 </div>
-                <div className="rounded-2xl bg-white/10 px-6 py-3 text-center">
+                <div className="rounded-2xl bg-white/10 px-6 py-3 text-center text-primary">
                     <CountdownTimer />
                 </div>
-                 <button className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-purple-700 transition-transform hover:scale-105">
+                 <button className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition-transform hover:scale-105">
                     View Deals <ArrowRight className="h-5 w-5" />
                 </button>
             </div>
