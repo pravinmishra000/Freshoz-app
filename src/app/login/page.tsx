@@ -29,7 +29,6 @@ const otpSchema = z.object({
 type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
-const TEST_PHONE_NUMBER = '+919097882555';
 const TEST_OTP = '123456';
 
 export default function LoginPage() {
@@ -54,9 +53,8 @@ export default function LoginPage() {
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
     setPhoneNumber(data.phone);
-    
-    // Check for the specific test number OR if generic test mode is on
-    if (data.phone === TEST_PHONE_NUMBER || isTestMode) {
+
+    if (isTestMode) {
       setTimeout(() => {
         setConfirmationResult({}); // Set a mock confirmation result
         toast({
@@ -91,9 +89,7 @@ export default function LoginPage() {
   const onOtpSubmit: SubmitHandler<OtpFormValues> = async (data) => {
     setIsLoading(true);
 
-    const isSpecificTestNumber = phoneNumber === TEST_PHONE_NUMBER;
-
-    if (isSpecificTestNumber || isTestMode) {
+    if (isTestMode) {
         if (data.otp === TEST_OTP) {
             setTimeout(() => {
                 toast({
@@ -178,7 +174,7 @@ export default function LoginPage() {
               <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
                  <p className="text-sm text-center text-muted-foreground">
                     Enter the 6-digit code sent to {phoneNumber}.
-                    {(isTestMode || phoneNumber === TEST_PHONE_NUMBER) && <span className="font-bold text-primary block">(Test OTP is {TEST_OTP})</span>}
+                    {isTestMode && <span className="font-bold text-primary block">(Test OTP is {TEST_OTP})</span>}
                 </p>
                 <FormField
                   control={otpForm.control}
