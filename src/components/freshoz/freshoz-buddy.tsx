@@ -8,10 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { getCheaperAlternatives } from '@/ai/flows/freshoz-buddy';
-import { trackOrderStatus } from '@/ai/flows/freshoz-buddy';
-import { checkProductAvailability } from '@/ai/flows/freshoz-buddy';
-import { manageCart } from '@/ai/flows/freshoz-buddy';
+import { getCheaperAlternatives, trackOrderStatus, checkProductAvailability, manageCart } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
 

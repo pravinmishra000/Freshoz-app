@@ -100,7 +100,7 @@
     @apply rounded-md shadow-lg glass-card !bg-popover border !border-border text-popover-foreground;
   }
   .PhoneInputCountryOption {
-      color: black !important;
+      color: hsl(var(--foreground));
   }
   .PhoneInputCountryOption:hover {
       @apply bg-accent/50;
