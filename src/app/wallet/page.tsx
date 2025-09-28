@@ -24,19 +24,18 @@ export default function WalletPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-yellow-50 relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-black/10"></div>
-      <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+      <div className="absolute top-10 left-10 w-72 h-72 bg-green-200/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-yellow-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-background/10 rounded-full blur-2xl"></div>
 
       {/* Sparkles Effect */}
       <div className="absolute top-20 right-20 animate-bounce">
-        <Sparkles className="w-6 h-6 text-yellow-300" />
+        <Sparkles className="w-6 h-6 text-yellow-400" />
       </div>
       <div className="absolute bottom-20 left-20 animate-bounce delay-300">
-        <Sparkles className="w-4 h-4 text-white" />
+        <Sparkles className="w-4 h-4 text-primary" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-6">
@@ -48,7 +47,7 @@ export default function WalletPage() {
               variant="ghost"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="glass-card rounded-2xl border-2 border-white/40 text-white p-3 hover:bg-white/20 transition-all duration-300"
+              className="glass-card rounded-2xl border-2 border-primary/20 text-primary p-3 hover:bg-primary/10 transition-all duration-300"
             >
               <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
             </Button>
@@ -65,10 +64,10 @@ export default function WalletPage() {
                   <Wallet className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <CardTitle className="text-2xl font-bold text-white uppercase">
+              <CardTitle className="text-2xl font-bold text-primary uppercase">
                 Freshoz Wallet
               </CardTitle>
-              <CardDescription className="text-white/80 text-base">
+              <CardDescription className="text-primary/80 text-base">
                 Your Digital Balance
               </CardDescription>
             </CardHeader>
@@ -78,13 +77,13 @@ export default function WalletPage() {
           <Card className="glass-card rounded-3xl mb-6">
             <CardContent className="text-center p-6">
               <div className="flex items-center justify-center mb-2">
-                <IndianRupee className="w-6 h-6 text-white/80 mr-1" />
-                <span className="text-white/80 text-lg">Current Balance</span>
+                <IndianRupee className="w-6 h-6 text-primary/80 mr-1" />
+                <span className="text-primary/80 text-lg">Current Balance</span>
               </div>
-              <div className="text-5xl font-bold text-white mb-2 drop-shadow-lg">
+              <div className="text-5xl font-bold text-primary mb-2 drop-shadow-lg">
                 ₹{balance.toLocaleString()}
               </div>
-              <div className="text-green-200 text-sm font-medium">
+              <div className="text-green-600 text-sm font-medium">
                 💫 Ready to use instantly
               </div>
             </CardContent>
@@ -93,9 +92,9 @@ export default function WalletPage() {
           {/* Actions Grid */}
           <div className="grid grid-cols-2 gap-4">
             {/* Add Money Button */}
-            <Button 
+            <Button
               onClick={() => router.push('/wallet/add-money')}
-              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
+              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-green-500/40 h-24 hover:scale-105 transition-all duration-300 group"
             >
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2 bg-green-500/20 rounded-full group-hover:bg-green-500/30 transition-colors">
@@ -106,9 +105,9 @@ export default function WalletPage() {
             </Button>
 
             {/* Transactions Button */}
-            <Button 
+            <Button
               onClick={() => router.push('/wallet/transactions')}
-              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-white/40 h-24 hover:scale-105 transition-all duration-300 group"
+              className="bg-green-100/80 hover:bg-green-200/80 text-green-800 glass-card rounded-2xl border-2 border-green-500/40 h-24 hover:scale-105 transition-all duration-300 group"
             >
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2 bg-yellow-500/20 rounded-full group-hover:bg-yellow-500/30 transition-colors">
@@ -124,16 +123,16 @@ export default function WalletPage() {
             <CardContent className="p-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <div className="text-white font-bold text-lg">5</div>
-                  <div className="text-white/60 text-xs">Transactions</div>
+                  <div className="text-primary font-bold text-lg">5</div>
+                  <div className="text-primary/60 text-xs">Transactions</div>
                 </div>
                 <div>
-                  <div className="text-white font-bold text-lg">₹500</div>
-                  <div className="text-white/60 text-xs">Avg. Spend</div>
+                  <div className="text-primary font-bold text-lg">₹500</div>
+                  <div className="text-primary/60 text-xs">Avg. Spend</div>
                 </div>
                 <div>
-                  <div className="text-white font-bold text-lg">30d</div>
-                  <div className="text-white/60 text-xs">Active</div>
+                  <div className="text-primary font-bold text-lg">30d</div>
+                  <div className="text-primary/60 text-xs">Active</div>
                 </div>
               </div>
             </CardContent>

@@ -12,7 +12,7 @@ export function BackButton() {
     <Button
       variant="ghost"
       onClick={() => router.back()}
-      className="glass-card rounded-2xl border-2 border-white/40 text-white p-3 hover:bg-white/20 transition-all duration-300"
+      className="glass-card rounded-2xl border-2 border-primary/20 text-primary p-3 hover:bg-primary/10 transition-all duration-300"
     >
       <ChevronLeft className="w-5 h-5" />
     </Button>
