@@ -27,7 +27,7 @@ interface AuthContextType {
   authUser: FirebaseUser | null;
   appUser: AppUser | null;
   loading: boolean;
-  signInWithPhoneNumber: (phone: string, role: UserRole) => Promise<ConfirmationResult>;
+  signInWithPhoneNumber: (phone: string, role: UserRole, appVerifier: RecaptchaVerifier) => Promise<ConfirmationResult>;
   confirmOtp: (confirmationResult: ConfirmationResult, otp: string) => Promise<void>;
   registerWithEmail: (email: string, password: string, name: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
@@ -65,23 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const setupRecaptcha = () => {
-    if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: (response: any) => {
-          // reCAPTCHA solved, you can now send OTP
-        },
-        'expired-callback': () => {
-          // Response expired. Ask user to solve reCAPTCHA again.
-        },
-      });
-    }
-  };
-
-  const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
-    setupRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
+  const signInWithPhoneNumber = async (phone: string, role: UserRole, appVerifier: RecaptchaVerifier): Promise<ConfirmationResult> => {
     sessionStorage.setItem('pendingUserRole', role);
     return firebaseSignInWithPhoneNumber(auth, phone, appVerifier);
   };

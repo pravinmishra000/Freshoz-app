@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,8 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RecaptchaVerifier } from 'firebase/auth';
+import { auth } from '@/lib/firebase/client';
 
 // Schemas for validation
 const emailLoginSchema = z.object({
@@ -74,6 +76,16 @@ export default function LoginPage() {
     defaultValues: { otp: '' },
   });
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: (response: any) => {},
+        'expired-callback': () => {},
+      });
+    }
+  }, []);
+
   // Handlers
   const onEmailLoginSubmit: SubmitHandler<EmailLoginFormValues> = async (data) => {
     setIsLoading(true);
@@ -105,7 +117,8 @@ export default function LoginPage() {
     setIsLoading(true);
     setPhoneNumber(data.phone);
     try {
-      const result = await signInWithPhoneNumber(data.phone, 'customer');
+      const appVerifier = window.recaptchaVerifier;
+      const result = await signInWithPhoneNumber(data.phone, 'customer', appVerifier);
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
