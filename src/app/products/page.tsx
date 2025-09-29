@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { AppShell } from '@/components/layout/AppShell';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import InstamartFlapTabBar from '@/components/freshoz/InstamartFlapTabBar';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,6 +42,9 @@ export default function ProductsPage() {
   return (
     <AppShell>
       <main className="container mx-auto pb-24">
+        <div className="my-4">
+          <InstamartFlapTabBar />
+        </div>
         {/* Promotions Carousel */}
         <section className="my-6">
           <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
@@ -126,6 +130,7 @@ export default function ProductsPage() {
     </AppShell>
   );
 }
+
 
 
 
