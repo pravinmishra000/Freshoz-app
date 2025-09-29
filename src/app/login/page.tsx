@@ -77,12 +77,14 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-      }
-    });
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response: any) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        }
+      });
+    }
   }, []);
 
   // Handlers
@@ -115,18 +117,20 @@ export default function LoginPage() {
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
     setPhoneNumber(data.phone);
+    
     const appVerifier = window.recaptchaVerifier;
     if (!appVerifier) {
         toast({ variant: 'destructive', title: 'Error', description: 'reCAPTCHA not initialized. Please refresh.' });
         setIsLoading(false);
         return;
     }
+
     try {
       const result = await signInWithPhoneNumber(data.phone, 'customer', appVerifier);
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
-      console.error(error);
+      console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
     } finally {
