@@ -14,7 +14,6 @@ import Image from 'next/image';
 import { AppShell } from '@/components/layout/AppShell';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import InstamartFlapTabBar from '@/components/freshoz/InstamartFlapTabBar';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -42,9 +41,6 @@ export default function ProductsPage() {
   return (
     <AppShell>
       <main className="container mx-auto pb-24">
-        <div className="my-4">
-          <InstamartFlapTabBar />
-        </div>
         {/* Promotions Carousel */}
         <section className="my-6">
           <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
@@ -76,7 +72,7 @@ export default function ProductsPage() {
                             href={`/products/category/${category.slug}`}
                             onClick={() => setActiveCategory(category.slug)}
                             className={cn(
-                                "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4 w-24 h-24",
+                                "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4",
                                 isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
                             )}
                         >
@@ -130,7 +126,3 @@ export default function ProductsPage() {
     </AppShell>
   );
 }
-
-
-
-
