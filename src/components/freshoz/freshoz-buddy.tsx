@@ -253,7 +253,7 @@ export default function FreshozBuddy({
       {isButtonVisible && (
         <Button
           variant="outline"
-          onClick={() => setIsOpen(true)}
+          onClick={() => setInternalIsOpen(true)}
           className={cn(
             "fixed right-4 z-50 h-14 w-14 rounded-full border-2 border-primary bg-primary/10 p-0 text-primary shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-primary/20 hover:scale-110 md:right-6",
             getBottomPosition()
