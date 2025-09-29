@@ -16,7 +16,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RecaptchaVerifier } from 'firebase/auth';
+import { RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
 import { auth } from '@/lib/firebase/client';
 
 // Schemas for validation
@@ -50,7 +50,7 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -197,10 +197,10 @@ export default function LoginPage() {
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isRegistering ? 'Create Account' : 'Sign In'}
         </Button>
-         <Button variant="link" size="sm" className="w-full" onClick={() => setIsRegistering(!isRegistering)}>
+         <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(!isRegistering)}>
             {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Register"}
         </Button>
-         {!isRegistering && <Button variant="link" size="sm" className="w-full text-xs">Forgot Password?</Button>}
+         {!isRegistering && <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>}
       </form>
     </Form>
   );
@@ -247,7 +247,7 @@ export default function LoginPage() {
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Verify & Sign In
         </Button>
-        <Button variant="link" size="sm" className="w-full" onClick={() => setConfirmationResult(null)}>
+        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setConfirmationResult(null)}>
             Use a different phone number
         </Button>
       </form>
