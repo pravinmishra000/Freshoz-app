@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,7 +6,7 @@ import type { Product, Category, Promotion } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { HelpCircle, Carrot, Apple, Milk, Coffee, ShoppingCart, Drumstick, Phone } from 'lucide-react';
 import { products as allProductsData, promotions, CATEGORIES } from '@/lib/data';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay";
 import Image from 'next/image';
@@ -21,7 +22,7 @@ export default function ProductsPage() {
     // Best deals sorted by discount
     const sortedDeals = [...allProductsData]
       .sort((a, b) => (b.mrp - b.price) - (a.mrp - a.price))
-      .slice(0, 12); // 12 for card-in-card grouping
+      .slice(0, 12); // Get top 12 deals
     setBestDeals(sortedDeals);
   }, []);
 
@@ -32,12 +33,6 @@ export default function ProductsPage() {
     'snacks-beverages': Coffee,
     'staples-grocery': ShoppingCart,
     'non-veg': Drumstick,
-  };
-
-  // Group best deals in sets of 2-3 for card-in-card
-  const bestDealsGrouped = [];
-  for (let i = 0; i < bestDeals.length; i += 3) {
-    bestDealsGrouped.push(bestDeals.slice(i, i + 3));
   }
 
   return (
@@ -62,7 +57,7 @@ export default function ProductsPage() {
           </Carousel>
         </section>
 
-        {/* Category Section with Flap Icons */}
+        {/* Category Section */}
         <section className="my-8">
           <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -71,7 +66,6 @@ export default function ProductsPage() {
               return (
                 <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
                   <div className="glass-card p-4 text-center cursor-pointer hover:scale-105 transition-transform h-40 flex flex-col justify-center items-center relative">
-                    {/* Flap style */}
                     <div className="absolute top-0 left-0 w-full h-12 bg-primary rounded-b-3xl -translate-y-3 shadow-md flex items-center justify-center">
                       <Icon className="text-white h-6 w-6" />
                     </div>
@@ -83,20 +77,12 @@ export default function ProductsPage() {
           </div>
         </section>
 
-        {/* Best Deals Section (Card-in-Card) */}
+        {/* Best Deals Section */}
         <section className="my-12">
           <h2 className="text-2xl font-bold text-foreground mb-4">Best Deals</h2>
-          <div className="flex space-x-4 overflow-x-auto pb-4">
-            {bestDealsGrouped.map((group, idx) => (
-              <div key={idx} className="min-w-[220px] sm:min-w-[260px] flex flex-col gap-2">
-                <Card className="bg-white/80 backdrop-blur-md shadow-md p-2 flex flex-col gap-2">
-                  {group.map((product) => (
-                    <div key={product.id} className="flex-1">
-                      <ProductCard product={product} smallCard />
-                    </div>
-                  ))}
-                </Card>
-              </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {bestDeals.map((product) => (
+                <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
