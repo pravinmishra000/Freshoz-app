@@ -54,6 +54,7 @@ export default function LoginPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null);
 
   // Forms
   const emailLoginForm = useForm<EmailLoginFormValues>({
@@ -77,14 +78,15 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    if (!recaptchaVerifier) {
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: (response: any) => {},
         'expired-callback': () => {},
       });
+      setRecaptchaVerifier(verifier);
     }
-  }, []);
+  }, [auth, recaptchaVerifier]);
 
   // Handlers
   const onEmailLoginSubmit: SubmitHandler<EmailLoginFormValues> = async (data) => {
@@ -116,9 +118,13 @@ export default function LoginPage() {
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
     setPhoneNumber(data.phone);
+    if (!recaptchaVerifier) {
+        toast({ variant: 'destructive', title: 'Error', description: 'reCAPTCHA not initialized. Please refresh.' });
+        setIsLoading(false);
+        return;
+    }
     try {
-      const appVerifier = window.recaptchaVerifier;
-      const result = await signInWithPhoneNumber(data.phone, 'customer', appVerifier);
+      const result = await signInWithPhoneNumber(data.phone, 'customer', recaptchaVerifier);
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {

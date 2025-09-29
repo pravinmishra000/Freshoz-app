@@ -87,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         photoURL: user.photoURL,
         role: role,
         createdAt: serverTimestamp(),
+        addresses: [],
       };
       
       await setDoc(userDocRef, newUser);
@@ -106,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         photoURL: user.photoURL,
         role: 'customer',
         createdAt: serverTimestamp(),
+        addresses: [],
     };
     
     await setDoc(doc(db, 'users', user.uid), newUser);
