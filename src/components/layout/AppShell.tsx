@@ -80,8 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="relative flex min-h-screen w-full flex-col lg:flex-row">
-        {/* Desktop Sidebar */}
-        <Sidebar className="hidden lg:flex" collapsible="icon">
+        <Sidebar>
           <SidebarContent>
             <SidebarHeader>
               <Link href="/" className="block">
@@ -106,50 +105,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarContent>
           <SidebarFooter>
             <SidebarSeparator/>
-            <SidebarMenu>
-               <SidebarMenuItem>
-                 <SidebarMenuButton onClick={logout} tooltip="Logout">
-                    <LogOut/>
-                    <span>Logout</span>
-                 </SidebarMenuButton>
-               </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
-
-        {/* Mobile Sidebar */}
-        <Sidebar className="lg:hidden" side="left">
-          <SidebarHeader>
-            <Link href="/" className="block p-2">
-              <Logo />
-            </Link>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <Link href={item.href} passHref>
-                    <SidebarMenuButton
-                      isActive={pathname.startsWith(item.href)}
-                      tooltip={item.label}
-                    >
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter>
              {authUser && (
-              <>
-              <SidebarSeparator/>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <Link href="/profile" passHref>
                     <SidebarMenuButton
                       isActive={pathname.startsWith('/profile')}
+                      tooltip="Profile"
                     >
                       <User />
                       <span>Profile</span>
@@ -157,14 +119,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton onClick={logout}>
-                    <LogOut />
-                    <span>Logout</span>
+                  <SidebarMenuButton onClick={logout} tooltip="Logout">
+                      <LogOut/>
+                      <span>Logout</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
-              </>
-            )}
+             )}
           </SidebarFooter>
         </Sidebar>
 
@@ -175,67 +136,64 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="lg:hidden">
                     <SidebarTrigger className="glass-icon-button" />
                   </div>
-                  <div className="hidden lg:block">
-                    <Link href="/" className="block">
-                        <Logo />
-                    </Link>
-                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="w-full max-w-lg px-2 lg:block hidden">
+                <div className="flex flex-1 items-center justify-end gap-2">
+                  <div className="w-full max-w-lg hidden lg:block">
                       <SmartSearchBar />
                   </div>
-                  <Link href="/wallet">
-                      <Button variant="ghost" size="icon" className="glass-icon-button">
-                          <Wallet className="h-5 w-5 text-primary" />
-                      </Button>
-                  </Link>
-                  {loading ? (
-                    <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
-                  ) : authUser ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Avatar className="cursor-pointer">
-                          <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
-                          <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
-                        </Avatar>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                          <DropdownMenuItem asChild>
-                            <Link href="/profile">
-                                <User className="mr-2 h-4 w-4" />
-                                <span>Profile</span>
-                              </Link>
-                          </DropdownMenuItem>
-                        {isAdmin && (
-                          <>
+                  <div className="flex items-center gap-2">
+                    <Link href="/wallet">
+                        <Button variant="ghost" size="icon" className="glass-icon-button">
+                            <Wallet className="h-5 w-5 text-primary" />
+                        </Button>
+                    </Link>
+                    {loading ? (
+                      <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+                    ) : authUser ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Avatar className="cursor-pointer">
+                            <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
+                            <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+                          </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                              <Link href="/admin/dashboard">
-                                <LayoutDashboard className="mr-2 h-4 w-4" />
-                                <span>Dashboard</span>
-                              </Link>
+                              <Link href="/profile">
+                                  <User className="mr-2 h-4 w-4" />
+                                  <span>Profile</span>
+                                </Link>
                             </DropdownMenuItem>
-                          </>
-                        )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={logout}>
-                          <LogOut className="mr-2 h-4 w-4" />
-                          <span>Logout</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <Button asChild variant="ghost" size="icon" className="glass-icon-button">
-                      <Link href="/login">
-                        <User className="h-5 w-5 text-primary" />
-                      </Link>
-                    </Button>
-                  )}
-                  <div className="lg:hidden">
-                    <CartSheet />
+                          {isAdmin && (
+                            <>
+                              <DropdownMenuItem asChild>
+                                <Link href="/admin/dashboard">
+                                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                                  <span>Dashboard</span>
+                                </Link>
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={logout}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Logout</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <Button asChild variant="ghost" size="icon" className="glass-icon-button">
+                        <Link href="/login">
+                          <User className="h-5 w-5 text-primary" />
+                        </Link>
+                      </Button>
+                    )}
+                    <div className="hidden lg:block">
+                      <CartSheet />
+                    </div>
                   </div>
                 </div>
             </div>
