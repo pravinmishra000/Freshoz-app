@@ -30,7 +30,8 @@ import {
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
-  SidebarSeparator
+  SidebarSeparator,
+  SidebarFooter
 } from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
 import { useAuth } from '@/lib/firebase/auth-context';
