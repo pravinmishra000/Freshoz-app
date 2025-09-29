@@ -31,7 +31,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarSeparator,
-  SidebarFooter
+  SidebarFooter,
+  SidebarInset
 } from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -129,7 +130,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <div className="flex flex-1 flex-col">
+        <SidebarInset>
           <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
             <div className="container mx-auto flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -203,7 +204,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
           
           <main className="flex-1 overflow-y-auto pb-24 md:pb-0">{children}</main>
-        </div>
+        </SidebarInset>
 
         {/* Mobile Bottom Navigation */}
         {!isAdmin && (
