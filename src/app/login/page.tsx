@@ -149,34 +149,25 @@ export default function LoginPage() {
       await confirmOtp(confirmationResult, data.otp);
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
-    } catch (error: any) {
+    } catch (error: any) => {
       toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const emailFormContent = (
-    <Form {...(isRegistering ? emailRegisterForm : emailLoginForm)}>
-      <form onSubmit={isRegistering ? emailRegisterForm.handleSubmit(onEmailRegisterSubmit) : emailLoginForm.handleSubmit(onEmailLoginSubmit)} className="space-y-6 pt-4">
-        {isRegistering && (
-          <FormField
-            control={emailRegisterForm.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-            )}
-          />
-        )}
+  const LoginForm = () => (
+    <Form {...emailLoginForm}>
+      <form onSubmit={emailLoginForm.handleSubmit(onEmailLoginSubmit)} className="space-y-6 pt-4">
         <FormField
-          control={isRegistering ? emailRegisterForm.control : emailLoginForm.control}
+          control={emailLoginForm.control}
           name="email"
           render={({ field }) => (
             <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
           )}
         />
         <FormField
-          control={isRegistering ? emailRegisterForm.control : emailLoginForm.control}
+          control={emailLoginForm.control}
           name="password"
           render={({ field }) => (
             <FormItem>
@@ -195,15 +186,63 @@ export default function LoginPage() {
         />
         <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isRegistering ? 'Create Account' : 'Sign In'}
+          Sign In
         </Button>
-         <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(!isRegistering)}>
-            {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Register"}
+        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(true)}>
+          Don't have an account? Register
         </Button>
-         {!isRegistering && <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>}
+        <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>
       </form>
     </Form>
   );
+
+  const RegisterForm = () => (
+    <Form {...emailRegisterForm}>
+      <form onSubmit={emailRegisterForm.handleSubmit(onEmailRegisterSubmit)} className="space-y-6 pt-4">
+        <FormField
+          control={emailRegisterForm.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={emailRegisterForm.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={emailRegisterForm.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Create Account
+        </Button>
+        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(false)}>
+          Already have an account? Sign In
+        </Button>
+      </form>
+    </Form>
+  );
+
+  const emailFormContent = isRegistering ? <RegisterForm /> : <LoginForm />;
 
   const phoneFormContent = !confirmationResult ? (
     <Form {...phoneForm}>
