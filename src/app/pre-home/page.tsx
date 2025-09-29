@@ -12,7 +12,7 @@ export default function PreHomeScreen() {
       <main className="flex flex-1 flex-col items-center justify-center p-4 text-center">
         <h2 className="text-3xl font-bold text-foreground mb-4">Welcome!</h2>
         <p className="text-muted-foreground text-lg mb-12 max-w-md">
-          Your one-stop shop for the freshest groceries, delivered right to your door.
+          Your one-stop shop for the freshest vegetable, fruits, groceries, etc. delivered right to your door.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-lg">
