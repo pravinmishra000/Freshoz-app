@@ -62,7 +62,7 @@ export default function ProductsPage() {
 
         {/* Category Section */}
         <section className="my-8 relative">
-            <div className="bg-primary rounded-2xl p-4 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="bg-primary rounded-2xl p-4 flex overflow-x-auto no-scrollbar space-x-4">
                 {CATEGORIES.map((category) => {
                     const Icon = categoryIcons[category.slug] || ShoppingCart;
                     const isActive = activeCategory === category.slug;
@@ -72,7 +72,7 @@ export default function ProductsPage() {
                             href={`/products/category/${category.slug}`}
                             onClick={() => setActiveCategory(category.slug)}
                             className={cn(
-                                "category-tab-item relative flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4",
+                                "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4 w-24 h-24",
                                 isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
                             )}
                         >
@@ -126,4 +126,5 @@ export default function ProductsPage() {
     </AppShell>
   );
 }
+
 
