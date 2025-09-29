@@ -134,7 +134,11 @@
   }
 
   /* New Category Tab styles */
-  .category-tab-item.active-category-tab {
+  .category-tab-item {
+    z-index: 1;
+  }
+  
+  .active-category-tab {
     color: hsl(var(--primary));
     font-weight: 600;
   }
@@ -147,6 +151,7 @@
     height: 20px;
     background-color: transparent;
     border-radius: 50%;
+    z-index: -1;
   }
 
   .active-category-tab::before {

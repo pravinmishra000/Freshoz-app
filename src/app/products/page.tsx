@@ -60,30 +60,35 @@ export default function ProductsPage() {
         </section>
 
         {/* Category Section */}
-        <section className="my-8 bg-primary rounded-t-2xl p-4 relative">
-          <h2 className="text-xl font-bold text-primary-foreground mb-4 px-2">Shop by Category</h2>
-          <div className="flex overflow-x-auto space-x-2 pb-4 no-scrollbar">
-            {CATEGORIES.map((category) => {
-              const Icon = categoryIcons[category.slug] || ShoppingCart;
-              const isActive = activeCategory === category.slug;
-              return (
-                <Link
-                  key={category.id}
-                  href={`/products/category/${category.slug}`}
-                  onClick={() => setActiveCategory(category.slug)}
-                  className={cn(
-                    "category-tab-item relative flex flex-col items-center justify-center space-y-2 p-3 flex-shrink-0 w-24 rounded-t-xl transition-all duration-300",
-                    isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
-                  )}
-                >
-                  <Icon className={cn("h-6 w-6", isActive ? "text-primary" : "text-primary-foreground")} />
-                  <span className={cn("text-xs font-medium text-center", isActive ? "text-primary" : "text-primary-foreground")}>
-                    {category.name_en}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+        <section className="my-8 relative">
+            <div className="bg-primary rounded-t-2xl p-4 flex overflow-x-auto no-scrollbar space-x-2">
+                {CATEGORIES.map((category) => {
+                    const Icon = categoryIcons[category.slug] || ShoppingCart;
+                    const isActive = activeCategory === category.slug;
+                    return (
+                        <Link
+                            key={category.id}
+                            href={`/products/category/${category.slug}`}
+                            onClick={() => setActiveCategory(category.slug)}
+                            className={cn(
+                                "category-tab-item relative flex-shrink-0 w-24 h-24 flex flex-col items-center justify-center rounded-t-xl transition-all duration-300",
+                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10 pt-8"
+                            )}
+                        >
+                            <Icon className={cn(
+                                "h-6 w-6 mb-1 transition-all",
+                                isActive ? "text-primary" : "text-primary-foreground"
+                            )} />
+                            <span className={cn(
+                                "text-xs font-medium text-center transition-colors",
+                                isActive ? "text-primary" : "text-primary-foreground"
+                            )}>
+                                {category.name_en}
+                            </span>
+                        </Link>
+                    );
+                })}
+            </div>
         </section>
 
         {/* Best Deals Section */}
