@@ -149,7 +149,7 @@ export default function LoginPage() {
       await confirmOtp(confirmationResult, data.otp);
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
-    } catch (error: any) => {
+    } catch (error: any) {
       toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
     } finally {
       setIsLoading(false);
