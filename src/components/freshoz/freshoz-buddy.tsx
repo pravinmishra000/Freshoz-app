@@ -22,18 +22,14 @@ type AIFlow = 'alternatives' | 'track' | 'availability' | 'cart';
 
 interface FreshozBuddyProps {
   isDeliveryBannerVisible?: boolean;
-  isOpen?: boolean;
-  onOpenChange?: (isOpen: boolean) => void;
   isButtonVisible?: boolean;
 }
 
 export default function FreshozBuddy({ 
   isDeliveryBannerVisible, 
-  isOpen: controlledIsOpen, 
-  onOpenChange: setControlledIsOpen,
   isButtonVisible = true
 }: FreshozBuddyProps) {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentFlow, setCurrentFlow] = useState<AIFlow | null>(null);
   const [inputValue, setInputValue] = useState('');
@@ -41,9 +37,6 @@ export default function FreshozBuddy({
   const [showInitial, setShowInitial] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const { cartItems } = useCart();
-
-  const isOpen = controlledIsOpen ?? internalIsOpen;
-  const setIsOpen = setControlledIsOpen ?? setInternalIsOpen;
 
   const supportPhoneNumber = '9097882555';
 
@@ -253,7 +246,7 @@ export default function FreshozBuddy({
       {isButtonVisible && (
         <Button
           variant="outline"
-          onClick={() => setInternalIsOpen(true)}
+          onClick={() => setIsOpen(true)}
           className={cn(
             "fixed right-4 z-50 h-14 w-14 rounded-full border-2 border-primary bg-primary/10 p-0 text-primary shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-primary/20 hover:scale-110 md:right-6",
             getBottomPosition()
@@ -412,3 +405,5 @@ export default function FreshozBuddy({
     </>
   );
 }
+
+    
