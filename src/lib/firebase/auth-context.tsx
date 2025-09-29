@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -11,6 +12,8 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
   signInWithPhoneNumber as firebaseSignInWithPhoneNumber,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   RecaptchaVerifier,
   ConfirmationResult,
   signOut,
@@ -26,6 +29,8 @@ interface AuthContextType {
   loading: boolean;
   signInWithPhoneNumber: (phone: string, role: UserRole) => Promise<ConfirmationResult>;
   confirmOtp: (confirmationResult: ConfirmationResult, otp: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string, name: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -47,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (userDoc.exists()) {
           setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
         } else {
-           console.log("User document doesn't exist for new or existing auth user.");
+           console.log("User document doesn't exist for new or existing auth user. This can happen on first login.");
            setAppUser(null);
         }
       } else {
@@ -77,7 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
-    // Store role temporarily to associate it after OTP confirmation
     sessionStorage.setItem('pendingUserRole', role);
     return firebaseSignInWithPhoneNumber(auth, phone, appVerifier);
   };
@@ -86,16 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userCredential = await confirmationResult.confirm(otp);
     const user = userCredential.user;
     
-    // Check if user document already exists
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
-      // New user, create their document in Firestore
       const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
       
       const newUser: Omit<AppUser, 'id'> = {
-        email: user.email, // phone auth users might not have email
+        email: user.email,
         phoneNumber: user.phoneNumber,
         displayName: user.displayName || `User ${user.uid.substring(0,5)}`,
         photoURL: user.photoURL,
@@ -105,11 +107,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       await setDoc(userDocRef, newUser);
       setAppUser({ id: user.uid, ...newUser } as AppUser);
-      
-      // Cleanup session storage
       sessionStorage.removeItem('pendingUserRole');
     }
-    // If user exists, their data is loaded by onAuthStateChanged
+  };
+  
+  const registerWithEmail = async (email: string, password: string, name: string): Promise<void> => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    const newUser: Omit<AppUser, 'id'> = {
+        displayName: name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+        role: 'customer',
+        createdAt: serverTimestamp(),
+    };
+    
+    await setDoc(doc(db, 'users', user.uid), newUser);
+    setAppUser({ id: user.uid, ...newUser } as AppUser);
+  };
+  
+  const signInWithEmail = async (email: string, password: string): Promise<void> => {
+      await signInWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {
@@ -123,6 +143,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     signInWithPhoneNumber,
     confirmOtp,
+    registerWithEmail,
+    signInWithEmail,
     logout,
   };
 
@@ -137,7 +159,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Extend window type for recaptchaVerifier
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;

@@ -1,21 +1,30 @@
 
+'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { User, MapPin, LogOut } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import React from 'react';
-
-// This is a placeholder page. In a real application, you would fetch user data.
+import { useAuth } from '@/lib/firebase/auth-context';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  const user = {
-    name: 'Demo User',
-    phone: '+91 98765 43210',
-    email: 'demo@freshoz.in',
+  const { appUser, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
   };
 
-  const addresses = [
+  const user = {
+    name: appUser?.displayName ?? 'Demo User',
+    phone: appUser?.phoneNumber ?? '+91 98765 43210',
+    email: appUser?.email ?? 'demo@freshoz.in',
+  };
+
+  const addresses = appUser?.addresses ?? [
     { id: '1', type: 'Home', address: '123 Fresh Fields, Green Valley', city: 'Sultanganj', pincode: '813213', isDefault: true },
     { id: '2', type: 'Work', address: '456 Business Park, Commerce St', city: 'Bhagalpur', pincode: '812001', isDefault: false },
   ];
@@ -92,7 +101,7 @@ export default function ProfilePage() {
                 <CardTitle className="text-xl">Account Actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button variant="destructive" className="w-full sm:w-auto">
+              <Button variant="destructive" className="w-full sm:w-auto" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </Button>

@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import type { Product, Category, Promotion } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
-import { HelpCircle, Carrot, Apple, Milk, Coffee, ShoppingCart, Drumstick } from 'lucide-react';
+import { HelpCircle, Carrot, Apple, Milk, Coffee, ShoppingCart, Drumstick, Phone } from 'lucide-react';
 import { products as allProductsData, promotions, CATEGORIES } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
@@ -107,6 +107,11 @@ export default function ProductsPage() {
           </div>
         </section>
       </main>
+
+        <a href="tel:9097882555" className="bg-positive text-white fixed bottom-40 right-6 md:bottom-20 z-40 h-14 w-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+            <Phone className="h-7 w-7" />
+            <span className="sr-only">Call to Order</span>
+        </a>
 
       <button className="glass-icon-button fixed bottom-24 right-6 md:bottom-6">
         <HelpCircle className="h-7 w-7 text-primary" />

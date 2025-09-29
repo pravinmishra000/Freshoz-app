@@ -12,11 +12,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Schemas for validation
+const emailLoginSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address.' }),
+  password: z.string().min(1, { message: 'Password is required.' }),
+});
+
+const emailRegisterSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Invalid email address.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+});
 
 const phoneSchema = z.object({
   phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number.' }),
@@ -26,19 +37,32 @@ const otpSchema = z.object({
   otp: z.string().min(6, { message: 'OTP must be 6 digits.' }).max(6),
 });
 
+type EmailLoginFormValues = z.infer<typeof emailLoginSchema>;
+type EmailRegisterFormValues = z.infer<typeof emailRegisterSchema>;
 type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
-const TEST_OTP = '123456';
-
 export default function LoginPage() {
-  const { signInWithPhoneNumber, confirmOtp } = useAuth();
+  const { signInWithPhoneNumber, confirmOtp, registerWithEmail, signInWithEmail } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+
   const [isLoading, setIsLoading] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [isTestMode, setIsTestMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  // Forms
+  const emailLoginForm = useForm<EmailLoginFormValues>({
+    resolver: zodResolver(emailLoginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  const emailRegisterForm = useForm<EmailRegisterFormValues>({
+    resolver: zodResolver(emailRegisterSchema),
+    defaultValues: { name: '', email: '', password: '' },
+  });
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
@@ -50,37 +74,44 @@ export default function LoginPage() {
     defaultValues: { otp: '' },
   });
 
+  // Handlers
+  const onEmailLoginSubmit: SubmitHandler<EmailLoginFormValues> = async (data) => {
+    setIsLoading(true);
+    try {
+      await signInWithEmail(data.email, data.password);
+      toast({ title: 'Login Successful', description: 'Welcome back!' });
+      router.push('/products');
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onEmailRegisterSubmit: SubmitHandler<EmailRegisterFormValues> = async (data) => {
+    setIsLoading(true);
+    try {
+      await registerWithEmail(data.email, data.password, data.name);
+      toast({ title: 'Registration Successful', description: 'Welcome to Freshoz!' });
+      router.push('/products');
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Registration Failed', description: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
     setPhoneNumber(data.phone);
-
-    if (isTestMode) {
-      setTimeout(() => {
-        setConfirmationResult({}); // Set a mock confirmation result
-        toast({
-          title: 'Test OTP Sent',
-          description: `Enter the test OTP '${TEST_OTP}'.`,
-        });
-        setIsLoading(false);
-      }, 1000);
-      return;
-    }
-
     try {
       const result = await signInWithPhoneNumber(data.phone, 'customer');
       setConfirmationResult(result);
-      toast({
-        title: 'OTP Sent',
-        description: `An OTP has been sent to ${data.phone}.`,
-      });
+      toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
       console.error(error);
-      toast({
-        variant: 'destructive',
-        title: 'Failed to Send OTP',
-        description: error.message || 'An unexpected error occurred.',
-      });
-      setConfirmationResult(null); // Reset on error
+      toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
+      setConfirmationResult(null);
     } finally {
       setIsLoading(false);
     }
@@ -88,28 +119,6 @@ export default function LoginPage() {
 
   const onOtpSubmit: SubmitHandler<OtpFormValues> = async (data) => {
     setIsLoading(true);
-
-    if (isTestMode) {
-        if (data.otp === TEST_OTP) {
-            setTimeout(() => {
-                toast({
-                    title: 'Test Login Successful',
-                    description: "Welcome, Demo User!",
-                });
-                router.push('/products');
-                setIsLoading(false);
-            }, 1000);
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Login Failed',
-                description: `Invalid test OTP. Please use '${TEST_OTP}'.`,
-            });
-            setIsLoading(false);
-        }
-        return;
-    }
-
     if (!confirmationResult) {
       toast({ variant: 'destructive', title: 'Error', description: 'Please request an OTP first.' });
       setIsLoading(false);
@@ -117,21 +126,112 @@ export default function LoginPage() {
     }
     try {
       await confirmOtp(confirmationResult, data.otp);
-      toast({
-        title: 'Login Successful',
-        description: "Welcome!",
-      });
+      toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: error.message || 'Invalid OTP or an unexpected error occurred.',
-      });
+      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
     } finally {
       setIsLoading(false);
     }
   };
+
+  const emailFormContent = (
+    <Form {...(isRegistering ? emailRegisterForm : emailLoginForm)}>
+      <form onSubmit={isRegistering ? emailRegisterForm.handleSubmit(onEmailRegisterSubmit) : emailLoginForm.handleSubmit(onEmailLoginSubmit)} className="space-y-6 pt-4">
+        {isRegistering && (
+          <FormField
+            control={emailRegisterForm.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+            )}
+          />
+        )}
+        <FormField
+          control={isRegistering ? emailRegisterForm.control : emailLoginForm.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={isRegistering ? emailRegisterForm.control : emailLoginForm.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isRegistering ? 'Create Account' : 'Sign In'}
+        </Button>
+         <Button variant="link" size="sm" className="w-full" onClick={() => setIsRegistering(!isRegistering)}>
+            {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Register"}
+        </Button>
+         {!isRegistering && <Button variant="link" size="sm" className="w-full text-xs">Forgot Password?</Button>}
+      </form>
+    </Form>
+  );
+
+  const phoneFormContent = !confirmationResult ? (
+    <Form {...phoneForm}>
+      <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-6 pt-4">
+        <FormField
+          control={phoneForm.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number</FormLabel>
+              <FormControl>
+                <PhoneInput {...field} international defaultCountry="IN" className="phone-input-dark" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div id="recaptcha-container"></div>
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Send OTP
+        </Button>
+      </form>
+    </Form>
+  ) : (
+     <Form {...otpForm}>
+      <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
+         <p className="text-sm text-center text-muted-foreground">Enter the 6-digit code sent to {phoneNumber}.</p>
+        <FormField
+          control={otpForm.control}
+          name="otp"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Verification Code</FormLabel>
+              <FormControl><Input placeholder="123456" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Verify & Sign In
+        </Button>
+        <Button variant="link" size="sm" className="w-full" onClick={() => setConfirmationResult(null)}>
+            Use a different phone number
+        </Button>
+      </form>
+    </Form>
+  );
 
   return (
     <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center p-4">
@@ -141,77 +241,14 @@ export default function LoginPage() {
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>
-          {!confirmationResult ? (
-            <Form {...phoneForm}>
-              <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-6 pt-4">
-                <FormField
-                  control={phoneForm.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <PhoneInput
-                          {...field}
-                          international
-                          defaultCountry="IN"
-                          className="phone-input-dark"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <div id="recaptcha-container"></div>
-                <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Send OTP
-                </Button>
-              </form>
-            </Form>
-          ) : (
-             <Form {...otpForm}>
-              <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
-                 <p className="text-sm text-center text-muted-foreground">
-                    Enter the 6-digit code sent to {phoneNumber}.
-                    {isTestMode && <span className="font-bold text-primary block">(Test OTP is {TEST_OTP})</span>}
-                </p>
-                <FormField
-                  control={otpForm.control}
-                  name="otp"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Verification Code</FormLabel>
-                      <FormControl>
-                         <Input placeholder="123456" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Verify &amp; Sign In
-                </Button>
-                <Button variant="link" size="sm" className="w-full" onClick={() => setConfirmationResult(null)}>
-                    Use a different phone number
-                </Button>
-              </form>
-            </Form>
-          )}
-
-          <div className="mt-6 flex items-center justify-center space-x-2">
-            <Label htmlFor="test-mode" className="text-sm text-muted-foreground">
-              Test Mode
-            </Label>
-            <Switch
-              id="test-mode"
-              checked={isTestMode}
-              onCheckedChange={setIsTestMode}
-              disabled={isLoading}
-            />
-          </div>
-
+          <Tabs defaultValue="phone" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="phone">Phone</TabsTrigger>
+              <TabsTrigger value="email">Email</TabsTrigger>
+            </TabsList>
+            <TabsContent value="phone">{phoneFormContent}</TabsContent>
+            <TabsContent value="email">{emailFormContent}</TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
