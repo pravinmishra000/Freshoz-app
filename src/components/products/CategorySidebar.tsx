@@ -38,6 +38,7 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
                         src={category.image || 'https://picsum.photos/seed/placeholder/100/100'}
                         alt={category.name_en}
                         fill
+                        sizes="(max-width: 768px) 20vw, 10vw"
                         className="object-contain rounded-md"
                     />
                     </div>

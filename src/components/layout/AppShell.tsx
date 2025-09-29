@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import type { ReactNode } from 'react';
@@ -80,7 +78,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="relative flex min-h-screen w-full flex-col lg:flex-row">
+      <div className="relative flex min-h-screen w-full flex-row">
+        {/* Sidebar */}
         <Sidebar>
           <SidebarContent>
             <SidebarHeader>
@@ -130,9 +129,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>
+        {/* Main Content Area */}
+        <SidebarInset className="flex flex-1 flex-col">
+          {/* Header */}
           <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
-            <div className="container mx-auto flex w-full items-center justify-between gap-4">
+            <div className="flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="lg:hidden">
                     <SidebarTrigger className="glass-icon-button" />
@@ -169,14 +170,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                                 </Link>
                             </DropdownMenuItem>
                           {isAdmin && (
-                            <>
-                              <DropdownMenuItem asChild>
-                                <Link href="/admin/dashboard">
-                                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                                  <span>Dashboard</span>
-                                </Link>
-                              </DropdownMenuItem>
-                            </>
+                            <DropdownMenuItem asChild>
+                              <Link href="/admin/dashboard">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                <span>Dashboard</span>
+                              </Link>
+                            </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={logout}>
@@ -203,14 +202,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
           </header>
           
-          <main className="flex-1 overflow-y-auto pb-24 md:pb-0">{children}</main>
+          {/* Main Body */}
+          <main className="flex-1 overflow-y-auto pb-[80px] md:pb-0">{children}</main>
         </SidebarInset>
 
         {/* Mobile Bottom Navigation */}
         {!isAdmin && (
           <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
             <div className="flex items-center justify-center gap-2">
-              {[
+              {[ 
                 { href: '/products', label: 'Home', icon: Home },
                 { href: '/offers', label: 'Offers', icon: Tag },
                 { href: '/chat', label: 'Chat', icon: MessageSquare },
