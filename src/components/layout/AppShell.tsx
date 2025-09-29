@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -14,8 +15,7 @@ import {
   Wallet,
   Tag,
   Users,
-  ShoppingCart,
-  Menu
+  ShoppingCart
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -78,10 +78,98 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navItems = isAdmin ? adminNavItems : customerNavItems;
 
   return (
-    <div className="relative z-10">
-      <SidebarProvider>
-        <div className="relative flex min-h-screen w-full flex-col">
-          <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center justify-between gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
+    <SidebarProvider>
+      <div className="relative flex min-h-screen w-full flex-col lg:flex-row">
+        {/* Desktop Sidebar */}
+        <Sidebar className="hidden lg:flex" collapsible="icon">
+          <SidebarContent>
+            <SidebarHeader>
+              <Link href="/" className="block">
+                <Logo />
+              </Link>
+            </SidebarHeader>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <Link href={item.href} passHref>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith(item.href)}
+                      tooltip={item.label}
+                    >
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarSeparator/>
+            <SidebarMenu>
+               <SidebarMenuItem>
+                 <SidebarMenuButton onClick={logout} tooltip="Logout">
+                    <LogOut/>
+                    <span>Logout</span>
+                 </SidebarMenuButton>
+               </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+
+        {/* Mobile Sidebar */}
+        <Sidebar className="lg:hidden" side="left">
+          <SidebarHeader>
+            <Link href="/" className="block p-2">
+              <Logo />
+            </Link>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <Link href={item.href} passHref>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith(item.href)}
+                      tooltip={item.label}
+                    >
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+             {authUser && (
+              <>
+              <SidebarSeparator/>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/profile" passHref>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith('/profile')}
+                    >
+                      <User />
+                      <span>Profile</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton onClick={logout}>
+                    <LogOut />
+                    <span>Logout</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+              </>
+            )}
+          </SidebarFooter>
+        </Sidebar>
+
+        <div className="flex flex-1 flex-col">
+          <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
             <div className="container mx-auto flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="lg:hidden">
@@ -155,122 +243,38 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <SmartSearchBar />
               </div>
           </header>
-
-          <div className="container mx-auto flex flex-1">
-            <Sidebar className="hidden lg:flex" collapsible="icon">
-              <SidebarContent>
-                <SidebarMenu>
-                  {navItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <Link href={item.href} passHref>
-                        <SidebarMenuButton
-                          isActive={pathname.startsWith(item.href)}
-                          tooltip={item.label}
-                        >
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarContent>
-              <SidebarFooter>
-                <SidebarSeparator/>
-                <SidebarMenu>
-                   <SidebarMenuItem>
-                     <SidebarMenuButton onClick={logout} tooltip="Logout">
-                        <LogOut/>
-                        <span>Logout</span>
-                     </SidebarMenuButton>
-                   </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarFooter>
-            </Sidebar>
-
-            {/* Mobile-only Sidebar */}
-            <Sidebar className="lg:hidden" side="left">
-              <SidebarHeader>
-                <Link href="/" className="block p-2">
-                  <Logo />
-                </Link>
-              </SidebarHeader>
-              <SidebarContent>
-                <SidebarMenu>
-                  {navItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <Link href={item.href} passHref>
-                        <SidebarMenuButton
-                          isActive={pathname.startsWith(item.href)}
-                          tooltip={item.label}
-                        >
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarContent>
-              <SidebarFooter>
-                 {authUser && (
-                  <>
-                  <SidebarSeparator/>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <Link href="/profile" passHref>
-                        <SidebarMenuButton
-                          isActive={pathname.startsWith('/profile')}
-                        >
-                          <User />
-                          <span>Profile</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton onClick={logout}>
-                        <LogOut />
-                        <span>Logout</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                  </>
-                )}
-              </SidebarFooter>
-            </Sidebar>
-
-            <main className="flex-1 overflow-y-auto pb-24 md:pb-0">{children}</main>
-          </div>
-
-          {/* Mobile Bottom Navigation */}
-          {!isAdmin && (
-            <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
-              <div className="flex items-center justify-center gap-2">
-                {[
-                  { href: '/products', label: 'Home', icon: Home },
-                  { href: '/offers', label: 'Offers', icon: Tag },
-                  { href: '/chat', label: 'Chat', icon: MessageSquare },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
-                      pathname.startsWith(item.href)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-accent/50'
-                    )}
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="sr-only">{item.label}</span>
-                  </Link>
-                ))}
-                <CartSheet />
-              </div>
-            </nav>
-          )}
+          
+          <main className="flex-1 overflow-y-auto pb-24 md:pb-0">{children}</main>
         </div>
-      </SidebarProvider>
-    </div>
+
+        {/* Mobile Bottom Navigation */}
+        {!isAdmin && (
+          <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
+            <div className="flex items-center justify-center gap-2">
+              {[
+                { href: '/products', label: 'Home', icon: Home },
+                { href: '/offers', label: 'Offers', icon: Tag },
+                { href: '/chat', label: 'Chat', icon: MessageSquare },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
+                    pathname.startsWith(item.href)
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-accent/50'
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="sr-only">{item.label}</span>
+                </Link>
+              ))}
+              <CartSheet />
+            </div>
+          </nav>
+        )}
+      </div>
+    </SidebarProvider>
   );
 }
