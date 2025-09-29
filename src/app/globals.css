@@ -123,4 +123,39 @@
   .glass-icon-button {
      @apply bg-primary/10 backdrop-blur-lg border border-primary/20 rounded-full shadow-lg p-3 text-center text-primary transition-transform duration-300 ease-out hover:scale-110 active:scale-95;
   }
+
+  /* For hiding scrollbars but keeping scroll functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* New Category Tab styles */
+  .category-tab-item.active-category-tab {
+    color: hsl(var(--primary));
+    font-weight: 600;
+  }
+  .active-category-tab::before,
+  .active-category-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 50%;
+  }
+
+  .active-category-tab::before {
+    left: -20px;
+    box-shadow: 10px 10px 0 0 hsl(var(--background));
+  }
+
+  .active-category-tab::after {
+    right: -20px;
+    box-shadow: -10px 10px 0 0 hsl(var(--background));
+  }
 }

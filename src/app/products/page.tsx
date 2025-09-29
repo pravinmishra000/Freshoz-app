@@ -12,10 +12,12 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from 'next/image';
 import { AppShell } from '@/components/layout/AppShell';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [bestDeals, setBestDeals] = useState<Product[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>('fresh-vegetables');
 
   useEffect(() => {
     setProducts(allProductsData);
@@ -58,19 +60,26 @@ export default function ProductsPage() {
         </section>
 
         {/* Category Section */}
-        <section className="my-8">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <section className="my-8 bg-primary rounded-t-2xl p-4 relative">
+          <h2 className="text-xl font-bold text-primary-foreground mb-4 px-2">Shop by Category</h2>
+          <div className="flex overflow-x-auto space-x-2 pb-4 no-scrollbar">
             {CATEGORIES.map((category) => {
               const Icon = categoryIcons[category.slug] || ShoppingCart;
+              const isActive = activeCategory === category.slug;
               return (
-                <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
-                  <div className="glass-card p-4 text-center cursor-pointer hover:scale-105 transition-transform h-40 flex flex-col justify-center items-center relative">
-                    <div className="absolute top-0 left-0 w-full h-12 bg-primary rounded-b-3xl -translate-y-3 shadow-md flex items-center justify-center">
-                      <Icon className="text-white h-6 w-6" />
-                    </div>
-                    <h3 className="font-semibold text-foreground text-center text-sm mt-16">{category.name_en}</h3>
-                  </div>
+                <Link
+                  key={category.id}
+                  href={`/products/category/${category.slug}`}
+                  onClick={() => setActiveCategory(category.slug)}
+                  className={cn(
+                    "category-tab-item relative flex flex-col items-center justify-center space-y-2 p-3 flex-shrink-0 w-24 rounded-t-xl transition-all duration-300",
+                    isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
+                  )}
+                >
+                  <Icon className={cn("h-6 w-6", isActive ? "text-primary" : "text-primary-foreground")} />
+                  <span className={cn("text-xs font-medium text-center", isActive ? "text-primary" : "text-primary-foreground")}>
+                    {category.name_en}
+                  </span>
                 </Link>
               );
             })}
