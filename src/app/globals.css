@@ -119,6 +119,14 @@
     @apply border-b border-white/30;
   }
 
+  /* Sidebar background */
+  [data-sidebar="sidebar"] {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
   /* Icon Button with Glass Effect */
   .glass-icon-button {
      @apply bg-primary/10 backdrop-blur-lg border border-primary/20 rounded-full shadow-lg p-3 text-center text-primary transition-transform duration-300 ease-out hover:scale-110 active:scale-95;
