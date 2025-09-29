@@ -71,8 +71,8 @@ export default function ProductsPage() {
                             href={`/products/category/${category.slug}`}
                             onClick={() => setActiveCategory(category.slug)}
                             className={cn(
-                                "category-tab-item relative flex-shrink-0 w-24 h-24 flex flex-col items-center justify-center rounded-t-xl transition-all duration-300",
-                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10 pt-8"
+                                "category-tab-item relative flex flex-col items-center justify-center rounded-t-xl transition-all duration-300 p-4",
+                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
                             )}
                         >
                             <Icon className={cn(
