@@ -33,7 +33,7 @@ export default function ProductsPage() {
     'snacks-beverages': Coffee,
     'staples-grocery': ShoppingCart,
     'non-veg': Drumstick,
-  }
+  };
 
   return (
     <AppShell>
