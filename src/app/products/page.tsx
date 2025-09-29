@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,10 +18,10 @@ export default function ProductsPage() {
 
   useEffect(() => {
     setProducts(allProductsData);
-    // Filter products for "Best Deals" (e.g., biggest discount)
+    // Best deals sorted by discount
     const sortedDeals = [...allProductsData]
       .sort((a, b) => (b.mrp - b.price) - (a.mrp - a.price))
-      .slice(0, 10);
+      .slice(0, 12); // 12 for card-in-card grouping
     setBestDeals(sortedDeals);
   }, []);
 
@@ -35,69 +34,74 @@ export default function ProductsPage() {
     'non-veg': Drumstick,
   };
 
+  // Group best deals in sets of 2-3 for card-in-card
+  const bestDealsGrouped = [];
+  for (let i = 0; i < bestDeals.length; i += 3) {
+    bestDealsGrouped.push(bestDeals.slice(i, i + 3));
+  }
+
   return (
     <AppShell>
       <main className="container mx-auto pb-24">
-        {/* Offer Banner Section */}
+        {/* Promotions Carousel */}
         <section className="my-6">
-            <Carousel
-                opts={{ loop: true }}
-                plugins={[Autoplay({ delay: 5000 })]}
-            >
+          <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
             <CarouselContent>
               {promotions.map((promo) => (
                 <CarouselItem key={promo.id}>
-                    <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl glass-card">
-                         <Image
-                            src={promo.imageUrl}
-                            alt={promo.title}
-                            fill
-                            className="object-cover"
-                            data-ai-hint={promo.imageHint}
-                        />
-                        <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-6">
-                            <h3 className="text-white text-2xl font-bold">{promo.title}</h3>
-                            <p className="text-white/90">{promo.description}</p>
-                        </div>
+                  <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
+                    <Image src={promo.imageUrl} alt={promo.title} fill className="object-cover" />
+                    <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-6">
+                      <h3 className="text-white text-2xl font-bold">{promo.title}</h3>
+                      <p className="text-white/90">{promo.description}</p>
                     </div>
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
         </section>
 
-        {/* Category Section */}
+        {/* Category Section with Flap Icons */}
         <section className="my-8">
           <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {CATEGORIES.map((category) => {
               const Icon = categoryIcons[category.slug] || ShoppingCart;
               return (
-              <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
-                <div className="glass-card p-4 text-center hover:scale-105 transition-transform cursor-pointer h-40 flex flex-col justify-center items-center">
-                   <div className="text-4xl mb-2 text-primary">
-                    <Icon />
+                <Link key={category.id} href={`/products/category/${category.slug}`} className="block">
+                  <div className="glass-card p-4 text-center cursor-pointer hover:scale-105 transition-transform h-40 flex flex-col justify-center items-center relative">
+                    {/* Flap style */}
+                    <div className="absolute top-0 left-0 w-full h-12 bg-primary rounded-b-3xl -translate-y-3 shadow-md flex items-center justify-center">
+                      <Icon className="text-white h-6 w-6" />
+                    </div>
+                    <h3 className="font-semibold text-foreground text-center text-sm mt-16">{category.name_en}</h3>
                   </div>
-                  <h3 className="font-semibold text-foreground text-center text-sm">{category.name_en}</h3>
-                </div>
-              </Link>
-            )})}
+                </Link>
+              );
+            })}
           </div>
         </section>
 
-        {/* Best Deals Section */}
+        {/* Best Deals Section (Card-in-Card) */}
         <section className="my-12">
-            <h2 className="text-2xl font-bold text-foreground mb-4">Best Deals</h2>
-            <div className="flex space-x-4 overflow-x-auto pb-4">
-                {bestDeals.map((product) => (
-                    <div key={product.id} className="min-w-[200px] sm:min-w-[240px]">
-                        <ProductCard product={product} />
+          <h2 className="text-2xl font-bold text-foreground mb-4">Best Deals</h2>
+          <div className="flex space-x-4 overflow-x-auto pb-4">
+            {bestDealsGrouped.map((group, idx) => (
+              <div key={idx} className="min-w-[220px] sm:min-w-[260px] flex flex-col gap-2">
+                <Card className="bg-white/80 backdrop-blur-md shadow-md p-2 flex flex-col gap-2">
+                  {group.map((product) => (
+                    <div key={product.id} className="flex-1">
+                      <ProductCard product={product} smallCard />
                     </div>
-                ))}
-            </div>
+                  ))}
+                </Card>
+              </div>
+            ))}
+          </div>
         </section>
 
-        {/* Popular Products Section */}
+        {/* Popular Products Grid */}
         <section className="my-12">
           <h2 className="text-2xl font-bold text-foreground mb-4">Popular Products</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -108,10 +112,11 @@ export default function ProductsPage() {
         </section>
       </main>
 
-        <a href="tel:9097882555" className="bg-positive text-white fixed bottom-40 right-6 md:bottom-20 z-40 h-14 w-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-            <Phone className="h-7 w-7" />
-            <span className="sr-only">Call to Order</span>
-        </a>
+      {/* Fixed Call & Help Buttons */}
+      <a href="tel:9097882555" className="bg-positive text-white fixed bottom-40 right-6 md:bottom-20 z-40 h-14 w-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+        <Phone className="h-7 w-7" />
+        <span className="sr-only">Call to Order</span>
+      </a>
 
       <button className="glass-icon-button fixed bottom-24 right-6 md:bottom-6">
         <HelpCircle className="h-7 w-7 text-primary" />
@@ -120,5 +125,3 @@ export default function ProductsPage() {
     </AppShell>
   );
 }
-
-    

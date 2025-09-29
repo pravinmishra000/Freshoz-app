@@ -24,10 +24,7 @@ export default function ProfilePage() {
     email: appUser?.email ?? 'demo@freshoz.in',
   };
 
-  const addresses = appUser?.addresses ?? [
-    { id: '1', type: 'Home', address: '123 Fresh Fields, Green Valley', city: 'Sultanganj', pincode: '813213', isDefault: true },
-    { id: '2', type: 'Work', address: '456 Business Park, Commerce St', city: 'Bhagalpur', pincode: '812001', isDefault: false },
-  ];
+  const addresses = appUser?.addresses ?? [];
 
   return (
     <AppShell>
@@ -77,21 +74,25 @@ export default function ProfilePage() {
               <Button variant="outline" size="sm">Add New</Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {addresses.map((addr, index) => (
-                <React.Fragment key={addr.id}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">{addr.type}</p>
-                        {addr.isDefault && <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">Default</span>}
+              {addresses.length > 0 ? (
+                addresses.map((addr, index) => (
+                  <React.Fragment key={addr.id}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold">{addr.type}</p>
+                          {addr.isDefault && <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">Default</span>}
+                        </div>
+                        <p className="text-muted-foreground">{addr.address}, {addr.city} - {addr.pincode}</p>
                       </div>
-                      <p className="text-muted-foreground">{addr.address}, {addr.city} - {addr.pincode}</p>
+                      <Button variant="ghost" size="sm">Edit</Button>
                     </div>
-                    <Button variant="ghost" size="sm">Edit</Button>
-                  </div>
-                  {index < addresses.length - 1 && <Separator />}
-                </React.Fragment>
-              ))}
+                    {index < addresses.length - 1 && <Separator />}
+                  </React.Fragment>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-4">You haven't added any addresses yet.</p>
+              )}
             </CardContent>
           </Card>
 
