@@ -98,7 +98,7 @@ const customerSupportFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await prompt(input);
-    const response = llmResponse.text();
+    const response = llmResponse.text;
     return response;
   }
 );

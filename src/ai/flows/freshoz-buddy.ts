@@ -99,8 +99,8 @@ ${JSON.stringify(products.map(p => ({name: p.name_en, name_hi: p.name_hi, pack_s
     });
 
 
-    const outputText = llmResponse.text();
-    const toolCalls = llmResponse.toolCalls();
+    const outputText = llmResponse.text;
+    const toolCalls = llmResponse.toolCalls;
 
     // For now, we are simplifying to handle one tool call per response.
     const cartAction = toolCalls && toolCalls.length > 0 ? (toolCalls[0].args as CartAction) : undefined;
