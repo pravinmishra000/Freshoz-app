@@ -85,8 +85,8 @@
     background: rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 
-      0 8px 32px 0 rgba(0, 0, 0, 0.1), /* Outer shadow */
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2); /* Inner shadow */
+      0 12px 40px 0 rgba(0, 0, 0, 0.12), /* Softer, deeper outer shadow */
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2); /* Inner shadow for edge highlight */
     @apply rounded-3xl overflow-hidden relative;
   }
   
