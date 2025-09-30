@@ -151,10 +151,6 @@ export const manageCart = ai.defineFlow(
     outputSchema: ManageCartOutput,
   },
   async ({ query, cartItems }) => {
-    // This is a mock. In a real app, this flow would need to interact with the
-    // client-side cart state, which is complex. This flow demonstrates the AI's
-    // understanding of the intent. The actual cart modification would be
-    // handled by client-side code after getting the structured output from the AI.
     const llmResponse = await ai.generate({
         prompt: `You are an intelligent shopping assistant for Freshoz. Your goal is to help users manage their shopping cart based on natural language commands.
 
@@ -171,7 +167,7 @@ Your tasks:
 2.  **Identify products and quantities.** Extract product names and amounts from the query. Match them against the product catalog. Be flexible with names (e.g., "tamatar" for "Tomato").
 3.  **Check availability.** If a user wants to add an item, assume it's available from the catalog.
 4.  **Formulate a response.**
-    *   If the command is clear (e.g., "add 2 kg tomatoes"), respond with a confirmation message and the corresponding action JSON. Example: "Sure, I've added 2 kg of Fresh Tomatoes. Anything else?"
+    *   If the command is clear and you find a matching product (e.g., user asks for "2 kg tomatoes"), respond with a confirmation message and the corresponding action JSON. Example message: "I found 'Fresh Tomatoes'. Should I add it to your cart?"
     *   If the command is ambiguous (e.g., "add some apples"), ask a clarifying question. Example: "Sure, how many apples would you like to add?"
     *   If an item is not in the catalog, inform the user gracefully. Example: "I'm sorry, I couldn't find 'exotic space carrots' in our store."
     *   If the user asks to see their cart, list the items and their quantities.

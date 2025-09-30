@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Bot, Loader2, SendHorizonal, Sparkles, X, Phone, MessageSquare, Mic } from 'lucide-react';
+import { Bot, Loader2, SendHorizonal, Sparkles, X, Phone, MessageSquare, Mic, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,11 +15,13 @@ import { cn } from '@/lib/utils';
 import type { CartItem, Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   content: React.ReactNode;
+  productSuggestion?: Product;
 };
 
 type AIFlow = 'alternatives' | 'track' | 'availability' | 'cart';
@@ -69,7 +71,6 @@ export default function FreshozBuddy() {
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(text);
-    // Find an Indian voice
     const voices = window.speechSynthesis.getVoices();
     const indianVoice = voices.find(voice => voice.lang === 'en-IN' || voice.lang === 'hi-IN');
     if (indianVoice) {
@@ -80,9 +81,10 @@ export default function FreshozBuddy() {
   };
   
   useEffect(() => {
-    // Pre-load voices
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
     }
   }, []);
 
@@ -94,7 +96,7 @@ export default function FreshozBuddy() {
         role: 'assistant', 
         content: proactiveMessage
       }]);
-      speak(proactiveMessage);
+       if (typeof proactiveMessage === 'string') speak(proactiveMessage);
     }
   }, [isOpen, cartItems, messages.length]);
   
@@ -131,7 +133,7 @@ export default function FreshozBuddy() {
     }
   
     setIsListening(true);
-    setShowInitial(false); // Move to chat view
+    setShowInitial(false); 
     if (!currentFlow) {
         setCurrentFlow('cart');
     }
@@ -144,7 +146,7 @@ export default function FreshozBuddy() {
   
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      // Directly call handleSubmit with the transcript
+      setInputValue(transcript);
       handleSubmit(undefined, transcript);
     };
   
@@ -160,29 +162,22 @@ export default function FreshozBuddy() {
     recognition.start();
   };
 
-  const handleAiActions = (actions: any[]) => {
-    actions.forEach(action => {
-      if (action.action === 'add' && action.itemName) {
-        const productToAdd = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
-        if (productToAdd) {
-            addToCart({
-                id: productToAdd.id,
-                productId: productToAdd.id,
-                variantId: 'default',
-                name: productToAdd.name_en,
-                price: productToAdd.price,
-                image: productToAdd.image,
-                quantity: action.quantity || 1,
-            });
-            toast({
-                title: 'Item Added!',
-                description: `${action.quantity || 1} x ${productToAdd.name_en} added to your cart.`,
-            });
-        }
-      }
-      // Implement 'remove' and 'update' logic here if needed
-    });
-  };
+  const handleAddProductFromSuggestion = (product: Product, quantity = 1) => {
+     addToCart({
+        id: product.variants?.[0]?.id ? `${product.id}-${product.variants[0].id}` : product.id,
+        productId: product.id,
+        variantId: product.variants?.[0]?.id || 'default',
+        name: product.name_en,
+        price: product.variants?.[0]?.price || product.price,
+        image: product.image,
+        quantity: quantity,
+      });
+      toast({
+          title: 'Item Added!',
+          description: `${quantity} x ${product.name_en} added to your cart.`,
+      });
+  }
+
 
   const handleSubmit = async (e?: React.FormEvent, voiceTranscript?: string) => {
     e?.preventDefault();
@@ -226,15 +221,26 @@ export default function FreshozBuddy() {
       const result = await flowAction(actionInput as any);
       
       let responseContent: React.ReactNode;
-      let responseTextToSpeak: string;
+      let responseTextToSpeak: string = "";
+      let productSuggestion: Product | undefined;
 
       if (typeof result === 'object' && result !== null) {
-        // Handle cart actions first
+        // Handle cart actions first - now this just finds the product
         if (result.actions && result.actions.length > 0) {
-            handleAiActions(result.actions);
+            const action = result.actions[0]; // Handle one product at a time for clarity
+            if (action.action === 'add' && action.itemName) {
+                productSuggestion = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
+            }
         }
 
-        if ('alternatives' in result) {
+        if (productSuggestion) {
+            responseTextToSpeak = result.message || `I found ${productSuggestion.name_en}. Should I add it to your cart?`;
+            responseContent = (
+                <div>
+                    <p>{responseTextToSpeak}</p>
+                </div>
+            );
+        } else if ('alternatives' in result) {
           responseTextToSpeak = `${result.reasoning} Here are some cheaper alternatives: ${result.alternatives.join(', ')}.`;
           responseContent = (
             <div className="space-y-2">
@@ -283,9 +289,11 @@ export default function FreshozBuddy() {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
         content: responseContent,
+        productSuggestion: productSuggestion
       };
+
       setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
-      speak(responseTextToSpeak);
+      if (responseTextToSpeak) speak(responseTextToSpeak);
 
     } catch (error) {
       console.error('AI Flow Error:', error);
@@ -307,11 +315,27 @@ export default function FreshozBuddy() {
     }
   };
   
+  const startFlow = (flow: AIFlow) => {
+    setCurrentFlow(flow);
+    setShowInitial(false);
+    const initialMessage = {
+      id: 'initial',
+      role: 'assistant' as const,
+      content: flowConfig[flow].prompt
+    };
+    setMessages([initialMessage]);
+    speak(flowConfig[flow].prompt);
+  };
+  
   const getBottomPosition = () => {
-    if (cartItems.length > 0) {
-        return "bottom-[8.5rem] md:bottom-24"
+    if (typeof window !== 'undefined' && window.innerWidth < 768) { // On mobile
+        if (cartItems.length > 0) {
+            return "bottom-[8.5rem]"; // Higher position when cart toast is visible
+        }
+        return "bottom-24"; // Default position above nav bar
     }
-    return "bottom-24 md:bottom-6";
+    // Desktop position
+    return "bottom-6";
   };
   
 
@@ -361,22 +385,42 @@ export default function FreshozBuddy() {
               <ScrollArea className="flex-1 px-6 py-4" ref={scrollAreaRef}>
                 <div className="space-y-4">
                   {messages.map((message) => (
-                    <div key={message.id} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
-                      {message.role === 'assistant' && (
-                        <Avatar className="h-8 w-8 bg-gradient-to-r from-green-500 to-emerald-600">
-                          <AvatarFallback className="bg-transparent">
-                            <Bot size={16} className="text-white" />
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
-                      <div className={cn(
-                        "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
-                        message.role === 'user' 
-                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                          : 'bg-gray-100 text-gray-800'
-                      )}>
-                        {message.content}
+                    <div key={message.id} className={`flex flex-col items-start gap-2 ${message.role === 'user' ? 'items-end' : ''}`}>
+                      <div className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                        {message.role === 'assistant' && (
+                          <Avatar className="h-8 w-8 bg-gradient-to-r from-green-500 to-emerald-600">
+                            <AvatarFallback className="bg-transparent">
+                              <Bot size={16} className="text-white" />
+                            </AvatarFallback>
+                          </Avatar>
+                        )}
+                        <div className={cn(
+                          "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                          message.role === 'user' 
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
+                            : 'bg-gray-100 text-gray-800'
+                        )}>
+                          {message.content}
+                        </div>
                       </div>
+                      {message.role === 'assistant' && message.productSuggestion && (
+                         <Card className="max-w-[80%] ml-11 bg-white border-gray-200 shadow-sm">
+                            <CardContent className="p-3 flex items-center gap-3">
+                                <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
+                                    <Image src={message.productSuggestion.image} alt={message.productSuggestion.name_en} fill className="object-cover" />
+                                </div>
+                                <div className="flex-grow">
+                                    <p className="font-semibold text-sm">{message.productSuggestion.name_en}</p>
+                                    <p className="text-xs text-muted-foreground">{message.productSuggestion.pack_size}</p>
+                                    <p className="font-bold text-sm text-primary">₹{message.productSuggestion.price}</p>
+                                </div>
+                                <Button size="sm" className="bg-positive text-white h-8" onClick={() => handleAddProductFromSuggestion(message.productSuggestion!)}>
+                                    <ShoppingCart className="h-4 w-4 mr-2" />
+                                    Add
+                                </Button>
+                            </CardContent>
+                         </Card>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -430,7 +474,7 @@ export default function FreshozBuddy() {
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
                       <div className="mb-3">
-                        <Button
+                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
