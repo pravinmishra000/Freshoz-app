@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { getCheaperAlternatives, trackOrderStatus, checkProductAvailability, manageCart } from '@/ai/flows/freshoz-buddy';
+import { manageCart } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
 import type { CartItem, Product } from '@/lib/types';
@@ -24,12 +24,9 @@ type ChatMessage = {
   productSuggestion?: Product;
 };
 
-type AIFlow = 'alternatives' | 'track' | 'availability' | 'cart';
-
 export default function FreshozBuddy() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentFlow, setCurrentFlow] = useState<AIFlow | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
@@ -40,33 +37,6 @@ export default function FreshozBuddy() {
   const recognitionRef = useRef<any>(null);
 
   const supportPhoneNumber = '9097882555';
-
-  const flowConfig = {
-    alternatives: {
-      prompt: 'आप किस उत्पाद के सस्ते विकल्प ढूंढ रहे हैं?',
-      placeholder: 'e.g., "आशीर्वाद आटा"',
-      action: getCheaperAlternatives,
-      inputKey: 'productName',
-    },
-    track: {
-      prompt: 'अपनी 주문 की स्थिति जानने के लिए कृपया अपना ऑर्डर आईडी दर्ज करें।',
-      placeholder: 'e.g., "ORDER12345"',
-      action: (input: any) => trackOrderStatus({ orderId: input.productName, userId: 'user123' }),
-      inputKey: 'productName',
-    },
-    availability: {
-      prompt: 'आप किस उत्पाद की उपलब्धता जांचना चाहेंगे?',
-      placeholder: 'e.g., "अमूल गोल्ड दूध"',
-      action: checkProductAvailability,
-      inputKey: 'productName',
-    },
-    cart: {
-      prompt: 'आप अपने कार्ट में आइटम जोड़, हटा या जांच सकते हैं। उदाहरण: "2 किलो टमाटर डालें"',
-      placeholder: 'e.g., "2 किलो टमाटर डालें"',
-      action: (input: {query: string, cartItems: CartItem[]}) => manageCart({ query: input.query, cartItems: input.cartItems }),
-      inputKey: 'query',
-    },
-  };
 
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -116,7 +86,6 @@ export default function FreshozBuddy() {
 
   const handleReset = () => {
     setMessages([]);
-    setCurrentFlow(null);
     setInputValue('');
     setIsLoading(false);
     setShowInitial(true);
@@ -139,9 +108,6 @@ export default function FreshozBuddy() {
   
     setIsListening(true);
     setShowInitial(false); 
-    if (!currentFlow) {
-        setCurrentFlow('cart');
-    }
     
     const recognition = new (window as any).webkitSpeechRecognition();
     recognition.lang = 'hi-IN'; // Prioritize Hindi recognition
@@ -151,7 +117,6 @@ export default function FreshozBuddy() {
   
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setInputValue(transcript);
       // Immediately submit the recognized speech
       handleSubmit(undefined, transcript);
     };
@@ -190,6 +155,7 @@ export default function FreshozBuddy() {
     const query = voiceTranscript || inputValue;
     if (!query.trim() || isLoading) return;
 
+    setShowInitial(false);
     const userMessage: ChatMessage = { id: Date.now().toString(), role: 'user', content: query };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
@@ -210,39 +176,38 @@ export default function FreshozBuddy() {
     setMessages((prev) => [...prev, loadingMessage]);
 
     try {
-      const flowToExecute = currentFlow || 'cart';
-      const flowDetails = flowConfig[flowToExecute];
-      const flowAction = flowDetails.action as Function;
-      const inputKey = flowDetails.inputKey;
       const currentCartItems = getCartItems();
       
-      const actionInput = { [inputKey]: query, cartItems: currentCartItems };
-      
-      const result = await flowAction(actionInput as any);
+      const result = await manageCart({ query, cartItems: currentCartItems });
       
       let responseContent: React.ReactNode;
       let responseTextToSpeak: string = "";
       let productSuggestion: Product | undefined;
 
       if (typeof result === 'object' && result !== null) {
-        // Handle cart actions first
+        responseTextToSpeak = result.message || "मैं आपकी कैसे मदद कर सकता हूँ?";
+        
+        // Check if there are actions and find the product
         if (result.actions && result.actions.length > 0) {
             const action = result.actions[0];
             const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
+
             if (product && (action.action === 'add' || action.action === 'update')) {
                  productSuggestion = product;
+                 responseContent = (
+                    <div>
+                        <p>{responseTextToSpeak}</p>
+                    </div>
+                );
+            } else {
+                 responseContent = <p>{responseTextToSpeak}</p>;
             }
+        } else {
+            responseContent = <p>{responseTextToSpeak}</p>;
         }
-        
-        responseTextToSpeak = result.message || "मैं आपकी कैसे मदद कर सकता हूँ?";
-        responseContent = (
-            <div>
-                <p>{responseTextToSpeak}</p>
-            </div>
-        );
 
       } else {
-        responseTextToSpeak = "Thank you! Your request has been processed.";
+        responseTextToSpeak = "धन्यवाद! आपका अनुरोध संसाधित कर लिया गया है।";
         responseContent = responseTextToSpeak;
       }
 
@@ -275,19 +240,7 @@ export default function FreshozBuddy() {
       setIsLoading(false);
     }
   };
-  
-  const startFlow = (flow: AIFlow) => {
-    setCurrentFlow(flow);
-    setShowInitial(false);
-    const initialMessage = {
-      id: 'initial',
-      role: 'assistant' as const,
-      content: flowConfig[flow].prompt
-    };
-    setMessages([initialMessage]);
-    speak(flowConfig[flow].prompt);
-  };
-  
+    
   const getBottomPosition = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) { // On mobile
         if (cartItems.length > 0) {
@@ -298,13 +251,6 @@ export default function FreshozBuddy() {
     return "bottom-6";
   };
   
-
-  const quickActions = [
-    { label: "कार्ट प्रबंधित करें", flow: 'cart' as const, icon: Bot },
-    { label: "ऑर्डर ट्रैक करें", flow: 'track' as const, icon: Bot },
-    { label: "विकल्प खोजें", flow: 'alternatives' as const, icon: Bot },
-  ];
-
   return (
     <>
         <Button
@@ -340,7 +286,7 @@ export default function FreshozBuddy() {
             </SheetTitle>
           </SheetHeader>
           
-          {currentFlow || !showInitial ? (
+          {!showInitial ? (
             <>
               <ScrollArea className="flex-1 px-6 py-4" ref={scrollAreaRef}>
                 <div className="space-y-4">
@@ -392,7 +338,7 @@ export default function FreshozBuddy() {
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder={currentFlow ? flowConfig[currentFlow].placeholder : 'बोलें या टाइप करें...'}
+                      placeholder={'बोलें या टाइप करें...'}
                       disabled={isLoading}
                       className="pr-12"
                       autoFocus
@@ -413,18 +359,16 @@ export default function FreshozBuddy() {
                   </Button>
                 </form>
                 
-                {currentFlow && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="mt-3 w-full" 
-                    onClick={handleReset}
-                    disabled={isLoading}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    फिर से शुरू करें
-                  </Button>
-                )}
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="mt-3 w-full" 
+                  onClick={handleReset}
+                  disabled={isLoading}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  फिर से शुरू करें
+                </Button>
               </SheetFooter>
             </>
           ) : (
@@ -448,20 +392,6 @@ export default function FreshozBuddy() {
                       <p className="text-muted-foreground text-sm">
                         आपकी खरीदारी को बेहतर बनाने के लिए मैं यहाँ हूँ!
                       </p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {quickActions.map((action) => (
-                        <Button
-                          key={action.label}
-                          variant="outline"
-                          className="w-full justify-start gap-3 bg-white hover:bg-gray-50 border-gray-200"
-                          onClick={() => startFlow(action.flow)}
-                        >
-                          <action.icon className="h-5 w-5 text-green-600" />
-                          <span>{action.label}</span>
-                        </Button>
-                      ))}
                     </div>
                   </CardContent>
                 </Card>
