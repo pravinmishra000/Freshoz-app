@@ -108,14 +108,20 @@ export default function FreshozBuddy() {
 
     const recognition = new (window as any).webkitSpeechRecognition();
     recognition.lang = 'hi-IN';
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognitionRef.current = recognition;
 
     recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInputValue(transcript);
-      handleSubmit(undefined, transcript);
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if(finalTranscript) {
+         setInputValue(finalTranscript);
+      }
     };
 
     recognition.onerror = (event: any) => {
@@ -125,6 +131,13 @@ export default function FreshozBuddy() {
 
     recognition.onend = () => {
       setIsListening(false);
+      // Use a timeout to ensure the final inputValue is set before submitting
+      setTimeout(() => {
+          // Access the value via a ref or function argument if state isn't updating fast enough
+          if(inputValue.trim()){
+             handleSubmit(undefined, inputValue);
+          }
+      }, 100);
     };
 
     recognition.start();
