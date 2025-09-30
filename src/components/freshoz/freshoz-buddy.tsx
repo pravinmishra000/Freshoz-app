@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Bot, Loader2, SendHorizonal, Sparkles, X, Mic, ShoppingCart, MessageSquare, Phone } from 'lucide-react';
+import { Bot, Loader2, SendHorizonal, Sparkles, X, Mic, ShoppingCart, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { manageCart } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
-import type { CartItem, Product } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -31,7 +31,7 @@ export default function FreshozBuddy() {
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
   const [isListening, setIsListening] = useState(false);
-  const { cartItems, getCartItems, addToCart } = useCart();
+  const { getCartItems, addToCart } = useCart();
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -44,8 +44,10 @@ export default function FreshozBuddy() {
     const setVoice = () => {
         window.speechSynthesis.cancel();
         const voices = window.speechSynthesis.getVoices();
+        // Prioritize a female Hindi voice
         let desiredVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('female'));
         
+        // Fallback to any Hindi voice if a female one isn't found
         if (!desiredVoice) {
             desiredVoice = voices.find(voice => voice.lang === 'hi-IN');
         }
@@ -55,6 +57,7 @@ export default function FreshozBuddy() {
         window.speechSynthesis.speak(utterance);
     };
 
+    // Voices are loaded asynchronously. We need to wait for them.
     if (window.speechSynthesis.getVoices().length === 0) {
         window.speechSynthesis.onvoiceschanged = setVoice;
     } else {
@@ -62,17 +65,6 @@ export default function FreshozBuddy() {
     }
   }, []);
 
-  useEffect(() => {
-    if (isOpen && cartItems.length > 0 && messages.length === 0 && showInitial) {
-      const proactiveMessage = "Namaste! Maine dekha ki aapke cart mein kuch saaman hai. Kya main aapki koi madad kar sakti hoon?";
-      setMessages([{
-        id: 'proactive',
-        role: 'assistant',
-        content: proactiveMessage
-      }]);
-      if (typeof proactiveMessage === 'string') speak(proactiveMessage);
-    }
-  }, [isOpen, cartItems, messages.length, showInitial, speak]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -238,19 +230,6 @@ export default function FreshozBuddy() {
     }
   };
 
-  const SuggestionCard = ({ icon, text, query }: { icon: React.ElementType, text: string, query: string }) => {
-    const Icon = icon;
-    return (
-        <Card 
-            className="flex-1 glass-card p-3 text-center hover:scale-105 transition-transform"
-            onClick={() => handleSubmit(undefined, query)}
-        >
-            <Icon className="h-6 w-6 mx-auto text-primary mb-1" />
-            <p className="text-xs font-semibold text-primary">{text}</p>
-        </Card>
-    )
-  }
-
   return (
     <>
       <Button
@@ -258,7 +237,7 @@ export default function FreshozBuddy() {
         onClick={() => setIsOpen(true)}
         className={cn(
           "glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 transition-all duration-300 md:right-6",
-          useCart().cartCount > 0 ? 'md:bottom-40' : 'md:bottom-24'
+           useCart().cartCount > 0 ? 'md:bottom-40' : 'md:bottom-24'
         )}
         aria-label="Open AI Assistant"
       >
@@ -278,7 +257,7 @@ export default function FreshozBuddy() {
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-2 rounded-full">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
-                <div>
+                 <div>
                   <h2 className="text-xl font-bold uppercase text-primary">
                     <span className="text-positive font-black">FRESHOZ</span> AI
                   </h2>
@@ -374,7 +353,7 @@ export default function FreshozBuddy() {
               </SheetFooter>
             </>
           ) : (
-            <div className="flex-1 px-6 py-6 flex flex-col justify-center">
+             <div className="flex-1 px-6 py-6 flex flex-col justify-center">
               <div className="space-y-4">
                   <div className="text-center mb-6">
                       <div className="inline-block p-3 bg-green-500/10 rounded-full mb-3">
@@ -392,10 +371,9 @@ export default function FreshozBuddy() {
                         Aapki shopping behtar banane ke liye main yahaan hoon!
                       </p>
                   </div>
-                   <div className="flex gap-2">
-                     <SuggestionCard icon={ShoppingCart} text="Add to Cart" query="Add 1kg tomatoes to cart" />
-                     <SuggestionCard icon={MessageSquare} text="Order Status" query="What is the status of my last order?" />
-                     <SuggestionCard icon={Phone} text="Call Support" query="Call customer support" />
+                   <div className="text-center text-sm text-muted-foreground">
+                    <p>Try asking:</p>
+                    <p className="font-semibold text-primary mt-1">"Add 1kg tomatoes to cart"</p>
                   </div>
               </div>
             </div>
@@ -405,5 +383,3 @@ export default function FreshozBuddy() {
     </>
   );
 }
-
-    
