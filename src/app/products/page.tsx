@@ -114,7 +114,7 @@ export default function ProductsPage() {
       </main>
 
       {/* Fixed Call & Help Buttons */}
-      <a href="tel:9097882555" className="bg-positive text-white fixed bottom-40 right-6 md:bottom-20 z-40 h-14 w-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+      <a href="tel:9097882555" className="glass-icon-button fixed bottom-24 left-4 z-40 h-14 w-14 md:left-6 md:bottom-6">
         <Phone className="h-7 w-7" />
         <span className="sr-only">Call to Order</span>
       </a>

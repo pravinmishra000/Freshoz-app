@@ -241,25 +241,12 @@ export default function FreshozBuddy() {
     }
   };
     
-  const getBottomPosition = () => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) { // On mobile
-        if (cartItems.length > 0) {
-            return "bottom-28";
-        }
-        return "bottom-24"; 
-    }
-    return "bottom-6";
-  };
-  
   return (
     <>
         <Button
           variant="outline"
           onClick={() => setIsOpen(true)}
-          className={cn(
-            "fixed right-4 z-40 h-14 w-14 rounded-full border-2 border-primary/20 bg-primary/10 p-0 text-positive shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-primary/20 hover:scale-110 md:right-6",
-            getBottomPosition()
-          )}
+          className="glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 md:right-6 md:bottom-6"
           aria-label="Open AI Assistant"
         >
           <Sparkles className="h-7 w-7 text-[#22c55e]" />

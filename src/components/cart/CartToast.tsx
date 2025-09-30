@@ -41,7 +41,7 @@ export function CartToast() {
         animate={{ y: 0 }}
         exit={{ y: '150%' }}
         transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-        className="fixed bottom-[5.5rem] left-0 right-0 z-40 md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[95%] md:max-w-md"
+        className="fixed bottom-24 left-0 right-0 z-40 md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-[95%] md:max-w-md"
       >
         <div className="flex flex-col items-center gap-2 px-4 md:px-0">
           {/* Secondary toast for free delivery */}
