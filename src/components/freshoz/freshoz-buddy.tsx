@@ -12,7 +12,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getCheaperAlternatives, trackOrderStatus, checkProductAvailability, manageCart } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
-import type { CartItem } from '@/lib/types';
+import type { CartItem, Product } from '@/lib/types';
+import { products as allProducts } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 type ChatMessage = {
   id: string;
@@ -30,7 +32,8 @@ export default function FreshozBuddy() {
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
   const [isListening, setIsListening] = useState(false);
-  const { cartItems, getCartItems } = useCart();
+  const { cartItems, getCartItems, addToCart } = useCart();
+  const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -84,7 +87,7 @@ export default function FreshozBuddy() {
   }, []);
 
   useEffect(() => {
-    if (isOpen && cartItems.length > 2 && messages.length === 0) {
+    if (isOpen && cartItems.length > 0 && messages.length === 0) {
       const proactiveMessage = "I see you have items in your cart! Need help with anything? I can help you manage cart, track orders, or find better deals!";
       setMessages([{
         id: 'proactive',
@@ -93,7 +96,7 @@ export default function FreshozBuddy() {
       }]);
       speak(proactiveMessage);
     }
-  }, [isOpen, cartItems.length, messages.length]);
+  }, [isOpen, cartItems, messages.length]);
   
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -165,6 +168,30 @@ export default function FreshozBuddy() {
     recognition.start();
   };
 
+  const handleAiActions = (actions: any[]) => {
+    actions.forEach(action => {
+      if (action.action === 'add' && action.itemName) {
+        const productToAdd = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
+        if (productToAdd) {
+            addToCart({
+                id: productToAdd.id,
+                productId: productToAdd.id,
+                variantId: 'default',
+                name: productToAdd.name_en,
+                price: productToAdd.price,
+                image: productToAdd.image,
+                quantity: action.quantity || 1,
+            });
+            toast({
+                title: 'Item Added!',
+                description: `${action.quantity || 1} x ${productToAdd.name_en} added to your cart.`,
+            });
+        }
+      }
+      // Implement 'remove' and 'update' logic here if needed
+    });
+  };
+
   const handleSubmit = async (e?: React.FormEvent, voiceTranscript?: string) => {
     e?.preventDefault();
     const query = voiceTranscript || inputValue;
@@ -210,6 +237,11 @@ export default function FreshozBuddy() {
       let responseTextToSpeak: string;
 
       if (typeof result === 'object' && result !== null) {
+        // Handle cart actions first
+        if (result.actions && result.actions.length > 0) {
+            handleAiActions(result.actions);
+        }
+
         if ('alternatives' in result) {
           responseTextToSpeak = `${result.reasoning} Here are some cheaper alternatives: ${result.alternatives.join(', ')}.`;
           responseContent = (
@@ -369,16 +401,16 @@ export default function FreshozBuddy() {
                       className="pr-12"
                       autoFocus
                     />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                      onClick={startVoiceInput}
-                      disabled={isLoading}
-                    >
-                      <Mic className={`h-5 w-5 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`} />
-                    </Button>
+                     <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-green-500 hover:bg-green-600 rounded-full"
+                        onClick={startVoiceInput}
+                        disabled={isLoading}
+                      >
+                        <Mic className={`h-5 w-5 text-white ${isListening ? 'animate-pulse' : ''}`} />
+                      </Button>
                   </div>
                   <Button type="submit" size="icon" className="bg-gradient-to-r from-green-500 to-emerald-600" disabled={isLoading || !inputValue.trim()}>
                     <SendHorizonal className="h-4 w-4" />
@@ -410,16 +442,16 @@ export default function FreshozBuddy() {
                       </div>
                       <div className="flex items-center justify-center gap-2">
                         <h3 className="font-semibold text-lg mb-2">How can I help you today?</h3>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 -mb-2"
-                          onClick={startVoiceInput}
-                          disabled={isLoading}
-                        >
-                          <Mic className={`h-5 w-5 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`} />
-                        </Button>
+                         <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 -mb-2 bg-green-500 hover:bg-green-600 rounded-full"
+                            onClick={startVoiceInput}
+                            disabled={isLoading}
+                          >
+                            <Mic className={`h-5 w-5 text-white ${isListening ? 'animate-pulse' : ''}`} />
+                          </Button>
                       </div>
 
                       <p className="text-muted-foreground text-sm">
@@ -472,5 +504,3 @@ export default function FreshozBuddy() {
     </>
   );
 }
-
-    
