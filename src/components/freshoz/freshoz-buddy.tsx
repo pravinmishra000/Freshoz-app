@@ -40,18 +40,14 @@ export default function FreshozBuddy() {
 
   const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
     
     const setVoice = () => {
+      window.speechSynthesis.cancel();
       const voices = window.speechSynthesis.getVoices();
-      // Find a male Hindi voice
       let desiredVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
       
-      // If no male voice, find any Hindi voice
       if (!desiredVoice) {
         desiredVoice = voices.find(voice => voice.lang === 'hi-IN');
       }
@@ -61,7 +57,6 @@ export default function FreshozBuddy() {
       window.speechSynthesis.speak(utterance);
     };
 
-    // Voices are loaded asynchronously. We need to wait for them.
     if (window.speechSynthesis.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = setVoice;
     } else {
@@ -389,20 +384,6 @@ export default function FreshozBuddy() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-0">
-                  <CardContent className="p-6">
-                    <h4 className="font-semibold text-center mb-4">Kya aapko insaani sahayata chahiye?</h4>
-                    <div className="space-y-3">
-                      <a href={`https://wa.me/${supportPhoneNumber}`} target="_blank" rel="noopener noreferrer" className="block w-full">
-                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-green-200">
-                          <MessageSquare className="h-5 w-5 text-green-600" />
-                          WhatsApp par chat karein
-                          <span className="ml-auto text-green-600">Turant madad</span>
-                        </Button>
-                      </a>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             </div>
           )}
