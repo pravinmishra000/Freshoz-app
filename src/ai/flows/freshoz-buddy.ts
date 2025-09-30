@@ -132,11 +132,11 @@ const getCartContents = ai.defineTool(
 
 
 const ManageCartInput = z.object({
-  query: z.string().describe('The user\'s request, e.g., "add 2kg tomatoes" or "remove apples".'),
+  query: z.string().describe('The user\'s request, e.g., "2kg टमाटर कार्ट में डालो" or "सेब हटाओ".'),
   cartItems: z.array(z.any()).describe("The current items in the user's cart."),
 });
 const ManageCartOutput = z.object({
-  message: z.string().describe('A confirmation message about the action taken, or a clarifying question.'),
+  message: z.string().describe('A confirmation message about the action taken, or a clarifying question. This message MUST be in Hindi.'),
   actions: z.array(z.object({
       action: z.enum(['add', 'remove', 'update']),
       itemName: z.string(),
@@ -152,7 +152,7 @@ export const manageCart = ai.defineFlow(
   },
   async ({ query, cartItems }) => {
     const llmResponse = await ai.generate({
-        prompt: `You are an intelligent shopping assistant for Freshoz. Your goal is to help users manage their shopping cart based on natural language commands.
+        prompt: `You are an intelligent shopping assistant for Freshoz. Your name is Freshoz. You MUST respond in Hindi.
 
 User's command: "${query}"
 
@@ -163,15 +163,15 @@ Full Product Catalog for reference (name, pack_size, price):
 ${JSON.stringify(products.map(p => ({name: p.name_en, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
 
 Your tasks:
-1.  **Interpret the user's command.** Understand if they want to add, remove, update quantities, or just check their cart.
-2.  **Identify products and quantities.** Extract product names and amounts from the query. Match them against the product catalog. Be flexible with names (e.g., "tamatar" for "Tomato").
+1.  **Interpret the user's command.** Understand if they want to add, remove, update quantities, or just check their cart. The user can use Hindi, English, or Hinglish.
+2.  **Identify products and quantities.** Extract product names and amounts from the query. Match them against the product catalog. Be flexible with names (e.g., "tamatar" for "Tomato", "kela" for "Banana").
 3.  **Check availability.** If a user wants to add an item, assume it's available from the catalog.
-4.  **Formulate a response.**
-    *   If the command is clear and you find a matching product (e.g., user asks for "2 kg tomatoes"), respond with a confirmation message and the corresponding action JSON. Example message: "I found 'Fresh Tomatoes'. Should I add it to your cart?"
-    *   If the command is ambiguous (e.g., "add some apples"), ask a clarifying question. Example: "Sure, how many apples would you like to add?"
-    *   If an item is not in the catalog, inform the user gracefully. Example: "I'm sorry, I couldn't find 'exotic space carrots' in our store."
-    *   If the user asks to see their cart, list the items and their quantities.
-    *   **CRUCIAL**: Before performing an 'add' or 'update' action, ALWAYS ask for confirmation. For example: "I found 'Amul Gold Milk 1L' for ₹56. Should I add it to your cart?"
+4.  **Formulate a response in HINDI.**
+    *   If the command is clear and you find a matching product, respond with a confirmation message and the corresponding action JSON. Example Hindi message: "मुझे 'ताज़ा टमाटर' मिला। क्या मैं इसे आपके कार्ट में डाल दूँ?"
+    *   If the command is ambiguous (e.g., "कुछ सेब डालो"), ask a clarifying question in Hindi. Example: "ज़रूर, आप कितने सेब कार्ट में डालना चाहेंगे?"
+    *   If an item is not in the catalog, inform the user gracefully in Hindi. Example: "माफ़ कीजिए, मुझे 'चमकीले गाजर' हमारे स्टोर में नहीं मिले।"
+    *   If the user asks to see their cart, list the items and their quantities in Hindi.
+    *   **CRUCIAL**: Before performing an 'add' or 'update' action, ALWAYS ask for confirmation in Hindi. For example: "मुझे 'Amul Gold Milk 1L' ₹56 का मिला। क्या मैं इसे आपके कार्ट में डाल दूँ?"
 `,
         output: { schema: ManageCartOutput },
         tools: [getCartContents],
