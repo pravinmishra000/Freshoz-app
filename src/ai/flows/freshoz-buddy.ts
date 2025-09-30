@@ -92,22 +92,23 @@ const freshozBuddyFlow = ai.defineFlow(
     outputSchema: FreshozBuddyOutputSchema,
   },
   async (input) => {
-    const llmResponse = await freshozBuddyPrompt.generate({
-      prompt: {
-        role: 'user',
-        content: input.query,
-      },
+    const llmResponse = await ai.generate({
+      prompt: input.query,
+      model: 'googleai/gemini-2.5-flash',
       history: [], // You can manage history here if needed
       context: {
         cartItems: input.cartItems,
-      }
+      },
+      tools: [updateCart],
+      promptConfig: freshozBuddyPrompt.promptConfig,
     });
 
-    const outputText = llmResponse.text;
-    const toolCalls = llmResponse.toolCalls;
+
+    const outputText = llmResponse.text();
+    const toolCalls = llmResponse.toolCalls();
 
     // For now, we are simplifying to handle one tool call per response.
-    const cartAction = toolCalls && toolCalls[0] ? (toolCalls[0].args as CartAction) : undefined;
+    const cartAction = toolCalls && toolCalls.length > 0 ? (toolCalls[0].args as CartAction) : undefined;
 
     return {
       response: outputText,
