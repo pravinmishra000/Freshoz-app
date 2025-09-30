@@ -107,14 +107,6 @@ export default function FreshozBuddy() {
     }
   }, [messages]);
 
-  const startFlow = (flow: AIFlow) => {
-    setCurrentFlow(flow);
-    const promptText = flowConfig[flow].prompt;
-    setMessages([{ id: 'start', role: 'assistant', content: promptText }]);
-    speak(promptText);
-    setShowInitial(false);
-  };
-  
   const handleReset = () => {
     setMessages([]);
     setCurrentFlow(null);
@@ -317,7 +309,7 @@ export default function FreshozBuddy() {
   
   const getBottomPosition = () => {
     if (cartItems.length > 0) {
-        return "bottom-28 md:bottom-24"
+        return "bottom-[8.5rem] md:bottom-24"
     }
     return "bottom-24 md:bottom-6";
   };
@@ -437,22 +429,19 @@ export default function FreshozBuddy() {
                 <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-0">
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
-                      <div className="bg-white p-3 rounded-full inline-block mb-3">
-                        <Sparkles className="h-8 w-8 text-green-600" />
+                      <div className="mb-3">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className={`h-12 w-12 bg-green-500 hover:bg-green-600 rounded-full transition-all duration-300 ${isListening ? 'scale-110 ring-4 ring-green-300' : ''}`}
+                          onClick={startVoiceInput}
+                          disabled={isLoading}
+                        >
+                          <Mic className={`h-6 w-6 text-white ${isListening ? 'animate-pulse' : ''}`} />
+                        </Button>
                       </div>
-                      <div className="flex items-center justify-center gap-2">
-                        <h3 className="font-semibold text-lg mb-2">How can I help you today?</h3>
-                         <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 -mb-2 bg-green-500 hover:bg-green-600 rounded-full"
-                            onClick={startVoiceInput}
-                            disabled={isLoading}
-                          >
-                            <Mic className={`h-5 w-5 text-white ${isListening ? 'animate-pulse' : ''}`} />
-                          </Button>
-                      </div>
+                      <h3 className="font-semibold text-lg">How can I help you today?</h3>
 
                       <p className="text-muted-foreground text-sm">
                         I'm here to make your shopping experience better!
