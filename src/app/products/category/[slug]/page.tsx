@@ -64,10 +64,10 @@ export default function CategoryPage() {
   return (
     <AppShell>
       <div className="container mx-auto py-8">
-        <div className="flex flex-row gap-4 md:gap-8">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           
           {/* Left Side: Category List */}
-          <aside className="w-1/4 md:w-1/5 lg:w-1/6">
+          <aside className="hidden md:block w-1/4 md:w-1/5 lg:w-1/6">
              <div className="sticky top-24">
                 <CategorySidebar 
                     categories={CATEGORIES} 
@@ -77,7 +77,7 @@ export default function CategoryPage() {
           </aside>
           
           {/* Right Side: Product Grid */}
-          <main className="w-3/4 md:w-4/5 lg:w-5/6">
+          <main className="w-full md:w-3/4 md:w-4/5 lg:w-5/6">
             {category ? (
               <>
                 <Card className="mb-6 border-0 bg-transparent shadow-none">

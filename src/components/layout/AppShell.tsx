@@ -8,7 +8,7 @@ import {
   Home, 
   LogOut, 
   User, 
-  LayoutDashboard, 
+  LayoutDashboard, EarningPeriod,
   Package, 
   MessageSquare, 
   Wallet,
@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
           
           {/* Main Body */}
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-0">{children}</main>
           
           {!isAdmin && <CartToast />}
         </SidebarInset>

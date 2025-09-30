@@ -40,14 +40,14 @@ export default function ProductsPage() {
 
   return (
     <AppShell>
-      <main className="container mx-auto pb-24">
+      <main className="container mx-auto">
         {/* Promotions Carousel */}
         <section className="my-6">
           <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
             <CarouselContent>
               {promotions.map((promo) => (
                 <CarouselItem key={promo.id}>
-                  <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
+                  <div className="relative h-48 md:h-auto md:aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
                     <Image src={promo.imageUrl} alt={promo.title} fill className="object-cover" data-ai-hint={promo.imageHint}/>
                     <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-6">
                       <h3 className="text-white text-2xl font-bold">{promo.title}</h3>
@@ -95,7 +95,7 @@ export default function ProductsPage() {
         {/* Best Deals Section */}
         <section className="my-12">
           <h2 className="text-2xl font-bold text-foreground mb-4">Best Deals</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
             {bestDeals.map((product) => (
                 <ProductCard key={product.id} product={product} />
             ))}
@@ -105,7 +105,7 @@ export default function ProductsPage() {
         {/* Popular Products Grid */}
         <section className="my-12">
           <h2 className="text-2xl font-bold text-foreground mb-4">Popular Products</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
             {products.slice(0, 10).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
