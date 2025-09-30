@@ -24,6 +24,7 @@ export function FreshozLogo({ size = 'md' }: FreshozLogoProps) {
           fill
           className="relative z-10 object-contain"
           priority
+          sizes="(max-width: 768px) 50px, 80px"
         />
       </div>
       

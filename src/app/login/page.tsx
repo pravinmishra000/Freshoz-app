@@ -260,7 +260,6 @@ export default function LoginPage() {
             </FormItem>
           )}
         />
-        <div id="recaptcha-container"></div>
         <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Send OTP
@@ -301,6 +300,7 @@ export default function LoginPage() {
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>
+          <div id="recaptcha-container"></div>
           <Tabs defaultValue="phone" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="phone">Phone</TabsTrigger>
