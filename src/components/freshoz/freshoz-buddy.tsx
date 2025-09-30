@@ -257,8 +257,8 @@ export default function FreshozBuddy() {
         variant="outline"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 transition-all duration-300 md:bottom-6 md:right-6",
-          useCart().cartCount > 0 ? 'md:bottom-28' : 'md:bottom-6'
+          "glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 transition-all duration-300 md:right-6",
+          useCart().cartCount > 0 ? 'md:bottom-40' : 'md:bottom-24'
         )}
         aria-label="Open AI Assistant"
       >
@@ -405,3 +405,5 @@ export default function FreshozBuddy() {
     </>
   );
 }
+
+    
