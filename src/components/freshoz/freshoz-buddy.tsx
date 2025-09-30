@@ -22,13 +22,7 @@ type ChatMessage = {
 
 type AIFlow = 'alternatives' | 'track' | 'availability' | 'cart';
 
-interface FreshozBuddyProps {
-  isButtonVisible?: boolean;
-}
-
-export default function FreshozBuddy({ 
-  isButtonVisible = true
-}: FreshozBuddyProps) {
+export default function FreshozBuddy() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentFlow, setCurrentFlow] = useState<AIFlow | null>(null);
@@ -38,6 +32,7 @@ export default function FreshozBuddy({
   const [isListening, setIsListening] = useState(false);
   const { cartItems, getCartItems } = useCart();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   const supportPhoneNumber = '9097882555';
 
@@ -68,13 +63,35 @@ export default function FreshozBuddy({
     },
   };
 
+  const speak = (text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    // Find an Indian voice
+    const voices = window.speechSynthesis.getVoices();
+    const indianVoice = voices.find(voice => voice.lang === 'en-IN' || voice.lang === 'hi-IN');
+    if (indianVoice) {
+      utterance.voice = indianVoice;
+    }
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  };
+  
+  useEffect(() => {
+    // Pre-load voices
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.getVoices();
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen && cartItems.length > 2 && messages.length === 0) {
+      const proactiveMessage = "I see you have items in your cart! Need help with anything? I can help you manage cart, track orders, or find better deals!";
       setMessages([{
         id: 'proactive',
         role: 'assistant', 
-        content: "I see you have items in your cart! Need help with anything? I can help you manage cart, track orders, or find better deals!"
+        content: proactiveMessage
       }]);
+      speak(proactiveMessage);
     }
   }, [isOpen, cartItems.length, messages.length]);
   
@@ -89,7 +106,9 @@ export default function FreshozBuddy({
 
   const startFlow = (flow: AIFlow) => {
     setCurrentFlow(flow);
-    setMessages([{ id: 'start', role: 'assistant', content: flowConfig[flow].prompt }]);
+    const promptText = flowConfig[flow].prompt;
+    setMessages([{ id: 'start', role: 'assistant', content: promptText }]);
+    speak(promptText);
     setShowInitial(false);
   };
   
@@ -103,29 +122,33 @@ export default function FreshozBuddy({
 
   const startVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window)) {
-      setMessages(prev => [...prev, {
-        id: 'voice-error',
-        role: 'assistant',
-        content: "Voice input is not supported in your browser. Please type your message."
-      }]);
+      const errorMsg = "Voice input is not supported in your browser. Please type your message.";
+      setMessages(prev => [...prev, { id: 'voice-error', role: 'assistant', content: errorMsg }]);
+      speak(errorMsg);
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
       return;
     }
 
     setIsListening(true);
     const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.lang = 'en-IN'; // Prioritize Indian English
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.lang = 'en-IN';
+    recognitionRef.current = recognition;
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setInputValue(transcript);
-      setIsListening(false);
       // Automatically submit after voice input
-      handleSubmit(new Event('submit'), transcript);
+      handleSubmit(undefined, transcript);
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
       setIsListening(false);
     };
 
@@ -136,8 +159,8 @@ export default function FreshozBuddy({
     recognition.start();
   };
 
-  const handleSubmit = async (e: Event | React.FormEvent, voiceTranscript?: string) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent, voiceTranscript?: string) => {
+    e?.preventDefault();
     const query = voiceTranscript || inputValue;
     if (!query.trim() || isLoading) return;
 
@@ -178,9 +201,11 @@ export default function FreshozBuddy({
       const result = await flowAction(actionInput as any);
       
       let responseContent: React.ReactNode;
+      let responseTextToSpeak: string;
 
       if (typeof result === 'object' && result !== null) {
         if ('alternatives' in result) {
+          responseTextToSpeak = `${result.reasoning} Here are some cheaper alternatives: ${result.alternatives.join(', ')}.`;
           responseContent = (
             <div className="space-y-2">
               <p>{result.reasoning}</p>
@@ -195,6 +220,7 @@ export default function FreshozBuddy({
             </div>
           );
         } else if ('orderStatus' in result) {
+           responseTextToSpeak = `${result.orderStatus}${result.deliveryETA ? ` Estimated Delivery is ${result.deliveryETA}.` : ''}`;
           responseContent = (
             <div className="bg-green-50 p-3 rounded-lg">
               <p className="font-semibold text-green-800">Order Status:</p>
@@ -205,18 +231,22 @@ export default function FreshozBuddy({
             </div>
           );
         } else if ('isAvailable' in result) {
+          responseTextToSpeak = result.availabilityMessage;
           responseContent = (
             <div className={`p-3 rounded-lg ${result.isAvailable ? 'bg-green-50 text-green-800' : 'bg-yellow-50 text-yellow-800'}`}>
               {result.availabilityMessage}
             </div>
           );
         } else if ('message' in result) {
+          responseTextToSpeak = result.message;
           responseContent = result.message;
         } else {
-          responseContent = "I've processed your request. How else can I help you?";
+          responseTextToSpeak = "I've processed your request. How else can I help you?";
+          responseContent = responseTextToSpeak;
         }
       } else {
-        responseContent = "Thank you! Your request has been processed.";
+        responseTextToSpeak = "Thank you! Your request has been processed.";
+        responseContent = responseTextToSpeak;
       }
 
       const assistantMessage: ChatMessage = {
@@ -225,9 +255,11 @@ export default function FreshozBuddy({
         content: responseContent,
       };
       setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
+      speak(responseTextToSpeak);
 
     } catch (error) {
       console.error('AI Flow Error:', error);
+      const errorText = "Sorry, something went wrong. Please try again or contact support directly";
       const errorMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
@@ -239,6 +271,7 @@ export default function FreshozBuddy({
         ),
       };
       setMessages((prev) => [...prev.slice(0, -1), errorMessage]);
+      speak(errorText);
     } finally {
       setIsLoading(false);
     }
@@ -246,7 +279,7 @@ export default function FreshozBuddy({
   
   const getBottomPosition = () => {
     if (cartItems.length > 0) {
-        return "bottom-28 md:bottom-24"
+        return "bottom-[8.5rem] md:bottom-24"
     }
     return "bottom-24 md:bottom-6";
   };
@@ -260,7 +293,6 @@ export default function FreshozBuddy({
 
   return (
     <>
-      {isButtonVisible && (
         <Button
           variant="outline"
           onClick={() => setIsOpen(true)}
@@ -272,7 +304,6 @@ export default function FreshozBuddy({
         >
           <Sparkles className="h-7 w-7 text-[#22c55e]" />
         </Button>
-      )}
       
       <Sheet open={isOpen} onOpenChange={(open) => {
           setIsOpen(open);
