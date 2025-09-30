@@ -118,11 +118,6 @@ export default function ProductsPage() {
         <Phone className="h-7 w-7" />
         <span className="sr-only">Call to Order</span>
       </a>
-
-      <button className="glass-icon-button fixed bottom-24 right-6 md:bottom-6">
-        <HelpCircle className="h-7 w-7 text-primary" />
-        <span className="sr-only">Help & Support</span>
-      </button>
     </AppShell>
   );
 }
