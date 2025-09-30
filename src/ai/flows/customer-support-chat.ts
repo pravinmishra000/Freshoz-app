@@ -12,6 +12,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { products, orders } from '@/lib/data'; // Using mock data for now
+import type { OrderStatus } from '@/lib/types';
 
 const MessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -51,7 +52,9 @@ const getOrderDetails = ai.defineTool(
   async ({ orderId }) => {
     // In a real app, this would query your Firestore database
     const order = orders.find((o) => o.id === orderId);
-    if (!order) return undefined;
+    if (!order || !order.id || !order.status || !order.totalAmount || !order.createdAt) {
+        return undefined;
+    }
 
     return {
         id: order.id,
