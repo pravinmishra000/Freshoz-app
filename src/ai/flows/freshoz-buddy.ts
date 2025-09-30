@@ -54,11 +54,21 @@ const FreshozBuddyOutputSchema = z.object({
 });
 export type FreshozBuddyOutput = z.infer<typeof FreshozBuddyOutputSchema>;
 
-// The main prompt
-const freshozBuddyPrompt = ai.definePrompt({
-  name: 'freshozBuddyPrompt',
-  tools: [updateCart],
-  system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
+
+// The main flow
+const freshozBuddyFlow = ai.defineFlow(
+  {
+    name: 'freshozBuddyFlow',
+    inputSchema: FreshozBuddyInputSchema,
+    outputSchema: FreshozBuddyOutputSchema,
+  },
+  async (input) => {
+    const llmResponse = await ai.generate({
+      prompt: input.query,
+      model: 'googleai/gemini-1.5-flash',
+      tools: [updateCart],
+      config: {
+          system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
 
 Your primary goal is to help users manage their shopping cart and answer their questions about products in a natural, conversational way. You MUST respond in conversational Hindi.
 
@@ -77,37 +87,6 @@ Your primary goal is to help users manage their shopping cart and answer their q
 {{else}}
 The cart is empty.
 {{/if}}
-
-**Product Catalog for Reference:**
-(The full catalog is provided to you. Use it to find item names, prices, and variants.)
-${JSON.stringify(products.map(p => ({name: p.name_en, name_hi: p.name_hi, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
-`,
-});
-
-// The main flow
-const freshozBuddyFlow = ai.defineFlow(
-  {
-    name: 'freshozBuddyFlow',
-    inputSchema: FreshozBuddyInputSchema,
-    outputSchema: FreshozBuddyOutputSchema,
-  },
-  async (input) => {
-    const llmResponse = await ai.generate({
-      prompt: input.query,
-      model: 'googleai/gemini-2.5-flash',
-      history: [], // You can manage history here if needed
-      tools: [updateCart],
-      promptConfig: {
-        system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
-
-Your primary goal is to help users manage their shopping cart and answer their questions about products in a natural, conversational way. You MUST respond in conversational Hindi.
-
-**Your Capabilities:**
-1.  **Add, Remove, Update Items:** Understand user requests to modify their cart. For example, "add 2kg tomatoes," "remove apples," "change milk to 2 packets."
-2.  **Answer Questions:** Respond to queries about product price, availability, and details based on the provided catalog.
-3.  **Confirmation First:** Before using the \`updateCart\` tool to make any change, YOU MUST ALWAYS confirm with the user first in your conversational response. For example, if the user says "add 1kg potatoes," you should respond with something like, "ज़रूर, मैं आपके कार्ट में 1 किलो आलू डाल दूँ?" (Sure, should I add 1kg potatoes to your cart?).
-4.  **Handle Ambiguity:** If a request is unclear (e.g., "add some milk"), ask a clarifying question like, "आप कौन सा दूध कार्ट में डालना चाहेंगी? हमारे पास Amul Gold और Amul Taaza है।" (Which milk would you like to add? We have Amul Gold and Amul Taaza).
-5.  **Product Not Found:** If a user asks for a product that is not in the catalog, inform them gracefully. Example: "माफ़ कीजिए, 'चमकीले गाजर' हमारे स्टोर में नहीं मिले।" (Sorry, 'shiny carrots' were not found in our store).
 
 **Product Catalog for Reference:**
 (The full catalog is provided to you. Use it to find item names, prices, and variants.)

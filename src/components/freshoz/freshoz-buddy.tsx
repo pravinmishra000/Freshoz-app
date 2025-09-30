@@ -36,7 +36,7 @@ export default function FreshozBuddy() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
- const speak = useCallback((text: string) => {
+  const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -50,6 +50,12 @@ export default function FreshozBuddy() {
         // Fallback to any Hindi voice if a female one isn't found
         if (!desiredVoice) {
             desiredVoice = voices.find(voice => voice.lang === 'hi-IN');
+        }
+
+        // Fallback to a default english voice if no hindi is available
+        if (!desiredVoice) {
+          let englishVoices = voices.filter(voice => voice.lang.startsWith('en-'));
+          desiredVoice = englishVoices.find(v => v.name.toLowerCase().includes('female')) || englishVoices[0];
         }
 
         utterance.voice = desiredVoice || null;
@@ -236,9 +242,9 @@ export default function FreshozBuddy() {
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                  <div>
-                  <h2 className="text-xl font-bold uppercase text-primary">
-                    <span className="font-black text-positive">FRESHOZ</span> AI
-                  </h2>
+                    <h2 className="text-xl font-bold uppercase text-primary">
+                        <span className="font-black text-positive">FRESHOZ</span> AI
+                    </h2>
                   <p className="text-sm text-muted-foreground">Aapki apni shopping assistant</p>
                 </div>
               </div>
