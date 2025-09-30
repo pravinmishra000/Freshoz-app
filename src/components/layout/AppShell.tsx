@@ -212,8 +212,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {/* Mobile Bottom Navigation */}
         {!isAdmin && (
-          <nav className="glass-card fixed bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full p-2 shadow-lg md:hidden">
-            <div className="flex items-center justify-center gap-2">
+          <nav className="glass-app-bar fixed bottom-0 left-0 right-0 z-30 rounded-t-xl py-2 px-4 shadow-lg md:hidden">
+            <div className="flex items-center justify-around">
               {[ 
                 { href: '/products', label: 'Home', icon: Home },
                 { href: '/offers', label: 'Offers', icon: Tag },
@@ -223,14 +223,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
+                    'flex h-12 w-16 flex-col items-center justify-center rounded-2xl text-sm font-medium transition-colors',
                     pathname.startsWith(item.href)
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-accent/50'
                   )}
                 >
                   <item.icon className="h-5 w-5" />
-                  <span className="sr-only">{item.label}</span>
+                  <span className="text-xs mt-1">{item.label}</span>
                 </Link>
               ))}
               <CartSheet />
