@@ -10,6 +10,7 @@ interface CartContextType {
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
+  getCartItems: () => CartItem[];
   cartCount: number;
   cartTotal: number;
 }
@@ -82,6 +83,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         console.error("Failed to clear cart from localStorage", error);
     }
   }, []);
+  
+  const getCartItems = useCallback(() => {
+    return cartItems;
+  }, [cartItems]);
 
   const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 0), 0);
   const cartTotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity || 0), 0);
@@ -92,6 +97,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     removeFromCart,
     updateQuantity,
     clearCart,
+    getCartItems,
     cartCount,
     cartTotal,
   };

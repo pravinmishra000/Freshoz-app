@@ -8,7 +8,7 @@ import {
   Home, 
   LogOut, 
   User, 
-  LayoutDashboard, EarningPeriod,
+  LayoutDashboard,
   Package, 
   MessageSquare, 
   Wallet,
@@ -46,6 +46,7 @@ import {
 import { CartSheet } from '../cart/CartSheet';
 import { SmartSearchBar } from '../products/SmartSearchBar';
 import { CartToast } from '../cart/CartToast';
+import FreshozBuddy from '../freshoz/freshoz-buddy';
 
 // Customer navigation items
 const customerNavItems = [
@@ -205,14 +206,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
           
           {/* Main Body */}
-          <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-0">{children}</main>
+          <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-4">{children}</main>
           
           {!isAdmin && <CartToast />}
+          {!isAdmin && <FreshozBuddy />}
         </SidebarInset>
 
         {/* Mobile Bottom Navigation */}
         {!isAdmin && (
-          <nav className="glass-app-bar fixed bottom-0 left-0 right-0 z-30 rounded-t-xl py-2 px-4 shadow-lg md:hidden">
+           <nav className="glass-app-bar fixed bottom-0 left-0 right-0 z-30 rounded-t-xl border-t py-2 px-4 shadow-lg md:hidden">
             <div className="flex items-center justify-around">
               {[ 
                 { href: '/products', label: 'Home', icon: Home },

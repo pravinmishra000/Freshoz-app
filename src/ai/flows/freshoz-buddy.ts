@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -7,6 +8,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { products, orders } from '@/lib/data';
+import type { CartItem } from '@/lib/types';
 
 // Flow 1: Get Cheaper Alternatives
 const CheaperAlternativesInput = z.object({
@@ -108,11 +110,38 @@ export const checkProductAvailability = ai.defineFlow(
 
 
 // Flow 4: Manage Cart
+
+const getCartContents = ai.defineTool(
+    {
+      name: 'getCartContents',
+      description: 'Retrieves the current items in the shopping cart.',
+      inputSchema: z.void(),
+      outputSchema: z.array(z.object({
+          id: z.string(),
+          name: z.string(),
+          quantity: z.number(),
+          price: z.number(),
+      })),
+    },
+    async () => {
+      // This is a placeholder. In the real implementation, the client will
+      // pass the cart contents to the flow.
+      return [];
+    }
+);
+
+
 const ManageCartInput = z.object({
   query: z.string().describe('The user\'s request, e.g., "add 2kg tomatoes" or "remove apples".'),
+  cartItems: z.array(z.any()).describe("The current items in the user's cart."),
 });
 const ManageCartOutput = z.object({
-  message: z.string().describe('A confirmation message about the action taken.'),
+  message: z.string().describe('A confirmation message about the action taken, or a clarifying question.'),
+  actions: z.array(z.object({
+      action: z.enum(['add', 'remove', 'update']),
+      itemName: z.string(),
+      quantity: z.number().optional(),
+  })).optional().describe('A list of actions to perform on the cart.'),
 });
 
 export const manageCart = ai.defineFlow(
@@ -121,14 +150,35 @@ export const manageCart = ai.defineFlow(
     inputSchema: ManageCartInput,
     outputSchema: ManageCartOutput,
   },
-  async ({ query }) => {
+  async ({ query, cartItems }) => {
     // This is a mock. In a real app, this flow would need to interact with the
     // client-side cart state, which is complex. This flow demonstrates the AI's
     // understanding of the intent. The actual cart modification would be
     // handled by client-side code after getting the structured output from the AI.
     const llmResponse = await ai.generate({
-        prompt: `The user wants to manage their cart. Their query is: "${query}". Interpret the query and respond with a confirmation of the action.`,
-        output: { schema: ManageCartOutput }
+        prompt: `You are an intelligent shopping assistant for Freshoz. Your goal is to help users manage their shopping cart based on natural language commands.
+
+User's command: "${query}"
+
+Current Cart Contents:
+${cartItems.length > 0 ? JSON.stringify(cartItems.map(item => ({name: item.name, quantity: item.quantity}))) : "The cart is empty."}
+
+Full Product Catalog for reference (name, pack_size, price):
+${JSON.stringify(products.map(p => ({name: p.name_en, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
+
+Your tasks:
+1.  **Interpret the user's command.** Understand if they want to add, remove, update quantities, or just check their cart.
+2.  **Identify products and quantities.** Extract product names and amounts from the query. Match them against the product catalog. Be flexible with names (e.g., "tamatar" for "Tomato").
+3.  **Check availability.** If a user wants to add an item, assume it's available from the catalog.
+4.  **Formulate a response.**
+    *   If the command is clear (e.g., "add 2 kg tomatoes"), respond with a confirmation message and the corresponding action JSON. Example: "Sure, I've added 2 kg of Fresh Tomatoes. Anything else?"
+    *   If the command is ambiguous (e.g., "add some apples"), ask a clarifying question. Example: "Sure, how many apples would you like to add?"
+    *   If an item is not in the catalog, inform the user gracefully. Example: "I'm sorry, I couldn't find 'exotic space carrots' in our store."
+    *   If the user asks to see their cart, list the items and their quantities.
+    *   **CRUCIAL**: Before performing an 'add' or 'update' action, ALWAYS ask for confirmation. For example: "I found 'Amul Gold Milk 1L' for ₹56. Should I add it to your cart?"
+`,
+        output: { schema: ManageCartOutput },
+        tools: [getCartContents],
     });
     return llmResponse.output!;
   }

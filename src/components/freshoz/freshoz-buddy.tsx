@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Bot, Loader2, SendHorizonal, Sparkles, X, Phone, MessageSquare, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
@@ -11,6 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getCheaperAlternatives, trackOrderStatus, checkProductAvailability, manageCart } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
+import type { CartItem } from '@/lib/types';
 
 type ChatMessage = {
   id: string;
@@ -21,12 +23,10 @@ type ChatMessage = {
 type AIFlow = 'alternatives' | 'track' | 'availability' | 'cart';
 
 interface FreshozBuddyProps {
-  isDeliveryBannerVisible?: boolean;
   isButtonVisible?: boolean;
 }
 
 export default function FreshozBuddy({ 
-  isDeliveryBannerVisible, 
   isButtonVisible = true
 }: FreshozBuddyProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +36,8 @@ export default function FreshozBuddy({
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
   const [isListening, setIsListening] = useState(false);
-  const { cartItems } = useCart();
+  const { cartItems, getCartItems } = useCart();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const supportPhoneNumber = '9097882555';
 
@@ -62,12 +63,11 @@ export default function FreshozBuddy({
     cart: {
       prompt: 'You can add, remove, or check items in your cart. For example: "Add 2kg tomatoes"',
       placeholder: 'e.g., "Add 2kg tomatoes"',
-      action: (input: {query: string}) => manageCart({ query: input.query }),
+      action: (input: {query: string, cartItems: CartItem[]}) => manageCart({ query: input.query, cartItems: input.cartItems }),
       inputKey: 'query',
     },
   };
 
-  // Proactive assistance based on cart contents
   useEffect(() => {
     if (isOpen && cartItems.length > 2 && messages.length === 0) {
       setMessages([{
@@ -77,6 +77,15 @@ export default function FreshozBuddy({
       }]);
     }
   }, [isOpen, cartItems.length, messages.length]);
+  
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        const scrollContainer = scrollAreaRef.current.querySelector('div');
+        if (scrollContainer) {
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+    }
+  }, [messages]);
 
   const startFlow = (flow: AIFlow) => {
     setCurrentFlow(flow);
@@ -112,6 +121,8 @@ export default function FreshozBuddy({
       const transcript = event.results[0][0].transcript;
       setInputValue(transcript);
       setIsListening(false);
+      // Automatically submit after voice input
+      handleSubmit(new Event('submit'), transcript);
     };
 
     recognition.onerror = () => {
@@ -125,20 +136,23 @@ export default function FreshozBuddy({
     recognition.start();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: Event | React.FormEvent, voiceTranscript?: string) => {
     e.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+    const query = voiceTranscript || inputValue;
+    if (!query.trim() || isLoading) return;
 
     let userMessage: ChatMessage;
     let actionInput: any;
 
+    const currentCartItems = getCartItems();
+
     if (currentFlow) {
-        userMessage = { id: Date.now().toString(), role: 'user', content: inputValue };
+        userMessage = { id: Date.now().toString(), role: 'user', content: query };
         const inputKey = flowConfig[currentFlow].inputKey;
-        actionInput = { [inputKey]: inputValue };
+        actionInput = { [inputKey]: query, cartItems: currentCartItems };
     } else {
-        userMessage = { id: Date.now().toString(), role: 'user', content: inputValue };
-        actionInput = { query: inputValue }; 
+        userMessage = { id: Date.now().toString(), role: 'user', content: query };
+        actionInput = { query: query, cartItems: currentCartItems }; 
         setCurrentFlow('cart'); 
     }
     
@@ -159,7 +173,7 @@ export default function FreshozBuddy({
 
     try {
       const flowDetails = flowConfig[currentFlow || 'cart'];
-      const flowAction = flowDetails.action;
+      const flowAction = flowDetails.action as Function;
       
       const result = await flowAction(actionInput as any);
       
@@ -231,9 +245,12 @@ export default function FreshozBuddy({
   };
   
   const getBottomPosition = () => {
-    const basePosition = cartItems.length > 0 ? 'bottom-28' : 'bottom-6';
-    return isDeliveryBannerVisible ? `${basePosition} md:bottom-32` : basePosition;
+    if (cartItems.length > 0) {
+        return "bottom-28 md:bottom-24"
+    }
+    return "bottom-24 md:bottom-6";
   };
+  
 
   const quickActions = [
     { label: "Manage Cart", flow: 'cart' as const, icon: Bot },
@@ -248,12 +265,12 @@ export default function FreshozBuddy({
           variant="outline"
           onClick={() => setIsOpen(true)}
           className={cn(
-            "fixed right-4 z-50 h-14 w-14 rounded-full border-2 border-primary bg-primary/10 p-0 text-primary shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-primary/20 hover:scale-110 md:right-6",
+            "fixed right-4 z-40 h-14 w-14 rounded-full border-2 border-primary/20 bg-primary/10 p-0 text-positive shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out hover:bg-primary/20 hover:scale-110 md:right-6",
             getBottomPosition()
           )}
           aria-label="Open AI Assistant"
         >
-          <Sparkles className="h-7 w-7" />
+          <Sparkles className="h-7 w-7 text-[#22c55e]" />
         </Button>
       )}
       
@@ -263,16 +280,16 @@ export default function FreshozBuddy({
             setTimeout(handleReset, 300);
           }
       }}>
-        <SheetContent className="flex w-full flex-col sm:max-w-md p-0">
+        <SheetContent className="flex w-full flex-col sm:max-w-md p-0 glass-card">
           <SheetHeader className="px-6 py-4 border-b">
             <SheetTitle>
               <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-full">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-2 rounded-full">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold uppercase text-primary">Freshoz Buddy</h2>
-                  <p className="text-sm text-muted-foreground">Your AI shopping assistant</p>
+                  <h2 className="text-xl font-bold uppercase text-primary">Freshoz AI</h2>
+                  <p className="text-sm text-muted-foreground">Your shopping assistant</p>
                 </div>
               </div>
             </SheetTitle>
@@ -280,12 +297,12 @@ export default function FreshozBuddy({
           
           {currentFlow || !showInitial ? (
             <>
-              <ScrollArea className="flex-1 px-6 py-4">
+              <ScrollArea className="flex-1 px-6 py-4" ref={scrollAreaRef}>
                 <div className="space-y-4">
                   {messages.map((message) => (
                     <div key={message.id} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                       {message.role === 'assistant' && (
-                        <Avatar className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600">
+                        <Avatar className="h-8 w-8 bg-gradient-to-r from-green-500 to-emerald-600">
                           <AvatarFallback className="bg-transparent">
                             <Bot size={16} className="text-white" />
                           </AvatarFallback>
@@ -294,7 +311,7 @@ export default function FreshozBuddy({
                       <div className={cn(
                         "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
                         message.role === 'user' 
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
                           : 'bg-gray-100 text-gray-800'
                       )}>
                         {message.content}
@@ -310,7 +327,7 @@ export default function FreshozBuddy({
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder={currentFlow ? flowConfig[currentFlow].placeholder : 'Type your message...'}
+                      placeholder={currentFlow ? flowConfig[currentFlow].placeholder : 'Type or talk...'}
                       disabled={isLoading}
                       className="pr-12"
                       autoFocus
@@ -319,14 +336,14 @@ export default function FreshozBuddy({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-1 top-1 h-7 w-7"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
                       onClick={startVoiceInput}
                       disabled={isLoading}
                     >
-                      <Mic className={`h-4 w-4 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-400'}`} />
+                      <Mic className={`h-5 w-5 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`} />
                     </Button>
                   </div>
-                  <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()}>
+                  <Button type="submit" size="icon" className="bg-gradient-to-r from-green-500 to-emerald-600" disabled={isLoading || !inputValue.trim()}>
                     <SendHorizonal className="h-4 w-4" />
                   </Button>
                 </form>
@@ -348,11 +365,11 @@ export default function FreshozBuddy({
           ) : (
             <div className="flex-1 px-6 py-6">
               <div className="space-y-4">
-                <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-0">
+                <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-0">
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
                       <div className="bg-white p-3 rounded-full inline-block mb-3">
-                        <Sparkles className="h-8 w-8 text-blue-600" />
+                        <Sparkles className="h-8 w-8 text-green-600" />
                       </div>
                       <h3 className="font-semibold text-lg mb-2">How can I help you today?</h3>
                       <p className="text-muted-foreground text-sm">
@@ -368,7 +385,7 @@ export default function FreshozBuddy({
                           className="w-full justify-start gap-3 bg-white hover:bg-gray-50 border-gray-200"
                           onClick={() => startFlow(action.flow)}
                         >
-                          <action.icon className="h-5 w-5 text-blue-600" />
+                          <action.icon className="h-5 w-5 text-green-600" />
                           <span>{action.label}</span>
                         </Button>
                       ))}
@@ -376,22 +393,22 @@ export default function FreshozBuddy({
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-0">
+                <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-0">
                   <CardContent className="p-6">
                     <h4 className="font-semibold text-center mb-4">Need human help?</h4>
                     <div className="space-y-3">
                       <a href={`tel:${supportPhoneNumber}`} className="block w-full">
-                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-green-200">
-                          <Phone className="h-5 w-5 text-green-600" />
+                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-blue-200">
+                          <Phone className="h-5 w-5 text-blue-600" />
                           Call Support
-                          <span className="ml-auto text-green-600">{supportPhoneNumber}</span>
+                          <span className="ml-auto text-blue-600">{supportPhoneNumber}</span>
                         </Button>
                       </a>
                       <a href={`https://wa.me/${supportPhoneNumber}`} target="_blank" rel="noopener noreferrer" className="block w-full">
-                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-blue-200">
-                          <MessageSquare className="h-5 w-5 text-blue-600" />
+                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-green-200">
+                          <MessageSquare className="h-5 w-5 text-green-600" />
                           WhatsApp Chat
-                          <span className="ml-auto text-blue-600">Instant help</span>
+                          <span className="ml-auto text-green-600">Instant help</span>
                         </Button>
                       </a>
                     </div>
@@ -405,5 +422,3 @@ export default function FreshozBuddy({
     </>
   );
 }
-
-    
