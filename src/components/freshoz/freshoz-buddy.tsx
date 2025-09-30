@@ -123,39 +123,45 @@ export default function FreshozBuddy() {
   const startVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window)) {
       const errorMsg = "Voice input is not supported in your browser. Please type your message.";
-      setMessages(prev => [...prev, { id: 'voice-error', role: 'assistant', content: errorMsg }]);
+      const assistantMessage = { id: 'voice-error', role: 'assistant' as const, content: errorMsg };
+      setMessages(prev => [...prev, assistantMessage]);
       speak(errorMsg);
       return;
     }
-
+  
     if (isListening) {
       recognitionRef.current?.stop();
+      setIsListening(false);
       return;
     }
-
+  
     setIsListening(true);
+    setShowInitial(false); // Move to chat view
+    if (!currentFlow) {
+        setCurrentFlow('cart');
+    }
+    
     const recognition = new (window as any).webkitSpeechRecognition();
-    recognition.lang = 'en-IN'; // Prioritize Indian English
+    recognition.lang = 'en-IN';
     recognition.continuous = false;
     recognition.interimResults = false;
     recognitionRef.current = recognition;
-
+  
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setInputValue(transcript);
-      // Automatically submit after voice input
       handleSubmit(undefined, transcript);
     };
-
+  
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error", event.error);
       setIsListening(false);
     };
-
+  
     recognition.onend = () => {
       setIsListening(false);
     };
-
+  
     recognition.start();
   };
 
@@ -402,7 +408,20 @@ export default function FreshozBuddy() {
                       <div className="bg-white p-3 rounded-full inline-block mb-3">
                         <Sparkles className="h-8 w-8 text-green-600" />
                       </div>
-                      <h3 className="font-semibold text-lg mb-2">How can I help you today?</h3>
+                      <div className="flex items-center justify-center gap-2">
+                        <h3 className="font-semibold text-lg mb-2">How can I help you today?</h3>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 -mb-2"
+                          onClick={startVoiceInput}
+                          disabled={isLoading}
+                        >
+                          <Mic className={`h-5 w-5 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`} />
+                        </Button>
+                      </div>
+
                       <p className="text-muted-foreground text-sm">
                         I'm here to make your shopping experience better!
                       </p>
