@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Bot, Loader2, SendHorizonal, Sparkles, X, Mic, ShoppingCart, MessageSquare } from 'lucide-react';
+import { Bot, Loader2, SendHorizonal, Sparkles, X, Mic, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -178,23 +178,14 @@ export default function FreshozBuddy() {
 
         if (result.actions && result.actions.length > 0) {
           const action = result.actions[0];
-          const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
-
-          if (product && (action.action === 'add' || action.action === 'update')) {
-            productSuggestion = product;
-            responseContent = (
-              <div>
-                <p>{responseTextToSpeak}</p>
-              </div>
-            );
-          } else if (product && action.action === 'remove') {
-            responseContent = <p>{responseTextToSpeak}</p>;
-          } else {
-            responseContent = <p>{responseTextToSpeak}</p>;
+          if (action.action === 'add' && action.itemName) {
+            const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName!.toLowerCase());
+            if (product) {
+              productSuggestion = product;
+            }
           }
-        } else {
-          responseContent = <p>{responseTextToSpeak}</p>;
         }
+        responseContent = <p>{responseTextToSpeak}</p>;
       } else {
         responseTextToSpeak = "Dhanyavaad! Aapka anurodh process kar liya gaya hai.";
         responseContent = responseTextToSpeak;
@@ -252,19 +243,17 @@ export default function FreshozBuddy() {
       }}>
         <SheetContent className="flex w-full flex-col sm:max-w-md p-0 glass-card">
           <SheetHeader className="px-6 py-4 border-b">
-            <SheetTitle>
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-2 rounded-full">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                  <div>
                   <h2 className="text-xl font-bold uppercase text-primary">
-                    <span className="text-positive font-black">FRESHOZ</span> AI
+                    <span className="font-black text-positive">FRESHOZ</span> AI
                   </h2>
                   <p className="text-sm text-muted-foreground">Aapki apni shopping assistant</p>
                 </div>
               </div>
-            </SheetTitle>
           </SheetHeader>
           
           {!showInitial ? (
@@ -313,7 +302,7 @@ export default function FreshozBuddy() {
                 </div>
               </ScrollArea>
               
-              <SheetFooter className="px-6 py-4 border-t">
+              <div className="px-6 py-4 border-t">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
                   <div className="relative flex-1">
                     <Input
@@ -350,7 +339,7 @@ export default function FreshozBuddy() {
                   <X className="h-4 w-4 mr-2" />
                   Phir se shuru karein
                 </Button>
-              </SheetFooter>
+              </div>
             </>
           ) : (
              <div className="flex-1 px-6 py-6 flex flex-col justify-center">
