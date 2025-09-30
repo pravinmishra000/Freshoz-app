@@ -52,13 +52,13 @@ const getOrderDetails = ai.defineTool(
   async ({ orderId }) => {
     // In a real app, this would query your Firestore database
     const order = orders.find((o) => o.id === orderId);
-    if (!order || !order.id || !order.status || !order.totalAmount || !order.createdAt) {
+    if (!order || !order.id || !order.status || !order.totalAmount || !order.createdAt || !order.items) {
         return undefined;
     }
 
     return {
         id: order.id,
-        status: order.status,
+        status: order.status as OrderStatus,
         totalAmount: order.totalAmount,
         createdAt: (order.createdAt as Date).toISOString(),
         items: order.items.map(i => ({ name: i.name, quantity: i.quantity }))
