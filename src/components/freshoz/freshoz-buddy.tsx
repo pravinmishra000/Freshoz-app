@@ -149,7 +149,7 @@ export default function FreshozBuddy() {
   
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setInputValue(transcript);
+      // Directly call handleSubmit with the transcript
       handleSubmit(undefined, transcript);
     };
   
@@ -472,3 +472,5 @@ export default function FreshozBuddy() {
     </>
   );
 }
+
+    
