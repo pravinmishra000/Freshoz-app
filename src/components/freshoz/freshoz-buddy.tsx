@@ -116,6 +116,7 @@ export default function FreshozBuddy() {
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
+      setInputValue(transcript);
       handleSubmit(undefined, transcript);
     };
 
@@ -278,7 +279,9 @@ export default function FreshozBuddy() {
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold uppercase text-primary">FRESHOZ AI सहायक</h2>
+                  <h2 className="text-xl font-bold uppercase text-primary">
+                    <span className="text-positive font-black">FRESHOZ</span> AI
+                  </h2>
                   <p className="text-sm text-muted-foreground">Aapki apni shopping assistant</p>
                 </div>
               </div>
@@ -389,7 +392,7 @@ export default function FreshozBuddy() {
                         Aapki shopping behtar banane ke liye main yahaan hoon!
                       </p>
                   </div>
-                  <div className="flex gap-2">
+                   <div className="flex gap-2">
                      <SuggestionCard icon={ShoppingCart} text="Add to Cart" query="Add 1kg tomatoes to cart" />
                      <SuggestionCard icon={MessageSquare} text="Order Status" query="What is the status of my last order?" />
                      <SuggestionCard icon={Phone} text="Call Support" query="Call customer support" />
