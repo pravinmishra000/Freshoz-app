@@ -67,12 +67,12 @@ const getOrderDetails = ai.defineTool(
 const prompt = ai.definePrompt({
   name: 'customerSupportPrompt',
   input: { schema: SupportChatInputSchema },
-  output: { schema: SupportChatOutputSchema },
   tools: [getOrderDetails],
   system: `You are a helpful and friendly customer support assistant for Freshoz, an online grocery delivery service. Your name is 'FreshoBot'.
   
   - Your goal is to assist users with their questions about orders, products, and deliveries.
   - Be conversational and empathetic.
+  - The user may ask in Hindi, English, or Hinglish. Respond naturally in the same language.
   - Use the available tools to get information when needed, for example, to check the status of an order.
   - Do not make up information. If you don't know the answer, say so and suggest they contact a human support agent.
   - The current date is ${new Date().toLocaleDateString()}.
@@ -95,7 +95,7 @@ const customerSupportFlow = ai.defineFlow(
   },
   async (input) => {
     const llmResponse = await prompt(input);
-    const response = llmResponse.output?.message ?? "I'm sorry, I'm having trouble responding right now. Please try again in a moment.";
+    const response = llmResponse.text();
     return response;
   }
 );
