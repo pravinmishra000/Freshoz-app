@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -44,6 +45,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CartSheet } from '../cart/CartSheet';
 import { SmartSearchBar } from '../products/SmartSearchBar';
+import { CartToast } from '../cart/CartToast';
 
 // Customer navigation items
 const customerNavItems = [
@@ -204,6 +206,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           
           {/* Main Body */}
           <main className="flex-1 overflow-y-auto pb-[80px] md:pb-0">{children}</main>
+           <CartToast />
         </SidebarInset>
 
         {/* Mobile Bottom Navigation */}
