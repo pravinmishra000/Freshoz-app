@@ -279,7 +279,7 @@ export default function FreshozBuddy() {
   
   const getBottomPosition = () => {
     if (cartItems.length > 0) {
-        return "bottom-[8.5rem] md:bottom-24"
+        return "bottom-28 md:bottom-24"
     }
     return "bottom-24 md:bottom-6";
   };
