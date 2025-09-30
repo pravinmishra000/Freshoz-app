@@ -88,55 +88,66 @@ export default function FreshozBuddy() {
     setShowInitial(true);
   };
 
-  const startVoiceInput = () => {
-    if (!('webkitSpeechRecognition' in window)) {
+  const startVoiceInput = async () => {
+    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
       const errorMsg = "Voice input is not supported in your browser. Please type your message.";
-      const assistantMessage = { id: 'voice-error', role: 'assistant' as const, content: errorMsg };
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, { id: 'voice-error', role: 'assistant', content: errorMsg }]);
       speak(errorMsg);
       return;
     }
 
     if (isListening) {
       recognitionRef.current?.stop();
-      setIsListening(false);
+      return;
+    }
+
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      const errorMsg = "Microphone access is blocked. Please allow it in your browser settings to use voice input.";
+      setMessages(prev => [...prev, { id: 'mic-error', role: 'assistant', content: errorMsg }]);
+      speak(errorMsg);
       return;
     }
 
     setIsListening(true);
     setShowInitial(false);
 
-    const recognition = new (window as any).webkitSpeechRecognition();
-    recognition.lang = 'hi-IN';
-    recognition.continuous = true;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'hi-IN'; // Can also use 'en-IN' for Hinglish
+    recognition.continuous = false; // Process after a pause
     recognition.interimResults = true;
     recognitionRef.current = recognition;
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interimTranscript = '';
       let finalTranscript = '';
+
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
           finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
         }
       }
-      if(finalTranscript) {
-         setInputValue(finalTranscript);
-      }
+      setInputValue(finalTranscript || interimTranscript);
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error", event.error);
       setIsListening(false);
     };
 
     recognition.onend = () => {
       setIsListening(false);
-      // Use a timeout to ensure the final inputValue is set before submitting
+      // The final transcript is in inputValue, now submit it.
+      // Use a timeout to ensure state has updated before submitting
       setTimeout(() => {
-          // Access the value via a ref or function argument if state isn't updating fast enough
-          if(inputValue.trim()){
-             handleSubmit(undefined, inputValue);
-          }
+        const currentInput = (document.getElementById('ai-assistant-input') as HTMLInputElement)?.value;
+        if (currentInput && currentInput.trim()) {
+          handleSubmit(undefined, currentInput);
+        }
       }, 100);
     };
 
@@ -191,6 +202,7 @@ export default function FreshozBuddy() {
       const responseTextToSpeak = result.response;
       let productSuggestion: Product | undefined;
 
+      // Check if the AI decided to use the cart tool and a product was found
       if(result.cartAction?.action === 'add' && result.cartAction?.itemName) {
         const product = allProducts.find(p => p.name_en.toLowerCase() === result.cartAction!.itemName!.toLowerCase());
         if (product) {
@@ -313,6 +325,7 @@ export default function FreshozBuddy() {
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
                   <div className="relative flex-1">
                     <Input
+                      id="ai-assistant-input"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder={'Bolein ya type karein...'}
@@ -379,3 +392,5 @@ export default function FreshozBuddy() {
     </>
   );
 }
+
+    
