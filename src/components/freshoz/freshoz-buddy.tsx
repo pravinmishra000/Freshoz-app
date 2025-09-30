@@ -72,13 +72,13 @@ export default function FreshozBuddy() {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
-    // Prioritize Hindi voice
-    const indianVoice = voices.find(voice => voice.lang === 'hi-IN');
-    if (indianVoice) {
-      utterance.voice = indianVoice;
+    // Prioritize Hindi male voice
+    const maleIndianVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
+    if (maleIndianVoice) {
+      utterance.voice = maleIndianVoice;
     } else {
-        // Fallback to any available Indian English voice
-        const fallbackVoice = voices.find(voice => voice.lang === 'en-IN');
+        // Fallback to any available Hindi voice
+        const fallbackVoice = voices.find(voice => voice.lang === 'hi-IN');
         if(fallbackVoice) utterance.voice = fallbackVoice;
     }
     utterance.rate = 0.9;
@@ -94,7 +94,7 @@ export default function FreshozBuddy() {
   }, []);
 
   useEffect(() => {
-    if (isOpen && cartItems.length > 0 && messages.length === 0) {
+    if (isOpen && cartItems.length > 0 && messages.length === 0 && showInitial) {
       const proactiveMessage = "नमस्ते! मैंने देखा कि आपके कार्ट में कुछ सामान हैं। क्या मैं आपकी कोई मदद कर सकता हूँ?";
       setMessages([{
         id: 'proactive',
@@ -103,7 +103,7 @@ export default function FreshozBuddy() {
       }]);
        if (typeof proactiveMessage === 'string') speak(proactiveMessage);
     }
-  }, [isOpen, cartItems, messages.length]);
+  }, [isOpen, cartItems, messages.length, showInitial]);
   
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -191,16 +191,10 @@ export default function FreshozBuddy() {
     if (!query.trim() || isLoading) return;
 
     const userMessage: ChatMessage = { id: Date.now().toString(), role: 'user', content: query };
-    const currentCartItems = getCartItems();
-    let actionInput: any;
-
-    if (!currentFlow) {
-        setCurrentFlow('cart'); // Default to cart management
-    }
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
     
-    const flowToExecute = currentFlow || 'cart';
-    const inputKey = flowConfig[flowToExecute].inputKey;
-    actionInput = { [inputKey]: query, cartItems: currentCartItems };
+    setIsLoading(true);
 
     const loadingMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
@@ -213,13 +207,16 @@ export default function FreshozBuddy() {
       ),
     };
 
-    setMessages((prev) => [...prev, userMessage, loadingMessage]);
-    setIsLoading(true);
-    setInputValue('');
+    setMessages((prev) => [...prev, loadingMessage]);
 
     try {
+      const flowToExecute = currentFlow || 'cart';
       const flowDetails = flowConfig[flowToExecute];
       const flowAction = flowDetails.action as Function;
+      const inputKey = flowDetails.inputKey;
+      const currentCartItems = getCartItems();
+      
+      const actionInput = { [inputKey]: query, cartItems: currentCartItems };
       
       const result = await flowAction(actionInput as any);
       
@@ -231,58 +228,19 @@ export default function FreshozBuddy() {
         // Handle cart actions first
         if (result.actions && result.actions.length > 0) {
             const action = result.actions[0];
-            if (action.action === 'add' && action.itemName) {
-                productSuggestion = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
+            const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
+            if (product && (action.action === 'add' || action.action === 'update')) {
+                 productSuggestion = product;
             }
         }
+        
+        responseTextToSpeak = result.message || "मैं आपकी कैसे मदद कर सकता हूँ?";
+        responseContent = (
+            <div>
+                <p>{responseTextToSpeak}</p>
+            </div>
+        );
 
-        if (productSuggestion) {
-            responseTextToSpeak = result.message || `मुझे ${productSuggestion.name_en} मिला। क्या मैं इसे आपके कार्ट में डाल दूँ?`;
-            responseContent = (
-                <div>
-                    <p>{responseTextToSpeak}</p>
-                </div>
-            );
-        } else if ('alternatives' in result) {
-          responseTextToSpeak = `${result.reasoning} Here are some cheaper alternatives: ${result.alternatives.join(', ')}.`;
-          responseContent = (
-            <div className="space-y-2">
-              <p>{result.reasoning}</p>
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="font-semibold text-blue-800">Cheaper Alternatives:</p>
-                <ul className="list-disc pl-5 mt-2 space-y-1">
-                  {(result.alternatives as string[]).map((alt, i) => (
-                    <li key={i} className="text-blue-700">{alt}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          );
-        } else if ('orderStatus' in result) {
-           responseTextToSpeak = `${result.orderStatus}${result.deliveryETA ? ` Estimated Delivery is ${result.deliveryETA}.` : ''}`;
-          responseContent = (
-            <div className="bg-green-50 p-3 rounded-lg">
-              <p className="font-semibold text-green-800">Order Status:</p>
-              <p className="text-green-700">{result.orderStatus}</p>
-              {result.deliveryETA && (
-                <p className="text-green-600 mt-1">Estimated Delivery: {result.deliveryETA}</p>
-              )}
-            </div>
-          );
-        } else if ('isAvailable' in result) {
-          responseTextToSpeak = result.availabilityMessage;
-          responseContent = (
-            <div className={`p-3 rounded-lg ${result.isAvailable ? 'bg-green-50 text-green-800' : 'bg-yellow-50 text-yellow-800'}`}>
-              {result.availabilityMessage}
-            </div>
-          );
-        } else if ('message' in result) {
-          responseTextToSpeak = result.message;
-          responseContent = result.message;
-        } else {
-          responseTextToSpeak = "I've processed your request. How else can I help you?";
-          responseContent = responseTextToSpeak;
-        }
       } else {
         responseTextToSpeak = "Thank you! Your request has been processed.";
         responseContent = responseTextToSpeak;
@@ -478,7 +436,6 @@ export default function FreshozBuddy() {
                       <div className="mb-3">
                          <Button
                           type="button"
-                          size="icon"
                           className={cn("h-12 w-12 bg-green-500 hover:bg-green-600 rounded-full transition-all duration-300", isListening && "scale-110 ring-4 ring-red-300 bg-red-500")}
                           onClick={startVoiceInput}
                           disabled={isLoading}

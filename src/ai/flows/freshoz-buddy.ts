@@ -153,7 +153,7 @@ export const manageCart = ai.defineFlow(
   async ({ query, cartItems }) => {
     const llmResponse = await ai.generate({
         prompt: `You are an intelligent shopping assistant for Freshoz. Your name is Freshoz. You MUST respond in Hindi.
-Your persona is a friendly female assistant.
+Your persona is a friendly male assistant.
 
 User's command: "${query}"
 
