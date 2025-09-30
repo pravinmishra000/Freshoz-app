@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
           
           {/* Main Body */}
-          <main className="flex-1 overflow-y-auto pb-[80px] md:pb-0">{children}</main>
+          <main className="flex-1 overflow-y-auto">{children}</main>
            <CartToast />
         </SidebarInset>
 
