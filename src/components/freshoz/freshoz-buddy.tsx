@@ -38,31 +38,32 @@ export default function FreshozBuddy() {
 
   const supportPhoneNumber = '9097882555';
 
-  const speak = (text: string) => {
+  const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    
     const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    // Prioritize Hindi male voice
-    const maleIndianVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
-    if (maleIndianVoice) {
-      utterance.voice = maleIndianVoice;
-    } else {
-        // Fallback to any available Hindi voice
+    
+    const setVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const maleIndianVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
+      
+      if (maleIndianVoice) {
+        utterance.voice = maleIndianVoice;
+      } else {
         const fallbackVoice = voices.find(voice => voice.lang === 'hi-IN');
-        if(fallbackVoice) utterance.voice = fallbackVoice;
-    }
-    utterance.rate = 0.9;
-    window.speechSynthesis.speak(utterance);
-  };
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        if (fallbackVoice) utterance.voice = fallbackVoice;
+      }
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    };
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = setVoice;
+    } else {
+      setVoice();
     }
   }, []);
-
+  
   useEffect(() => {
     if (isOpen && cartItems.length > 0 && messages.length === 0 && showInitial) {
       const proactiveMessage = "नमस्ते! मैंने देखा कि आपके कार्ट में कुछ सामान हैं। क्या मैं आपकी कोई मदद कर सकता हूँ?";
@@ -73,7 +74,7 @@ export default function FreshozBuddy() {
       }]);
        if (typeof proactiveMessage === 'string') speak(proactiveMessage);
     }
-  }, [isOpen, cartItems, messages.length, showInitial]);
+  }, [isOpen, cartItems, messages.length, showInitial, speak]);
   
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -243,14 +244,14 @@ export default function FreshozBuddy() {
     
   return (
     <>
-        <Button
-          variant="outline"
-          onClick={() => setIsOpen(true)}
-          className="glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 md:right-6 md:bottom-6"
-          aria-label="Open AI Assistant"
-        >
-          <Sparkles className="h-7 w-7 text-[#22c55e]" />
-        </Button>
+      <Button
+        variant="outline"
+        onClick={() => setIsOpen(true)}
+        className="glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 md:bottom-6 md:right-6"
+        aria-label="Open AI Assistant"
+      >
+        <Sparkles className="h-7 w-7 text-primary" />
+      </Button>
       
       <Sheet open={isOpen} onOpenChange={(open) => {
           setIsOpen(open);
@@ -267,7 +268,7 @@ export default function FreshozBuddy() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold uppercase text-primary">FRESHOZ AI सहायक</h2>
-                  <p className="text-sm text-muted-foreground">आपकी अपनी शॉपिंग trợ lý</p>
+                  <p className="text-sm text-muted-foreground">आपकी अपनी शॉपिंग assistant</p>
                 </div>
               </div>
             </SheetTitle>
