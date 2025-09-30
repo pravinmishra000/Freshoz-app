@@ -40,23 +40,28 @@ export default function FreshozBuddy() {
 
   const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
     
     const setVoice = () => {
       const voices = window.speechSynthesis.getVoices();
-      const maleIndianVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
+      // Find a male Hindi voice
+      let desiredVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('male'));
       
-      if (maleIndianVoice) {
-        utterance.voice = maleIndianVoice;
-      } else {
-        const fallbackVoice = voices.find(voice => voice.lang === 'hi-IN');
-        if (fallbackVoice) utterance.voice = fallbackVoice;
+      // If no male voice, find any Hindi voice
+      if (!desiredVoice) {
+        desiredVoice = voices.find(voice => voice.lang === 'hi-IN');
       }
+
+      utterance.voice = desiredVoice || null;
       utterance.rate = 0.9;
       window.speechSynthesis.speak(utterance);
     };
 
+    // Voices are loaded asynchronously. We need to wait for them.
     if (window.speechSynthesis.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = setVoice;
     } else {
@@ -66,7 +71,7 @@ export default function FreshozBuddy() {
   
   useEffect(() => {
     if (isOpen && cartItems.length > 0 && messages.length === 0 && showInitial) {
-      const proactiveMessage = "नमस्ते! मैंने देखा कि आपके कार्ट में कुछ सामान हैं। क्या मैं आपकी कोई मदद कर सकता हूँ?";
+      const proactiveMessage = "Namaste! Maine dekha ki aapke cart mein kuch saaman hai. Kya main aapki koi madad kar sakta hoon?";
       setMessages([{
         id: 'proactive',
         role: 'assistant', 
@@ -111,14 +116,13 @@ export default function FreshozBuddy() {
     setShowInitial(false); 
     
     const recognition = new (window as any).webkitSpeechRecognition();
-    recognition.lang = 'hi-IN'; // Prioritize Hindi recognition
+    recognition.lang = 'hi-IN';
     recognition.continuous = false;
     recognition.interimResults = false;
     recognitionRef.current = recognition;
   
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      // Immediately submit the recognized speech
       handleSubmit(undefined, transcript);
     };
   
@@ -145,8 +149,8 @@ export default function FreshozBuddy() {
         quantity: quantity,
       });
       toast({
-          title: 'आइटम जोड़ा गया!',
-          description: `${quantity} x ${product.name_en} आपके कार्ट में जोड़ दिया गया है।`,
+          title: 'Item added!',
+          description: `${quantity} x ${product.name_en} aapke cart mein jod diya gaya hai.`,
       });
   }
 
@@ -169,7 +173,7 @@ export default function FreshozBuddy() {
       content: (
         <div className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>सोच रहा हूँ...</span>
+          <span>Soch raha hoon...</span>
         </div>
       ),
     };
@@ -186,9 +190,8 @@ export default function FreshozBuddy() {
       let productSuggestion: Product | undefined;
 
       if (typeof result === 'object' && result !== null) {
-        responseTextToSpeak = result.message || "मैं आपकी कैसे मदद कर सकता हूँ?";
+        responseTextToSpeak = result.message || "Main aapki kaise madad kar sakta hoon?";
         
-        // Check if there are actions and find the product
         if (result.actions && result.actions.length > 0) {
             const action = result.actions[0];
             const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName.toLowerCase());
@@ -200,6 +203,8 @@ export default function FreshozBuddy() {
                         <p>{responseTextToSpeak}</p>
                     </div>
                 );
+            } else if (product && action.action === 'remove') {
+                responseContent = <p>{responseTextToSpeak}</p>;
             } else {
                  responseContent = <p>{responseTextToSpeak}</p>;
             }
@@ -208,7 +213,7 @@ export default function FreshozBuddy() {
         }
 
       } else {
-        responseTextToSpeak = "धन्यवाद! आपका अनुरोध संसाधित कर लिया गया है।";
+        responseTextToSpeak = "Dhanyavaad! Aapka anurodh process kar liya gaya hai.";
         responseContent = responseTextToSpeak;
       }
 
@@ -224,14 +229,14 @@ export default function FreshozBuddy() {
 
     } catch (error) {
       console.error('AI Flow Error:', error);
-      const errorText = "माफ़ कीजिए, कुछ गड़बड़ हो गई। कृपया फिर से प्रयास करें।";
+      const errorText = "Maaf kijiye, kuch gadbad ho gayi. Kripya fir se koshish karein.";
       const errorMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
         content: (
           <div className="text-red-600 bg-red-50 p-3 rounded-lg">
-            <p className="font-semibold">माफ़ कीजिए, कुछ गड़बड़ हो गई</p>
-            <p className="text-sm mt-1">कृपया फिर से प्रयास करें।</p>
+            <p className="font-semibold">Maaf kijiye, kuch gadbad ho gayi</p>
+            <p className="text-sm mt-1">Kripya fir se koshish karein.</p>
           </div>
         ),
       };
@@ -268,7 +273,7 @@ export default function FreshozBuddy() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold uppercase text-primary">FRESHOZ AI सहायक</h2>
-                  <p className="text-sm text-muted-foreground">आपकी अपनी शॉपिंग assistant</p>
+                  <p className="text-sm text-muted-foreground">Aapki apni shopping assistant</p>
                 </div>
               </div>
             </SheetTitle>
@@ -326,7 +331,7 @@ export default function FreshozBuddy() {
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder={'बोलें या टाइप करें...'}
+                      placeholder={'Bolein ya type karein...'}
                       disabled={isLoading}
                       className="pr-12"
                       autoFocus
@@ -355,7 +360,7 @@ export default function FreshozBuddy() {
                   disabled={isLoading}
                 >
                   <X className="h-4 w-4 mr-2" />
-                  फिर से शुरू करें
+                  Phir se shuru karein
                 </Button>
               </SheetFooter>
             </>
@@ -365,7 +370,7 @@ export default function FreshozBuddy() {
                 <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-0">
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
-                      <div className="mb-3">
+                       <div className="mb-3">
                          <Button
                           type="button"
                           className={cn("h-12 w-12 bg-green-500 hover:bg-green-600 rounded-full transition-all duration-300", isListening && "scale-110 ring-4 ring-red-300 bg-red-500")}
@@ -375,10 +380,10 @@ export default function FreshozBuddy() {
                           <Mic className="h-6 w-6 text-white" />
                         </Button>
                       </div>
-                      <h3 className="font-semibold text-lg">मैं आपकी कैसे मदद कर सकता हूँ?</h3>
+                      <h3 className="font-semibold text-lg">Main aapki kaise madad kar sakta hoon?</h3>
 
                       <p className="text-muted-foreground text-sm">
-                        आपकी खरीदारी को बेहतर बनाने के लिए मैं यहाँ हूँ!
+                        Aapki shopping behtar banane ke liye main yahaan hoon!
                       </p>
                     </div>
                   </CardContent>
@@ -386,20 +391,13 @@ export default function FreshozBuddy() {
 
                 <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-0">
                   <CardContent className="p-6">
-                    <h4 className="font-semibold text-center mb-4">क्या आपको मानवीय सहायता चाहिए?</h4>
+                    <h4 className="font-semibold text-center mb-4">Kya aapko insaani sahayata chahiye?</h4>
                     <div className="space-y-3">
-                      <a href={`tel:${supportPhoneNumber}`} className="block w-full">
-                        <Button variant="outline" className="w-full justify-start gap-3 bg-white border-blue-200">
-                          <Phone className="h-5 w-5 text-blue-600" />
-                          सहायता के लिए कॉल करें
-                          <span className="ml-auto text-blue-600">{supportPhoneNumber}</span>
-                        </Button>
-                      </a>
                       <a href={`https://wa.me/${supportPhoneNumber}`} target="_blank" rel="noopener noreferrer" className="block w-full">
                         <Button variant="outline" className="w-full justify-start gap-3 bg-white border-green-200">
                           <MessageSquare className="h-5 w-5 text-green-600" />
-                          WhatsApp पर चैट करें
-                          <span className="ml-auto text-green-600">तुरंत मदद</span>
+                          WhatsApp par chat karein
+                          <span className="ml-auto text-green-600">Turant madad</span>
                         </Button>
                       </a>
                     </div>
