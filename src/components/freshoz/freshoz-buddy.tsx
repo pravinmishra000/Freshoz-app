@@ -86,6 +86,10 @@ export default function FreshozBuddy() {
     setInputValue('');
     setIsLoading(false);
     setShowInitial(true);
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
   };
 
   const startVoiceInput = async () => {
@@ -392,5 +396,3 @@ export default function FreshozBuddy() {
     </>
   );
 }
-
-    
