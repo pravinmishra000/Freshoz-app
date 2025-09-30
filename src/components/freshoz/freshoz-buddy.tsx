@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { manageCart } from '@/ai/flows/freshoz-buddy';
+import { getAiResponse } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/types';
@@ -36,7 +36,7 @@ export default function FreshozBuddy() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  const speak = useCallback((text: string) => {
+ const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -167,39 +167,27 @@ export default function FreshozBuddy() {
 
     try {
       const currentCartItems = getCartItems();
-      const result = await manageCart({ query, cartItems: currentCartItems });
-
-      let responseContent: React.ReactNode;
-      let responseTextToSpeak: string = "";
+      const result = await getAiResponse({ query, cartItems: currentCartItems });
+      
+      const responseTextToSpeak = result.response;
       let productSuggestion: Product | undefined;
 
-      if (typeof result === 'object' && result !== null) {
-        responseTextToSpeak = result.message || "Main aapki kaise madad kar sakti hoon?";
-
-        if (result.actions && result.actions.length > 0) {
-          const action = result.actions[0];
-          if (action.action === 'add' && action.itemName) {
-            const product = allProducts.find(p => p.name_en.toLowerCase() === action.itemName!.toLowerCase());
-            if (product) {
-              productSuggestion = product;
-            }
-          }
+      if(result.cartAction?.action === 'add' && result.cartAction?.itemName) {
+        const product = allProducts.find(p => p.name_en.toLowerCase() === result.cartAction!.itemName!.toLowerCase());
+        if (product) {
+          productSuggestion = product;
         }
-        responseContent = <p>{responseTextToSpeak}</p>;
-      } else {
-        responseTextToSpeak = "Dhanyavaad! Aapka anurodh process kar liya gaya hai.";
-        responseContent = responseTextToSpeak;
       }
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
-        content: responseContent,
+        content: responseTextToSpeak,
         productSuggestion: productSuggestion
       };
-
+      
       setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
-      if (responseTextToSpeak) speak(responseTextToSpeak);
+      speak(responseTextToSpeak);
 
     } catch (error) {
       console.error('AI Flow Error:', error);

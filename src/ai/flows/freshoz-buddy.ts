@@ -9,35 +9,67 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { products } from '@/lib/data';
 
-// Main flow for handling cart management and other shopping queries
-const ManageCartInputSchema = z.object({
-  query: z.string().describe('The user\'s request, e.g., "2kg टमाटर कार्ट में डालो" or "सेब हटाओ".'),
+// Zod schemas for the tool
+const CartActionSchema = z.object({
+  action: z.enum(['add', 'remove', 'update', 'clear']),
+  itemName: z.string().describe('The name of the item, e.g., "Tomato" or "Amul Gold Milk".'),
+  quantity: z.string().describe('The quantity, including units, e.g., "1 kg" or "2 packets".').optional(),
+});
+export type CartAction = z.infer<typeof CartActionSchema>;
+
+const updateCart = ai.defineTool(
+  {
+    name: 'updateCart',
+    description: 'Use this tool to add, remove, or update items in the shopping cart. You must confirm with the user before using this tool.',
+    inputSchema: CartActionSchema,
+    outputSchema: z.object({
+      success: z.boolean(),
+      message: z.string().describe("A message confirming the action taken, in Hindi."),
+    }),
+  },
+  async (input) => {
+    // In a real application, this would interact with the cart state.
+    // For now, we simulate success.
+    console.log('Updating cart with action:', input);
+    const product = products.find(p => p.name_en.toLowerCase() === input.itemName.toLowerCase());
+    
+    if (input.action === 'add' && !product) {
+       return { success: false, message: `माफ़ कीजिए, मुझे '${input.itemName}' हमारे स्टोर में नहीं मिला।` };
+    }
+    
+    return { success: true, message: `ठीक है, मैंने आपके कार्ट में '${input.itemName}' ${input.action === 'add' ? 'डाल दिया है' : 'हटा दिया है'}।` };
+  }
+);
+
+// Main flow schemas
+const FreshozBuddyInputSchema = z.object({
+  query: z.string().describe('The user\'s request in Hindi, English, or Hinglish.'),
   cartItems: z.array(z.any()).describe("The current items in the user's cart."),
 });
-export type ManageCartInput = z.infer<typeof ManageCartInputSchema>;
+export type FreshozBuddyInput = z.infer<typeof FreshozBuddyInputSchema>;
 
-
-const ManageCartOutputSchema = z.object({
-  message: z.string().describe('A confirmation message about the action taken, or a clarifying question. This message MUST be in Hindi.'),
-  actions: z.array(z.object({
-      action: z.enum(['add', 'remove', 'update', 'info', 'clarify', 'error']),
-      itemName: z.string().optional(),
-      quantity: z.string().optional(),
-  })).optional().describe('A list of actions to perform on the cart or information to provide.'),
+const FreshozBuddyOutputSchema = z.object({
+  response: z.string().describe('The assistant\'s conversational response in natural, friendly Hindi.'),
+  cartAction: CartActionSchema.optional().describe('The cart action to be performed if applicable.'),
 });
-export type ManageCartOutput = z.infer<typeof ManageCartOutputSchema>;
+export type FreshozBuddyOutput = z.infer<typeof FreshozBuddyOutputSchema>;
 
+// The main prompt
+const freshozBuddyPrompt = ai.definePrompt({
+  name: 'freshozBuddyPrompt',
+  tools: [updateCart],
+  system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
 
-const prompt = ai.definePrompt({
-    name: 'manageCartPrompt',
-    input: { schema: ManageCartInputSchema },
-    output: { schema: ManageCartOutputSchema },
-    prompt: `You are an intelligent shopping assistant for Freshoz. Your name is Freshoz. You MUST respond in Hindi.
-Your persona is a friendly female assistant.
+Your primary goal is to help users manage their shopping cart and answer their questions about products in a natural, conversational way. You MUST respond in conversational Hindi.
 
-User's command: "{{query}}"
+**Your Capabilities:**
+1.  **Add, Remove, Update Items:** Understand user requests to modify their cart. For example, "add 2kg tomatoes," "remove apples," "change milk to 2 packets."
+2.  **Answer Questions:** Respond to queries about product price, availability, and details based on the provided catalog.
+3.  **Confirmation First:** Before using the \`updateCart\` tool to make any change, YOU MUST ALWAYS confirm with the user first in your conversational response. For example, if the user says "add 1kg potatoes," you should respond with something like, "ज़रूर, मैं आपके कार्ट में 1 किलो आलू डाल दूँ?" (Sure, should I add 1kg potatoes to your cart?).
+4.  **Handle Ambiguity:** If a request is unclear (e.g., "add some milk"), ask a clarifying question like, "आप कौन सा दूध कार्ट में डालना चाहेंगी? हमारे पास Amul Gold और Amul Taaza है।" (Which milk would you like to add? We have Amul Gold and Amul Taaza).
+5.  **Product Not Found:** If a user asks for a product that is not in the catalog, inform them gracefully. Example: "माफ़ कीजिए, 'चमकीले गाजर' हमारे स्टोर में नहीं मिले।" (Sorry, 'shiny carrots' were not found in our store).
 
-Current Cart Contents:
+**Current Shopping Cart:**
 {{#if cartItems.length}}
 {{#each cartItems}}
 - {{this.name}} (Quantity: {{this.quantity}})
@@ -46,40 +78,54 @@ Current Cart Contents:
 The cart is empty.
 {{/if}}
 
-Full Product Catalog for reference (name, pack_size, price, variants):
-${JSON.stringify(products.map(p => ({name: p.name_en, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
-
-Your tasks:
-1.  **Interpret the user's command.** Understand if they want to add, remove, update quantities, ask about price, availability, or just check their cart. The user can use Hindi, English, or Hinglish.
-2.  **Identify products and quantities.** Extract product names and amounts from the query. Match them against the product catalog. Be flexible with names (e.g., "tamatar" for "Tomato", "kela" for "Banana"). Handle multiple items in one query.
-3.  **Formulate a response and action in JSON format.**
-    *   If the command is clear to **add an item**, and you find a matching product, your response message must ask for confirmation. The corresponding action in the JSON should be 'add'. The itemName should be the exact product name from the catalog. Example Hindi message: "मुझे 'ताज़ा टमाटर' मिला। क्या मैं इसे आपके कार्ट में डाल दूँ?"
-    *   If the command is ambiguous (e.g., "कुछ सेब डालो"), ask a clarifying question in Hindi. The action should be 'clarify'. Example: "ज़रूर, आप कितने सेब कार्ट में डालना चाहेंगी?"
-    *   If an item is not in the catalog, inform the user gracefully in Hindi. The action should be 'error'. Example: "माफ़ कीजिए, मुझे 'चमकीले गाजर' हमारे स्टोर में नहीं मिले।"
-    *   If the user asks about price or availability, provide the information in the message. The action should be 'info'.
-    *   If the user asks to see their cart, list the items and their quantities in Hindi in the message. The action should be 'info'.
-    *   **CRUCIAL**: Before performing an 'add' or 'update' action, ALWAYS ask for confirmation in your Hindi response. For example: "मुझे 'Amul Gold Milk 1L' ₹56 का मिला। क्या मैं इसे आपके कार्ट में डाल दूँ?"
+**Product Catalog for Reference:**
+(The full catalog is provided to you. Use it to find item names, prices, and variants.)
+${JSON.stringify(products.map(p => ({name: p.name_en, name_hi: p.name_hi, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
 `,
 });
 
-const manageCartFlow = ai.defineFlow(
+// The main flow
+const freshozBuddyFlow = ai.defineFlow(
   {
-    name: 'manageCartFlow',
-    inputSchema: ManageCartInputSchema,
-    outputSchema: ManageCartOutputSchema,
+    name: 'freshozBuddyFlow',
+    inputSchema: FreshozBuddyInputSchema,
+    outputSchema: FreshozBuddyOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    if (!output) {
-        return {
-            message: "माफ़ कीजिए, मुझे समझ नहीं आया। क्या आप फिर से कह सकती हैं?",
-            actions: [{ action: 'error' }]
-        };
-    }
-    return output;
+    const llmResponse = await freshozBuddyPrompt.generate({
+      prompt: {
+        role: 'user',
+        content: input.query,
+      },
+      history: [], // You can manage history here if needed
+      context: {
+        cartItems: input.cartItems,
+      }
+    });
+
+    const outputText = llmResponse.text;
+    const toolCalls = llmResponse.toolCalls;
+
+    // For now, we are simplifying to handle one tool call per response.
+    const cartAction = toolCalls && toolCalls[0] ? (toolCalls[0].args as CartAction) : undefined;
+
+    return {
+      response: outputText,
+      cartAction: cartAction,
+    };
   }
 );
 
-export async function manageCart(input: ManageCartInput): Promise<ManageCartOutput> {
-    return manageCartFlow(input);
+
+export async function getAiResponse(input: FreshozBuddyInput): Promise<FreshozBuddyOutput> {
+  const result = await freshozBuddyFlow(input);
+
+  // If the AI decided to use the cart tool, execute it.
+  if (result.cartAction) {
+    const toolResult = await updateCart(result.cartAction);
+    // You could potentially use this toolResult to further modify the response.
+    console.log("Tool Result:", toolResult);
+  }
+
+  return result;
 }
