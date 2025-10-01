@@ -95,11 +95,12 @@ const customerSupportFlow = ai.defineFlow(
   {
     name: 'customerSupportFlow',
     inputSchema: SupportChatInputSchema,
-    outputSchema: z.string(),
+    // Note: No outputSchema here because the prompt itself doesn't have one,
+    // which allows the ai.run() call to resolve with a standard GenerateResponse.
   },
   async (input) => {
-    const response = await prompt(input);
-    return response.text || '';
+    const llmResponse = await ai.run(prompt, { input });
+    return llmResponse.text;
   }
 );
 
