@@ -3,26 +3,31 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { CATEGORIES } from '@/lib/data';
 import Link from 'next/link';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/lib/types';
 
+const categoryStyles: { [key: string]: { emoji: string; color: string } } = {
+  'fresh-vegetables': { emoji: '🥦', color: 'bg-green-100' },
+  'fresh-fruits': { emoji: '🍎', color: 'bg-red-100' },
+  'dairy-bakery': { emoji: '🥛', color: 'bg-blue-100' },
+  'staples-grocery': { emoji: '🛍️', color: 'bg-yellow-100' },
+  'non-veg': { emoji: '🍗', color: 'bg-rose-100' },
+  'snacks-beverages': { emoji: '☕', color: 'bg-orange-100' },
+};
+
 function CategoryCard({ category }: { category: Category }) {
+    const style = categoryStyles[category.slug] || { emoji: '🛒', color: 'bg-gray-100' };
+
     return (
         <Link href={`/products/category/${category.slug}`} className="block group">
-            <Card className="glass-card h-full overflow-hidden transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-                <div className="relative aspect-video w-full">
-                    <Image
-                        src={category.image || 'https://picsum.photos/seed/placeholder/200/150'}
-                        alt={category.name_en}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                </div>
-                <CardContent className="p-4">
+            <Card className={cn(
+                "h-full overflow-hidden transition-all duration-300 transform hover:scale-105 hover:shadow-xl",
+                style.color
+            )}>
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <p className="text-6xl mb-4">{style.emoji}</p>
                     <h3 className="font-bold text-primary text-base">{category.name_en}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{category.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{category.description}</p>
                 </CardContent>
             </Card>
         </Link>
