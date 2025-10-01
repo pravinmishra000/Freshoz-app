@@ -253,7 +253,7 @@ export default function FreshozBuddy() {
                     id="ai-assistant-input"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder={'Bolein ya type karein...'}
+                    placeholder="Aap kya dhoondh rahe hain?"
                     disabled={isLoading}
                     className="flex-1"
                     autoFocus
