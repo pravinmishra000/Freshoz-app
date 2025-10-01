@@ -255,7 +255,7 @@ export default function LoginPage() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <PhoneInput {...field} country="IN" defaultCountry="IN" className="phone-input-dark" />
+                <PhoneInput {...field} defaultCountry="IN" international={false} className="phone-input-dark" />
               </FormControl>
               <FormMessage />
             </FormItem>
