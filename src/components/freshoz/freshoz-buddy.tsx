@@ -17,6 +17,7 @@ import { products as allProducts } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { useAuth } from '@/lib/firebase/auth-context';
+import Link from 'next/link';
 
 type ChatMessage = {
   id: string;
@@ -187,18 +188,26 @@ export default function FreshozBuddy() {
                             </p>
                             <div className="pt-4 space-y-2">
                                 <p className="text-sm text-muted-foreground">Try asking:</p>
-                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Mujhe kuch sabjiyan dikhao")}>
-                                    "Mujhe kuch sabjiyan dikhao"
-                                </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Mera wallet balance kitna hai?")}>
-                                    "Mera wallet balance kitna hai?"
-                                </Button>
-                                 <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("What are the best deals today?")}>
-                                    "What are the best deals today?"
-                                </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Kya mere liye aaj koi offer hai?")}>
-                                    "Kya mere liye aaj koi offer hai?"
-                                </Button>
+                                <Link href="/products/category/fresh-vegetables" passHref>
+                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                      <a>"Mujhe kuch sabjiyan dikhao"</a>
+                                  </Button>
+                                </Link>
+                                <Link href="/wallet" passHref>
+                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                      <a>"Mera wallet balance kitna hai?"</a>
+                                  </Button>
+                                </Link>
+                                 <Link href="/offers" passHref>
+                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                      <a>"What are the best deals today?"</a>
+                                  </Button>
+                                </Link>
+                                <Link href="/offers" passHref>
+                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                      <a>"Kya mere liye aaj koi offer hai?"</a>
+                                  </Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
