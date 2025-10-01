@@ -52,6 +52,7 @@ import FreshozBuddy from '../freshoz/freshoz-buddy';
 // Customer navigation items
 const customerNavItems = [
   { href: '/products', label: 'Home / Shop', icon: Home },
+  { href: '/categories', label: 'Categories', icon: LayoutGrid },
   { href: '/orders', label: 'My Orders', icon: Package },
   { href: '/offers', label: 'Offers & Discounts', icon: Tag },
   { href: '/wallet', label: 'Wallet', icon: Wallet },
@@ -80,6 +81,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const navItems = isAdmin ? adminNavItems : customerNavItems;
 
+  const checkActive = (href: string) => {
+    if (href === '/products') {
+      // Only active if it's exactly /products or starts with /products/ but not /products/category
+      return pathname === href || (pathname.startsWith('/products/') && !pathname.startsWith('/products/category'));
+    }
+    return pathname.startsWith(href);
+  };
+
+
   return (
     <SidebarProvider>
       <div className="relative flex min-h-screen w-full flex-row">
@@ -96,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                   <Link href={item.href} passHref>
                     <SidebarMenuButton
-                      isActive={pathname.startsWith(item.href)}
+                      isActive={checkActive(item.href)}
                       tooltip={item.label}
                     >
                       <item.icon />
@@ -219,7 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="glass-card flex items-center justify-around gap-2 rounded-full p-2">
               {[ 
                 { href: '/products', label: 'Home', icon: Home },
-                { href: '/products/category', label: 'Categories', icon: LayoutGrid },
+                { href: '/categories', label: 'Categories', icon: LayoutGrid },
                 { href: '/offers', label: 'Offers', icon: Tag },
                 { href: '/chat', label: 'Chat', icon: MessageSquare },
                 { href: '/checkout', label: 'Cart', icon: ShoppingCart },
@@ -229,7 +239,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   href={item.href}
                   className={cn(
                     'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
-                    (pathname === item.href || (item.href === '/products' && pathname.startsWith('/products')))
+                    checkActive(item.href)
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-accent/50'
                   )}

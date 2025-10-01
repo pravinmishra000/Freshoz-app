@@ -2,17 +2,15 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CATEGORIES } from '@/lib/data';
 import { Loader2 } from 'lucide-react';
 
 export default function ProductCategoryRedirectPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to the first category by default
-    if (CATEGORIES.length > 0) {
-      router.replace(`/products/category/${CATEGORIES[0].slug}`);
-    }
+    // This page is a redirector. The new page for all categories is /categories.
+    // This will redirect /products/category to /categories.
+    router.replace(`/categories`);
   }, [router]);
 
   return (
