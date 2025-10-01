@@ -211,10 +211,10 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
   const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = useAutocomplete({
     inputField: inputRef.current,
     options: {
-      componentRestrictions: { country: 'in' },
-      locationBias: aoiBounds,
-      strictBounds: false, // Be a bit lenient to find nearby places
-      fields: ["address_components", "geometry", "formatted_address"],
+        componentRestrictions: { country: 'in' },
+        bounds: aoiBounds,
+        strictBounds: true,
+        fields: ["address_components", "geometry", "formatted_address"],
     },
   });
   
@@ -232,12 +232,6 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
       .catch(err => console.error("Error getting place details", err));
   };
   
-  // Filter predictions to only show relevant ones
-   const filteredPredictions = placePredictions.filter(
-    (prediction) => prediction.description.includes('Bhagalpur') || prediction.description.includes('Khagaria')
-  );
-
-
   return (
     <div className='relative'>
         <div className="relative">
@@ -251,9 +245,9 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
             />
             {isPlacePredictionsLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />}
         </div>
-      {filteredPredictions.length > 0 && (
+      {placePredictions.length > 0 && (
           <div className='absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border z-20'>
-              {filteredPredictions.map(({ description, place_id }) => (
+              {placePredictions.map(({ description, place_id }) => (
                 <button key={place_id} onClick={() => handleSuggestionClick({ description, place_id } as any)} className="block w-full text-left p-4 hover:bg-gray-100">
                     {description}
                 </button>
@@ -263,5 +257,3 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     </div>
   );
 }
-
-  
