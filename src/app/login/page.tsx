@@ -80,12 +80,15 @@ export default function LoginPage() {
   useEffect(() => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        }
+        size: 'invisible',
+        callback: () => {
+          console.log("reCAPTCHA solved");
+        },
       });
     }
+    return () => {
+      window.recaptchaVerifier?.clear();
+    };
   }, []);
 
   // Handlers
@@ -255,7 +258,7 @@ export default function LoginPage() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <PhoneInput {...field} defaultCountry="IN" international={false} className="phone-input-dark" />
+                <PhoneInput {...field} defaultCountry="IN" country="IN" international={false} className="phone-input-dark" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -317,3 +320,5 @@ export default function LoginPage() {
 }
 
   
+
+    
