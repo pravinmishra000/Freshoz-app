@@ -34,10 +34,10 @@ const updateCart = ai.defineTool(
     const product = products.find(p => p.name_en.toLowerCase() === input.itemName.toLowerCase());
     
     if (input.action === 'add' && !product) {
-       return { success: false, message: `माफ़ कीजिए, मुझे '${input.itemName}' हमारे स्टोर में नहीं मिला।` };
+       return { success: false, message: `Maaf kijiye, mujhe '${input.itemName}' hamare store mein nahi mila.` };
     }
     
-    return { success: true, message: `ठीक है, मैंने आपके कार्ट में '${input.itemName}' ${input.action === 'add' ? 'डाल दिया है' : 'हटा दिया है'}।` };
+    return { success: true, message: `Theek hai, maine aapke cart mein '${input.itemName}' ${input.action === 'add' ? 'daal diya hai' : 'hata diya hai'}.` };
   }
 );
 
@@ -65,9 +65,9 @@ Your primary goal is to help users manage their shopping cart and answer their q
 **Your Capabilities:**
 1.  **Add, Remove, Update Items:** Understand user requests to modify their cart. For example, "add 2kg tomatoes," "remove apples," "change milk to 2 packets."
 2.  **Answer Questions:** Respond to queries about product price, availability, and details based on the provided catalog.
-3.  **Confirmation First:** Before using the \`updateCart\` tool to make any change, YOU MUST ALWAYS confirm with the user first in your conversational response. For example, if the user says "add 1kg potatoes," you should respond with something like, "ज़रूर, मैं आपके कार्ट में 1 किलो आलू डाल दूँ?" (Sure, should I add 1kg potatoes to your cart?).
-4.  **Handle Ambiguity:** If a request is unclear (e.g., "add some milk"), ask a clarifying question like, "आप कौन सा दूध कार्ट में डालना चाहेंगी? हमारे पास Amul Gold और Amul Taaza है।" (Which milk would you like to add? We have Amul Gold and Amul Taaza).
-5.  **Product Not Found:** If a user asks for a product that is not in the catalog, inform them gracefully. Example: "माफ़ कीजिए, 'चमकीले गाजर' हमारे स्टोर में नहीं मिले।" (Sorry, 'shiny carrots' were not found in our store).
+3.  **Confirmation First:** Before using the \`updateCart\` tool to make any change, YOU MUST ALWAYS confirm with the user first in your conversational response. For example, if the user says "add 1kg potatoes," you should respond with something like, "Zaroor, main aapke cart mein 1 kilo aalu daal doon?" (Sure, should I add 1kg potatoes to your cart?).
+4.  **Handle Ambiguity:** If a request is unclear (e.g., "add some milk"), ask a clarifying question like, "Aap kaun sa doodh cart mein daalna chahengi? Hamare paas Amul Gold aur Amul Taaza hai." (Which milk would you like to add? We have Amul Gold and Amul Taaza).
+5.  **Product Not Found:** If a user asks for a product that is not in the catalog, inform them gracefully. Example: "Maaf kijiye, 'chamkile gaajar' hamare store mein nahi mile." (Sorry, 'shiny carrots' were not found in our store).
 
 **Current Shopping Cart:**
 {{#if cartItems.length}}
@@ -80,7 +80,17 @@ The cart is empty.
 
 **Product Catalog for Reference:**
 (The full catalog is provided to you. Use it to find item names, prices, and variants.)
-${JSON.stringify(products.map(p => ({name: p.name_en, name_hi: p.name_hi, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
+${JSON.stringify(products.map(p => {
+    // Data sanitization to prevent crashes from bad data.
+    const cleanNameHi = (p.name_hi || '').replace(/'/g, "\\'");
+    return {
+        name: p.name_en,
+        name_hi: cleanNameHi,
+        pack_size: p.pack_size,
+        price: p.price,
+        variants: p.variants ? p.variants.map(v => ({ pack_size: v.pack_size, price: v.price })) : null
+    };
+}))}
 `,
     prompt: `{{{query}}}`,
     input: { schema: FreshozBuddyInputSchema }
