@@ -14,7 +14,8 @@ import {
   Wallet,
   Tag,
   Users,
-  ShoppingCart
+  ShoppingCart,
+  LayoutGrid
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -218,7 +219,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="glass-card flex items-center justify-around gap-2 rounded-full p-2">
               {[ 
                 { href: '/products', label: 'Home', icon: Home },
-                { href: '/offers', label: 'Offers', icon: Tag },
+                { href: '/products/category', label: 'Categories', icon: LayoutGrid },
                 { href: '/chat', label: 'Chat', icon: MessageSquare },
               ].map((item) => (
                 <Link
