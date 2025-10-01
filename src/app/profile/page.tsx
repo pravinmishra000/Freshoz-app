@@ -9,9 +9,10 @@ import React, { useState } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
 import AddressAutocomplete from '@/components/location/AddressAutocomplete';
+import { Address } from '@/lib/types';
 
 export default function ProfilePage() {
-  const { appUser, logout } = useAuth();
+  const { appUser, logout, setAppUser } = useAuth();
   const router = useRouter();
   const [isAddingAddress, setIsAddingAddress] = useState(false);
 
@@ -20,10 +21,13 @@ export default function ProfilePage() {
     router.push('/login');
   };
 
-  const handleAddressSaved = () => {
+  const handleAddressSaved = (newAddress: Address) => {
+    if (appUser) {
+        // Optimistically update the user state to reflect the new address instantly
+        const updatedAddresses = [...(appUser.addresses || []), newAddress];
+        setAppUser({ ...appUser, addresses: updatedAddresses });
+    }
     setIsAddingAddress(false);
-    // You might want to re-fetch the user data here to show the new address
-    // For now, we just close the modal.
   };
 
   if (isAddingAddress) {
@@ -92,7 +96,7 @@ export default function ProfilePage() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-semibold">{addr.type}</p>
+                          <p className="font-semibold">{addr.type || 'Address'}</p>
                           {addr.isDefault && <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">Default</span>}
                         </div>
                         <p className="text-muted-foreground">{addr.address}, {addr.city} - {addr.pincode}</p>

@@ -194,28 +194,20 @@ export async function createOrder(orderData: CreateOrderData): Promise<string> {
  */
 export async function updateUserAddress(userId: string, address: Omit<Address, 'id'>): Promise<Address> {
     const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-        throw new Error('User not found');
-    }
-
-    const userData = userSnap.data() as User;
+    
+    // Generate a unique ID for the new address
     const newAddressId = uuidv4();
     const newAddress: Address = { ...address, id: newAddressId };
-    
-    let isDefault = true; // Make the new address default if it's the first one
-    if (userData.addresses && userData.addresses.length > 0) {
-        isDefault = false;
-    }
-    newAddress.isDefault = isDefault;
 
+    // Atomically add the new address to the 'addresses' array in the user's document.
     await updateDoc(userRef, {
         addresses: arrayUnion(newAddress)
     });
 
+    // Return the newly created address with its ID.
     return newAddress;
 }
+
 
 /**
  * Update product stock (optional: prevent negative stock)

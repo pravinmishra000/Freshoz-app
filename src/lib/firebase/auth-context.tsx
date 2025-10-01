@@ -7,6 +7,8 @@ import {
   useEffect,
   useState,
   ReactNode,
+  Dispatch,
+  SetStateAction,
 } from 'react';
 import {
   onAuthStateChanged,
@@ -26,6 +28,7 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
   authUser: FirebaseUser | null;
   appUser: AppUser | null;
+  setAppUser: Dispatch<SetStateAction<AppUser | null>>;
   loading: boolean;
   signInWithPhoneNumber: (phone: string, role: UserRole, appVerifier: RecaptchaVerifier) => Promise<ConfirmationResult>;
   confirmOtp: (confirmationResult: ConfirmationResult, otp: string) => Promise<void>;
@@ -126,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     authUser,
     appUser,
+    setAppUser,
     loading,
     signInWithPhoneNumber,
     confirmOtp,

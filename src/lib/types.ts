@@ -1,6 +1,8 @@
+
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { FieldValue } from 'firebase/firestore';
+import { Dispatch, SetStateAction } from 'react';
 
 // 🔧 Base interface for all menu items
 export interface MenuItemBase {
@@ -181,7 +183,7 @@ export interface Promotion {
 export interface CartItem {
   id: string; // This should be a combination of product id and variant id, e.g., "prod1-var2"
   productId: string;
-  variantId: string;
+  variantId?: string;
   name: string;
   price: number;
   mrp?: number;
@@ -211,6 +213,8 @@ export interface Address {
   isDefault?: boolean;
   landmark?: string;
   country?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface User {
@@ -314,6 +318,7 @@ export interface AuthUser {
   displayName?: string;
   phoneNumber?: string;
   photoURL?: string;
+  setAppUser: Dispatch<SetStateAction<User | null>>;
 }
 
 export interface LoginCredentials {
