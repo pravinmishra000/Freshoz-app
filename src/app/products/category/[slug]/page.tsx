@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import type { Product, Category } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { products as allProductsData, CATEGORIES } from '@/lib/data';
@@ -17,15 +17,14 @@ const DEFAULT_CATEGORY_SLUG = 'fresh-vegetables';
 export default function CategoryPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialSlug = params.slug || searchParams.get('slug') || DEFAULT_CATEGORY_SLUG;
   
-  const [selectedSlug, setSelectedSlug] = useState<string>(initialSlug as string);
+  const slug = params.slug as string || DEFAULT_CATEGORY_SLUG;
+  
   const [category, setCategory] = useState<Category | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateCategory = useCallback((slug: string) => {
+  useEffect(() => {
     setIsLoading(true);
     const currentCategory = CATEGORIES.find(cat => cat.slug === slug);
     if (currentCategory) {
@@ -35,23 +34,14 @@ export default function CategoryPage() {
       );
       setFilteredProducts(products);
     } else {
-      setCategory(null);
-      setFilteredProducts([]);
-    }
-    // Update URL without reloading page
-    if (params.slug !== slug) {
-       router.push(`/products/category/${slug}`, { scroll: false });
+      // If slug is invalid, redirect to the default category
+      router.replace(`/products/category/${DEFAULT_CATEGORY_SLUG}`);
+      return; // Stop further execution for this render
     }
     setIsLoading(false);
-  }, [router, params.slug]);
+  }, [slug, router]);
 
-  useEffect(() => {
-    const slug = params.slug || DEFAULT_CATEGORY_SLUG;
-    setSelectedSlug(slug as string);
-    updateCategory(slug as string);
-  }, [params.slug, updateCategory]);
-
-  if (isLoading) {
+  if (isLoading || !category) {
     return (
       <AppShell>
         <div className="flex h-64 items-center justify-center">
@@ -71,39 +61,30 @@ export default function CategoryPage() {
              <div className="sticky top-24">
                 <CategorySidebar 
                     categories={CATEGORIES} 
-                    activeSlug={selectedSlug}
+                    activeSlug={slug}
                 />
              </div>
           </aside>
           
           {/* Right Side: Product Grid */}
           <main className="w-full md:w-3/4 md:w-4/5 lg:w-5/6">
-            {category ? (
-              <>
-                <Card className="mb-6 border-0 bg-transparent shadow-none">
-                  <CardHeader className="p-0">
-                    <CardTitle className="font-headline text-2xl md:text-4xl font-bold text-primary">{category.name_en}</CardTitle>
-                    <CardDescription className="hidden md:block">{category.description}</CardDescription>
-                  </CardHeader>
-                </Card>
+            <Card className="mb-6 border-0 bg-transparent shadow-none">
+              <CardHeader className="p-0">
+                <CardTitle className="font-headline text-2xl md:text-4xl font-bold text-primary">{category.name_en}</CardTitle>
+                <CardDescription className="hidden md:block">{category.description}</CardDescription>
+              </CardHeader>
+            </Card>
 
-                {filteredProducts.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                    {filteredProducts.map((product) => (
-                      <ProductCard key={product.id} product={product} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-10 glass-card">
-                    <p className="text-muted-foreground">No products found in this category.</p>
-                  </div>
-                )}
-              </>
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
             ) : (
-               <div className="text-center py-10 glass-card">
-                  <h1 className="text-xl md:text-2xl font-bold">Category not found</h1>
-                  <p className="text-muted-foreground mt-2">Please select a valid category.</p>
-                </div>
+              <div className="text-center py-10 glass-card">
+                <p className="text-muted-foreground">No products found in this category.</p>
+              </div>
             )}
           </main>
         </div>

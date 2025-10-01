@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import type { Product, Category, Promotion } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { HelpCircle, Carrot, Apple, Milk, Coffee, ShoppingCart, Drumstick, Phone } from 'lucide-react';
@@ -14,9 +15,13 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export default function ProductsPage() {
+  const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [bestDeals, setBestDeals] = useState<Product[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>('fresh-vegetables');
+  
+  const activeCategory = pathname.includes('/products/category/')
+    ? pathname.split('/').pop()
+    : 'fresh-vegetables';
 
   useEffect(() => {
     setProducts(allProductsData);
@@ -68,7 +73,6 @@ export default function ProductsPage() {
                         <Link
                             key={category.id}
                             href={`/products/category/${category.slug}`}
-                            onClick={() => setActiveCategory(category.slug)}
                             className={cn(
                                 "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4",
                                 isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-white/20"
