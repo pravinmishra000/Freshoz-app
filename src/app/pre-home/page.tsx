@@ -14,7 +14,7 @@ export default function PreHomeScreen() {
         <p className="text-muted-foreground text-lg mb-12 max-w-md">
           Your one-stop shop for the freshest vegetable, fruits, groceries, etc. delivered right to your door.
         </p>
-
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-lg">
           <a href="tel:9097882555" className="glass-button flex flex-col items-center justify-center">
             <Phone className="h-10 w-10 text-positive mb-3" />
