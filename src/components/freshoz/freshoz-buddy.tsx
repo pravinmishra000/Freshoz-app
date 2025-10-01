@@ -16,6 +16,7 @@ import type { Product } from '@/lib/types';
 import { products as allProducts } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { useAuth } from '@/lib/firebase/auth-context';
 
 type ChatMessage = {
   id: string;
@@ -31,6 +32,7 @@ export default function FreshozBuddy() {
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
   const { getCartItems, addToCart } = useCart();
+  const { appUser } = useAuth();
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -179,7 +181,7 @@ export default function FreshozBuddy() {
                             <div className="inline-block p-4 bg-green-500/10 rounded-full mb-3">
                                 <Sparkles className="h-10 w-10 text-green-600"/>
                             </div>
-                            <h3 className="font-semibold text-lg text-primary">Main aapki kaise madad kar sakti hoon?</h3>
+                            <h3 className="font-semibold text-lg text-primary">Hi {appUser?.displayName || 'Guest'}, how can I help you?</h3>
                             <p className="text-muted-foreground text-sm">
                                <span className="font-bold text-positive">Freshoz</span> aapki shopping ko aur behtar banane ke liye yahaan hai!
                             </p>
