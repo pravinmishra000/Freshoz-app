@@ -218,10 +218,6 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
         fields: ["address_components", "geometry", "formatted_address"],
     },
   });
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
 
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
     if (!place.place_id || !placeAutocomplete) return;
@@ -239,24 +235,29 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
                 ref={inputRef}
-                placeholder="Search for area, street name..."
+                placeholder="Enter your address"
                 className="w-full pl-10 pr-4 py-2 h-12 text-base"
                 value={inputValue}
-                onChange={handleInputChange}
+                onChange={(e) => setInputValue(e.target.value)}
+                autoComplete="off"
             />
             {isPlacePredictionsLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />}
         </div>
       {placePredictions.length > 0 && (
           <div className='absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border z-20'>
-              {placePredictions.map(({ description, place_id }) => (
-                <button key={place_id} onClick={() => handleSuggestionClick({ description, place_id } as any)} className="block w-full text-left p-4 hover:bg-gray-100">
-                    {description}
-                </button>
-              ))}
+              {placePredictions.map(({ description, place_id }) => {
+                const suggestionText = description;
+                const isServicable = suggestionText.includes('Bhagalpur') || suggestionText.includes('Khagaria');
+                if (!isServicable) return null;
+                
+                return (
+                    <button key={place_id} onClick={() => handleSuggestionClick({ description, place_id } as any)} className="block w-full text-left p-4 hover:bg-gray-100">
+                        {suggestionText}
+                    </button>
+                )
+              })}
           </div>
       )}
     </div>
   );
 }
-
-    
