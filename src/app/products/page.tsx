@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -62,7 +60,7 @@ export default function ProductsPage() {
 
         {/* Category Section */}
         <section className="my-8 relative">
-            <div className="bg-primary rounded-2xl p-4 flex overflow-x-auto no-scrollbar space-x-4">
+            <div className="bg-gradient-to-r from-orange-400 to-sky-400 rounded-2xl p-4 flex overflow-x-auto no-scrollbar space-x-4">
                 {CATEGORIES.map((category) => {
                     const Icon = categoryIcons[category.slug] || ShoppingCart;
                     const isActive = activeCategory === category.slug;
@@ -73,16 +71,16 @@ export default function ProductsPage() {
                             onClick={() => setActiveCategory(category.slug)}
                             className={cn(
                                 "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4",
-                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-primary-foreground/10"
+                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-white/20"
                             )}
                         >
                             <Icon className={cn(
                                 "h-6 w-6 mb-1 transition-all",
-                                isActive ? "text-positive" : "text-primary-foreground"
+                                isActive ? "text-positive" : "text-white"
                             )} />
                             <span className={cn(
                                 "text-xs font-medium text-center transition-colors",
-                                isActive ? "text-primary" : "text-primary-foreground"
+                                isActive ? "text-primary" : "text-white"
                             )}>
                                 {category.name_en}
                             </span>
