@@ -208,7 +208,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     options: {
       componentRestrictions: { country: 'in' },
       bounds: indiaBounds,
-      strictBounds: false
+      strictBounds: true,
     },
   });
   

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -129,7 +130,8 @@ export default function LoginPage() {
       const result = await signInWithPhoneNumber(data.phone, 'customer', appVerifier);
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
-    } catch (error: any)      console.error("OTP Send Error:", error);
+    } catch (error: any) {
+      console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
     } finally {
@@ -253,7 +255,7 @@ export default function LoginPage() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <PhoneInput {...field} international country="IN" defaultCountry="IN" className="phone-input-dark" />
+                <PhoneInput {...field} country="IN" defaultCountry="IN" className="phone-input-dark" />
               </FormControl>
               <FormMessage />
             </FormItem>
