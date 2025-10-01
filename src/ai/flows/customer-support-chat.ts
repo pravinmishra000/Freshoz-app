@@ -26,7 +26,7 @@ const SupportChatInputSchema = z.object({
 export type SupportChatInput = z.infer<typeof SupportChatInputSchema>;
 
 const SupportChatOutputSchema = z.object({
-  message: z.string().describe('The chatbot\'s response message.'),
+  message: z.string().describe("The chatbot's response message."),
 });
 export type SupportChatOutput = z.infer<typeof SupportChatOutputSchema>;
 
@@ -95,17 +95,16 @@ const customerSupportFlow = ai.defineFlow(
   {
     name: 'customerSupportFlow',
     inputSchema: SupportChatInputSchema,
-    // Note: No outputSchema here because the prompt itself doesn't have one,
-    // which allows the ai.run() call to resolve with a standard GenerateResponse.
+    outputSchema: SupportChatOutputSchema,
   },
   async (input) => {
     const llmResponse = await ai.run(prompt, { input });
-    return llmResponse.text;
+    return { message: llmResponse.text };
   }
 );
 
 
 export async function supportChat(input: SupportChatInput): Promise<SupportChatOutput> {
     const response = await customerSupportFlow(input);
-    return { message: response };
+    return response;
 }

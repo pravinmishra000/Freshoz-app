@@ -52,11 +52,12 @@ const FreshozBuddyOutputSchema = z.object({
   response: z.string().describe('The assistant\'s conversational response in natural, friendly Hindi.'),
   cartAction: CartActionSchema.optional().describe('The cart action to be performed if applicable.'),
 });
-export type FreshozBuddyOutput = z_infer<typeof FreshozBuddyOutputSchema>;
+export type FreshozBuddyOutput = z.infer<typeof FreshozBuddyOutputSchema>;
 
 const prompt = ai.definePrompt({
     name: 'freshozBuddyPrompt',
     tools: [updateCart],
+    model: 'googleai/gemini-1.5-flash',
     system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
 
 Your primary goal is to help users manage their shopping cart and answer their questions about products in a natural, conversational way. You MUST respond in conversational Hindi.
@@ -95,12 +96,8 @@ const freshozBuddyFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llmResponse = await ai.generate({
-        prompt,
-        input,
-        model: 'googleai/gemini-1.5-flash',
-        tools: [updateCart],
-    });
+    // Correct way to execute a defined prompt
+    const llmResponse = await prompt(input);
 
     const outputText = llmResponse.text;
     const toolCalls = llmResponse.toolCalls;
