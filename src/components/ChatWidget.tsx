@@ -10,7 +10,7 @@ async function sendPrompt(prompt: string) {
       return data.output;
     } catch (err) {
       console.error(err);
-      return "Kuch gadbad ho gayi, fir se koshish karein.";
+      return "Kuch technical issue hai, kuchh samay baad ispar koshish karein.";
     }
   }
   

@@ -97,7 +97,11 @@ const customerSupportFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (input) => {
-    const llmResponse = await prompt(input);
+    const llmResponse = await ai.generate({
+        prompt: await prompt(input),
+        model: 'googleai/gemini-1.5-flash',
+        tools: [getOrderDetails]
+    });
     return llmResponse.text;
   }
 );
