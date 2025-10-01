@@ -102,7 +102,7 @@ export default function WalletPage() {
                 >
                     <CardContent className="p-5 flex items-center gap-5">
                         <div className="bg-green-100 p-3 rounded-xl">
-                            <Plus className="w-6 h-6 text-green-700"/>
+                            <Plus className="w-6 h-6 text-positive"/>
                         </div>
                         <div className="text-left">
                             <h3 className="font-bold text-lg text-gray-800">Add Money</h3>

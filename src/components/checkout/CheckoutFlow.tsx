@@ -180,7 +180,7 @@ export function CheckoutFlow() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center rounded-md border border-primary bg-primary/10 p-4">
-                  <CreditCard className="mr-4 h-6 w-6 text-primary" />
+                  <CreditCard className="mr-4 h-6 w-6 text-positive" />
                   <div>
                     <p className="font-semibold">Cash on Delivery (COD)</p>
                     <p className="text-sm text-muted-foreground">Pay with cash when your order arrives.</p>

@@ -150,7 +150,7 @@ export default function FreshozBuddy() {
         )}
         aria-label="Open AI Assistant"
       >
-        <Sparkles className="h-7 w-7 text-primary" />
+        <Sparkles className="h-7 w-7 text-positive" />
       </Button>
       
       <Sheet open={isOpen} onOpenChange={(open) => {
@@ -180,7 +180,7 @@ export default function FreshozBuddy() {
                     <div className="flex-1 px-6 py-6 flex flex-col justify-center text-center">
                         <div className="space-y-4">
                             <div className="inline-block p-4 bg-green-500/10 rounded-full mb-3">
-                                <Sparkles className="h-10 w-10 text-green-600"/>
+                                <Sparkles className="h-10 w-10 text-positive"/>
                             </div>
                             <h3 className="font-semibold text-lg text-primary">Hi {appUser?.displayName || 'Guest'}, how can I help you?</h3>
                             <p className="text-muted-foreground text-sm">

@@ -78,7 +78,7 @@ export default function ProductsPage() {
                         >
                             <Icon className={cn(
                                 "h-6 w-6 mb-1 transition-all",
-                                isActive ? "text-primary" : "text-primary-foreground"
+                                isActive ? "text-positive" : "text-primary-foreground"
                             )} />
                             <span className={cn(
                                 "text-xs font-medium text-center transition-colors",
@@ -115,7 +115,7 @@ export default function ProductsPage() {
 
       {/* Fixed Call & Help Buttons */}
       <a href="tel:9097882555" className="glass-icon-button fixed bottom-24 left-4 z-40 h-14 w-14 md:left-6 md:bottom-6">
-        <Phone className="h-7 w-7" />
+        <Phone className="h-7 w-7 text-positive" />
         <span className="sr-only">Call to Order</span>
       </a>
     </AppShell>

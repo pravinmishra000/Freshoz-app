@@ -43,7 +43,7 @@ export default function ProfilePage() {
           <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex items-center gap-4">
-                <User className="h-6 w-6 text-primary" />
+                <User className="h-6 w-6 text-positive" />
                 <CardTitle className="text-xl">Personal Information</CardTitle>
               </div>
               <Button variant="outline" size="sm">Edit</Button>
@@ -68,7 +68,7 @@ export default function ProfilePage() {
           <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex items-center gap-4">
-                <MapPin className="h-6 w-6 text-primary" />
+                <MapPin className="h-6 w-6 text-positive" />
                 <CardTitle className="text-xl">Address Book</CardTitle>
               </div>
               <Button variant="outline" size="sm">Add New</Button>

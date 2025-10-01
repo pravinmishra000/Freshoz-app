@@ -151,7 +151,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="flex items-center gap-2">
                     <Link href="/wallet">
                         <Button variant="ghost" size="icon" className="glass-icon-button">
-                            <Wallet className="h-5 w-5 text-primary" />
+                            <Wallet className="h-5 w-5 text-positive" />
                         </Button>
                     </Link>
                     {loading ? (
@@ -191,7 +191,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     ) : (
                       <Button asChild variant="ghost" size="icon" className="glass-icon-button">
                         <Link href="/login">
-                          <User className="h-5 w-5 text-primary" />
+                          <User className="h-5 w-5 text-positive" />
                         </Link>
                       </Button>
                     )}

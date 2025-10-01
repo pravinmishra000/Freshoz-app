@@ -382,11 +382,11 @@ export default function AddMoneyPage() {
           {/* Security Features */}
           <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
             <div className="flex items-center space-x-2">
-              <Shield className="h-4 w-4 text-green-600" />
+              <Shield className="h-4 w-4 text-positive" />
               <span>256-bit SSL Secure</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Zap className="h-4 w-4 text-green-600" />
+              <Zap className="h-4 w-4 text-positive" />
               <span>Instant Transfer</span>
             </div>
           </div>
