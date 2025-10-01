@@ -1,3 +1,4 @@
+
 import { Product } from '../../types';
 
 export const EGGS_PRODUCTS: Product[] = [
@@ -15,7 +16,7 @@ export const EGGS_PRODUCTS: Product[] = [
     pack_size: '12 pieces',
     is_veg: false,
     delivery_mode: 'quick',
-    image: 'https://picsum.photos/seed/egg-1/400/400',
+    image: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fnon-veg%2Fproducts%2Feggs.webp?alt=media&token=c19ac51c-4394-4361-9cde-607062402511',
     imageHint: 'Farm Eggs',
     tags: ['eggs', 'fresh', 'farm', 'protein'],
     rating: 4.5,
@@ -26,8 +27,9 @@ export const EGGS_PRODUCTS: Product[] = [
       { warehouse_id: 'khagaria', stock: 0 }
     ],
     variants: [
-      { id: 'egg-1-1', pack_size: '6 pieces', mrp: 30, price: 28, stock_qty: 100 },
-      { id: 'egg-1-2', pack_size: '12 pieces', mrp: 60, price: 55, stock_qty: 100 },
+      { id: 'egg-1-1', pack_size: '6 pc', mrp: 30, price: 28, stock_qty: 100 },
+      { id: 'egg-1-2', pack_size: '12 pc', mrp: 60, price: 55, stock_qty: 100 },
+      { id: 'egg-1-3', pack_size: '30 pc', mrp: 150, price: 135, stock_qty: 50 },
     ]
   },
   {
@@ -254,6 +256,34 @@ export const EGGS_PRODUCTS: Product[] = [
     ],
     variants: [
        { id: 'egg-9-1', pack_size: '30 pieces', mrp: 140, price: 130, stock_qty: 100 },
+    ]
+  },
+   {
+    id: 'egg-10',
+    name_en: 'chencke-whole',
+    name_hi: 'chencke-whole',
+    description: 'Fresh whole chicken',
+    brand: 'Local Farms',
+    category_id: 'cat-5',
+    mrp: 210,
+    price: 200,
+    stock_qty: 90,
+    unit: 'dozen',
+    pack_size: '1 pc',
+    is_veg: false,
+    delivery_mode: 'quick',
+    image: 'https://picsum.photos/seed/egg-10/400/400',
+    imageHint: 'Omega Eggs',
+    tags: ['eggs', 'omega-3', 'enriched', 'healthy'],
+    rating: 4.8,
+    rating_count: 85,
+    warehouse_stock: [
+      { warehouse_id: 'sultanganj', stock: 40 },
+      { warehouse_id: 'bhagalpur', stock: 0 },
+      { warehouse_id: 'khagaria', stock: 0 }
+    ],
+    variants: [
+        { id: 'egg-10-1', pack_size: '1 pc', mrp: 210, price: 200, stock_qty: 90 },
     ]
   }
 ];
