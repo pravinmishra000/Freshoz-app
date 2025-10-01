@@ -56,7 +56,7 @@ export function CheckoutFlow() {
       phone: appUser?.phoneNumber || '',
       address: appUser?.address?.address || '',
       city: appUser?.address?.city || '',
-      district: '',
+      district: appUser?.address?.district || 'Bhagalpur',
       state: 'Bihar',
       pincode: appUser?.address?.pincode || '',
     },
@@ -69,7 +69,7 @@ export function CheckoutFlow() {
             phone: appUser.phoneNumber || '',
             address: appUser.address?.address || '',
             city: appUser.address?.city || '',
-            district: '',
+            district: appUser.address?.district || 'Bhagalpur',
             state: 'Bihar',
             pincode: appUser.address?.pincode || '',
         });
@@ -184,7 +184,7 @@ export function CheckoutFlow() {
                   render={({ field }) => (
                     <FormItem className="sm:col-span-2">
                       <FormLabel>Phone Number</FormLabel>
-                      <FormControl><Input placeholder="+91 *******" {...field} /></FormControl>
+                      <FormControl><Input placeholder="+91 123456789.." {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -196,23 +196,23 @@ export function CheckoutFlow() {
                     <FormItem className="sm:col-span-2">
                       <FormLabel>Street Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ghat Road" {...field} />
+                        <Input placeholder="Station Road, Ghat Road..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField control={form.control} name="city" render={({ field }) => (
-                    <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="e.g. Sultanganj" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="Sultanganj" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                  <FormField control={form.control} name="district" render={({ field }) => (
-                    <FormItem><FormLabel>District</FormLabel><FormControl><Input placeholder="e.g. Bhagalpur" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>District</FormLabel><FormControl><Input placeholder="Bhagalpur" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="state" render={({ field }) => (
                     <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="pincode" render={({ field }) => (
-                    <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input placeholder="8*****" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input placeholder="813213" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </CardContent>
             </Card>
@@ -341,5 +341,3 @@ export function CheckoutFlow() {
     </div>
   );
 }
-
-    
