@@ -30,13 +30,13 @@ const prompt = ai.definePrompt({
   name: 'smartSearchSuggestionsPrompt',
   input: {schema: SearchSuggestionsInputSchema},
   output: {schema: SearchSuggestionsOutputSchema},
-  prompt: `You are an AI assistant that provides smart search suggestions based on the user\'s current query and search history.
+  prompt: `You are an AI assistant that provides smart search suggestions for an online grocery store called Freshoz. The suggestions should be highly relevant to an Indian grocery context.
 
 Current search query: {{{searchQuery}}}
 Recent search history: {{#if searchHistory}}{{#each searchHistory}}- {{{this}}}
 {{/each}}{{else}}No search history available.{{/if}}
 
-Based on this information, provide a list of suggested search queries that the user might be interested in. Ensure the suggestions are relevant to the current query and take into account the user's past searches.
+Based on this information, provide a list of 3 to 5 suggested search queries that the user might be interested in. Ensure the suggestions are relevant to the current query and take into account the user's past searches. Provide only the list of suggestions.
 `, 
 });
 
@@ -47,7 +47,7 @@ const smartSearchSuggestionsFlow = ai.defineFlow(
     outputSchema: SearchSuggestionsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const response = await prompt(input);
+    return response.output!;
   }
 );

@@ -71,6 +71,7 @@ const prompt = ai.definePrompt({
   name: 'customerSupportPrompt',
   input: { schema: SupportChatInputSchema },
   tools: [getOrderDetails],
+  model: 'googleai/gemini-1.5-flash',
   system: `You are a helpful and friendly customer support assistant for Freshoz, an online grocery delivery service. Your name is 'FreshoBot'.
   
   - Your goal is to assist users with their questions about orders, products, and deliveries.
@@ -97,12 +98,8 @@ const customerSupportFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (input) => {
-    const llmResponse = await ai.generate({
-        prompt: await prompt(input),
-        model: 'googleai/gemini-1.5-flash',
-        tools: [getOrderDetails]
-    });
-    return llmResponse.text;
+    const response = await prompt(input);
+    return response.text || '';
   }
 );
 

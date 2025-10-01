@@ -54,21 +54,11 @@ const FreshozBuddyOutputSchema = z.object({
 });
 export type FreshozBuddyOutput = z.infer<typeof FreshozBuddyOutputSchema>;
 
-
-// The main flow
-const freshozBuddyFlow = ai.defineFlow(
-  {
-    name: 'freshozBuddyFlow',
-    inputSchema: FreshozBuddyInputSchema,
-    outputSchema: FreshozBuddyOutputSchema,
-  },
-  async (input) => {
-    const llmResponse = await ai.generate({
-      prompt: input.query,
-      model: 'googleai/gemini-1.5-flash',
-      tools: [updateCart],
-      config: {
-          system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
+const prompt = ai.definePrompt({
+    name: 'freshozBuddyPrompt',
+    model: 'googleai/gemini-1.5-flash',
+    tools: [updateCart],
+    system: `You are a smart, friendly, and helpful female shopping assistant for an online grocery store called Freshoz. Your name is Freshoz.
 
 Your primary goal is to help users manage their shopping cart and answer their questions about products in a natural, conversational way. You MUST respond in conversational Hindi.
 
@@ -91,13 +81,21 @@ The cart is empty.
 **Product Catalog for Reference:**
 (The full catalog is provided to you. Use it to find item names, prices, and variants.)
 ${JSON.stringify(products.map(p => ({name: p.name_en, name_hi: p.name_hi, pack_size: p.pack_size, price: p.price, variants: p.variants?.map(v => ({pack_size: v.pack_size, price: v.price})) })))}
-`
-      },
-      context: {
-        cartItems: input.cartItems,
-      },
-    });
+`,
+    prompt: `{{{query}}}`
+});
 
+
+// The main flow
+const freshozBuddyFlow = ai.defineFlow(
+  {
+    name: 'freshozBuddyFlow',
+    inputSchema: FreshozBuddyInputSchema,
+    outputSchema: FreshozBuddyOutputSchema,
+  },
+  async (input) => {
+    
+    const llmResponse = await prompt(input);
 
     const outputText = llmResponse.text;
     const toolCalls = llmResponse.toolCalls;
