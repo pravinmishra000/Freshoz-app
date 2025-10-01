@@ -5,18 +5,30 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { User, MapPin, LogOut } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
+import AddressAutocomplete from '@/components/location/AddressAutocomplete';
 
 export default function ProfilePage() {
   const { appUser, logout } = useAuth();
   const router = useRouter();
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
+
+  const handleAddressSaved = () => {
+    setIsAddingAddress(false);
+    // You might want to re-fetch the user data here to show the new address
+    // For now, we just close the modal.
+  };
+
+  if (isAddingAddress) {
+      return <AddressAutocomplete onAddressSelect={handleAddressSaved} />;
+  }
 
   const user = {
     name: appUser?.displayName ?? 'Demo User',
@@ -71,7 +83,7 @@ export default function ProfilePage() {
                 <MapPin className="h-6 w-6 text-positive" />
                 <CardTitle className="text-xl">Address Book</CardTitle>
               </div>
-              <Button variant="outline" size="sm">Add New</Button>
+              <Button variant="outline" size="sm" onClick={() => setIsAddingAddress(true)}>Add New</Button>
             </CardHeader>
             <CardContent className="space-y-4">
               {addresses.length > 0 ? (

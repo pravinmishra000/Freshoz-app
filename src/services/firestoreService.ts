@@ -16,7 +16,8 @@ import {
   orderBy,
   increment,
   setDoc,
-  onSnapshot, Unsubscribe
+  onSnapshot, Unsubscribe,
+  arrayUnion
 } from 'firebase/firestore';
 import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -186,6 +187,34 @@ export async function createOrder(orderData: CreateOrderData): Promise<string> {
   await updateDoc(newOrderRef, { firestoreId: newOrderRef.id });
 
   return newOrderRef.id;
+}
+
+/**
+ * Add or update a user's address
+ */
+export async function updateUserAddress(userId: string, address: Omit<Address, 'id'>): Promise<Address> {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+        throw new Error('User not found');
+    }
+
+    const userData = userSnap.data() as User;
+    const newAddressId = uuidv4();
+    const newAddress: Address = { ...address, id: newAddressId };
+    
+    let isDefault = true; // Make the new address default if it's the first one
+    if (userData.addresses && userData.addresses.length > 0) {
+        isDefault = false;
+    }
+    newAddress.isDefault = isDefault;
+
+    await updateDoc(userRef, {
+        addresses: arrayUnion(newAddress)
+    });
+
+    return newAddress;
 }
 
 /**
