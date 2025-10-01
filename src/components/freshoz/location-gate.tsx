@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin } from 'lucide-react';
 
-const SUPPORTED_PINS = ['813213'];
+const SUPPORTED_PINS = ['813213', '813212', '812001', '812003'];
 const LOCAL_STORAGE_KEY = 'freshoz_pincode_verified';
 
 export default function LocationGate() {
@@ -65,7 +66,7 @@ export default function LocationGate() {
         <Button type="submit" onClick={handleCheckPin} className="w-full neon-button">
           Continue
         </Button>
-        <p className="text-center text-sm text-muted-foreground">Currently serving: {SUPPORTED_PINS.join(', ')} (Sultanganj)</p>
+        <p className="text-center text-sm text-muted-foreground">Currently serving: Sultanganj, Tilkamanjhi, Barari, Sabour & nearby areas.</p>
       </DialogContent>
     </Dialog>
   );
