@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Bot, Loader2, SendHorizonal, Sparkles, X, Mic, ShoppingCart } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Bot, Loader2, SendHorizonal, Sparkles, X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -30,47 +30,9 @@ export default function FreshozBuddy() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
-  const [isListening, setIsListening] = useState(false);
   const { getCartItems, addToCart } = useCart();
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
-
-  const speak = useCallback((text: string) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    const setVoice = () => {
-        window.speechSynthesis.cancel();
-        const voices = window.speechSynthesis.getVoices();
-        // Prioritize a female Hindi voice
-        let desiredVoice = voices.find(voice => voice.lang === 'hi-IN' && voice.name.toLowerCase().includes('female'));
-        
-        // Fallback to any Hindi voice if a female one isn't found
-        if (!desiredVoice) {
-            desiredVoice = voices.find(voice => voice.lang === 'hi-IN');
-        }
-
-        // Fallback to a default english voice if no hindi is available
-        if (!desiredVoice) {
-          let englishVoices = voices.filter(voice => voice.lang.startsWith('en-'));
-          desiredVoice = englishVoices.find(v => v.name.toLowerCase().includes('female')) || englishVoices[0];
-        }
-
-        utterance.voice = desiredVoice || null;
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
-    };
-
-    // Voices are loaded asynchronously. We need to wait for them.
-    if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = setVoice;
-    } else {
-        setVoice();
-    }
-  }, []);
-
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -86,88 +48,6 @@ export default function FreshozBuddy() {
     setInputValue('');
     setIsLoading(false);
     setShowInitial(true);
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    setIsListening(false);
-  };
-
-  const startVoiceInput = async () => {
-    // Stop any currently playing speech
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      const errorMsg = "Voice input is not supported in your browser. Please type your message.";
-      setMessages(prev => [...prev, { id: 'voice-error', role: 'assistant', content: errorMsg }]);
-      speak(errorMsg);
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      const errorMsg = "Microphone access is blocked. Please allow it in your browser settings to use voice input.";
-      setMessages(prev => [...prev, { id: 'mic-error', role: 'assistant', content: errorMsg }]);
-      speak(errorMsg);
-      return;
-    }
-    
-    setShowInitial(false);
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'hi-IN';
-    recognition.continuous = false; // Process after a pause
-    recognition.interimResults = true;
-    recognitionRef.current = recognition;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    }
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interimTranscript = '';
-      let finalTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-      setInputValue(finalTranscript || interimTranscript);
-    };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Speech recognition error", event.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-      // The final transcript is in inputValue, now submit it.
-      // Use a timeout to ensure state has updated before submitting
-      setTimeout(() => {
-        const currentInput = (document.getElementById('ai-assistant-input') as HTMLInputElement)?.value;
-        if (currentInput && currentInput.trim()) {
-          handleSubmit(undefined, currentInput);
-        }
-      }, 100);
-    };
-
-    recognition.start();
   };
 
   const handleAddProductFromSuggestion = (product: Product, quantity = 1) => {
@@ -186,9 +66,9 @@ export default function FreshozBuddy() {
     });
   };
 
-  const handleSubmit = async (e?: React.FormEvent, voiceTranscript?: string) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    const query = voiceTranscript || inputValue;
+    const query = inputValue;
     if (!query.trim() || isLoading) return;
 
     setShowInitial(false);
@@ -215,10 +95,9 @@ export default function FreshozBuddy() {
       const currentCartItems = getCartItems();
       const result = await getAiResponse({ query, cartItems: currentCartItems });
       
-      const responseTextToSpeak = result.response;
+      const responseText = result.response;
       let productSuggestion: Product | undefined;
 
-      // Check if the AI decided to use the cart tool and a product was found
       if(result.cartAction?.action === 'add' && result.cartAction?.itemName) {
         const product = allProducts.find(p => p.name_en.toLowerCase() === result.cartAction!.itemName!.toLowerCase());
         if (product) {
@@ -229,12 +108,11 @@ export default function FreshozBuddy() {
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
-        content: responseTextToSpeak,
+        content: responseText,
         productSuggestion: productSuggestion
       };
       
       setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
-      speak(responseTextToSpeak);
 
     } catch (error) {
       console.error('AI Flow Error:', error);
@@ -250,7 +128,6 @@ export default function FreshozBuddy() {
         ),
       };
       setMessages((prev) => [...prev.slice(0, -1), errorMessage]);
-      speak(errorText);
     } finally {
       setIsLoading(false);
     }
@@ -339,27 +216,15 @@ export default function FreshozBuddy() {
               
               <div className="px-6 py-4 border-t">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      id="ai-assistant-input"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      placeholder={'Bolein ya type karein...'}
-                      disabled={isLoading}
-                      className="pr-12"
-                      autoFocus
-                    />
-                     <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className={cn("absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-green-500 hover:bg-green-600 rounded-full", isListening && "bg-red-500 animate-pulse")}
-                        onClick={startVoiceInput}
-                        disabled={isLoading}
-                      >
-                        <Mic className="h-5 w-5 text-white" />
-                      </Button>
-                  </div>
+                  <Input
+                    id="ai-assistant-input"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder={'Bolein ya type karein...'}
+                    disabled={isLoading}
+                    className="flex-1"
+                    autoFocus
+                  />
                   <Button type="submit" size="icon" className="bg-gradient-to-r from-green-500 to-emerald-600" disabled={isLoading || !inputValue.trim()}>
                     <SendHorizonal className="h-4 w-4" />
                   </Button>
@@ -381,24 +246,18 @@ export default function FreshozBuddy() {
              <div className="flex-1 px-6 py-6 flex flex-col justify-center">
               <div className="space-y-4">
                   <div className="text-center mb-6">
-                      <div className="inline-block p-3 bg-green-500/10 rounded-full mb-3">
-                          <Button
-                            type="button"
-                            className={cn("h-16 w-16 bg-green-500 hover:bg-green-600 rounded-full transition-all duration-300 shadow-lg", isListening && "scale-110 ring-4 ring-red-300 bg-red-500")}
-                            onClick={startVoiceInput}
-                            disabled={isLoading}
-                          >
-                            <Mic className="h-8 w-8 text-white" />
-                          </Button>
+                      <div className="inline-block p-4 bg-green-500/10 rounded-full mb-3">
+                         <Sparkles className="h-10 w-10 text-green-600"/>
                       </div>
                       <h3 className="font-semibold text-lg text-primary">Main aapki kaise madad kar sakti hoon?</h3>
                       <p className="text-muted-foreground text-sm">
                         Aapki shopping behtar banane ke liye main yahaan hoon!
                       </p>
                   </div>
-                   <div className="text-center text-sm text-muted-foreground">
+                  <div className="text-center text-sm text-muted-foreground">
                     <p>Try asking:</p>
                     <p className="font-semibold text-primary mt-1">"Add 1kg tomatoes to cart"</p>
+                    <p className="font-semibold text-primary mt-1">"Mera wallet balance kitna hai?"</p>
                   </div>
               </div>
             </div>
