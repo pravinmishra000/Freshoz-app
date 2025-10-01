@@ -220,7 +220,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               {[ 
                 { href: '/products', label: 'Home', icon: Home },
                 { href: '/products/category', label: 'Categories', icon: LayoutGrid },
+                { href: '/offers', label: 'Offers', icon: Tag },
                 { href: '/chat', label: 'Chat', icon: MessageSquare },
+                { href: '/profile', label: 'Profile', icon: User },
               ].map((item) => (
                 <Link
                   key={item.href}
@@ -236,7 +238,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <span className="sr-only">{item.label}</span>
                 </Link>
               ))}
-              <CartSheet />
             </div>
           </nav>
         )}

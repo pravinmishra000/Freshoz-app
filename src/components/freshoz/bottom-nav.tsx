@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, Wallet, User, Phone } from "lucide-react";
+import { Home, LayoutGrid, Wallet, User, Tag } from "lucide-react";
 
 // Named export bana den
 export const BottomNav = () => {
@@ -12,9 +12,9 @@ export const BottomNav = () => {
   const navItems = [
     { href: "/products", icon: Home, label: "Home" },
     { href: "/products/category", icon: LayoutGrid, label: "Categories" },
+    { href: "/offers", icon: Tag, label: "Offers" },
     { href: "/wallet", icon: Wallet, label: "Wallet" },
     { href: "/profile", icon: User, label: "Profile" },
-    { href: "/chat", icon: Phone, label: "Support" },
   ];
 
   return (
