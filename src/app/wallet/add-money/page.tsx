@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, CreditCard, Smartphone, Eye, EyeOff, Shield, Zap, Wallet, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronLeft, CreditCard, Smartphone, Eye, EyeOff, Shield, Zap, Wallet, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const quickAmounts = [100, 200, 500, 1000, 2000, 5000];
@@ -47,7 +47,7 @@ export default function AddMoneyPage() {
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
     
     // Mock verification logic
-    if (upiId.length > 5) {
+    if (upiId.length > 5 && upiId.includes('ok')) { // simple validation for demo
       setIsUpiVerified(true);
       setUpiError('');
     } else {
@@ -340,12 +340,13 @@ export default function AddMoneyPage() {
                     />
                     {!isUpiVerified && (
                       <Button
+                        type="button"
                         onClick={handleVerifyUpi}
                         disabled={isVerifyingUpi || !upiId}
                         className="w-28"
                       >
                         {isVerifyingUpi ? (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <Loader2 className="h-4 w-4 animate-spin"/>
                         ) : (
                           'Verify'
                         )}
@@ -399,7 +400,7 @@ export default function AddMoneyPage() {
           >
             {isProcessing ? (
               <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <Loader2 className="h-5 w-5 animate-spin" />
                 <span>Processing Payment...</span>
               </div>
             ) : (
