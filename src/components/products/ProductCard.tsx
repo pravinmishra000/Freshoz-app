@@ -91,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
+    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
       <div className="relative aspect-square w-full overflow-hidden">
         {hasRealImage ? (
              <Image
@@ -139,7 +139,7 @@ export function ProductCard({ product }: ProductCardProps) {
              <p className="text-xs text-muted-foreground mb-1">{currentPackSize}</p>
           )}
 
-          <h3 className="font-semibold text-sm md:text-base text-foreground leading-tight line-clamp-2">{product.name_en}</h3>
+          <h3 className="font-semibold text-base md:text-lg text-foreground leading-tight line-clamp-2">{product.name_en}</h3>
         </div>
         
         <div className="mt-2 flex items-center justify-between">
