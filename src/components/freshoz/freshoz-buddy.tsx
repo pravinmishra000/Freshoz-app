@@ -187,16 +187,16 @@ export default function FreshozBuddy() {
                             </p>
                             <div className="pt-4 space-y-2">
                                 <p className="text-sm text-muted-foreground">Try asking:</p>
-                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Aapko kya chahiye? Fal, Sabji ya Doodh..?")}>
+                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Aapko kya chahiye? Fal, Sabji ya Doodh..?")}>
                                     "Aapko kya chahiye? Fal, Sabji ya Doodh..?"
                                 </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Mera wallet balance kitna hai?")}>
+                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Mera wallet balance kitna hai?")}>
                                     "Mera wallet balance kitna hai?"
                                 </Button>
-                                 <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("What are the best deals today?")}>
+                                 <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("What are the best deals today?")}>
                                     "What are the best deals today?"
                                 </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Kya mere liye aaj koi offer hai?")}>
+                                <Button variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5" onClick={() => handleHintClick("Kya mere liye aaj koi offer hai?")}>
                                     "Kya mere liye aaj koi offer hai?"
                                 </Button>
                             </div>
