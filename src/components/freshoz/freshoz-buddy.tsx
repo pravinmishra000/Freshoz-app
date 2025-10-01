@@ -89,10 +89,18 @@ export default function FreshozBuddy() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setIsListening(false);
   };
 
   const startVoiceInput = async () => {
+    // Stop any currently playing speech
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+
     const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       const errorMsg = "Voice input is not supported in your browser. Please type your message.";
@@ -103,6 +111,7 @@ export default function FreshozBuddy() {
 
     if (isListening) {
       recognitionRef.current?.stop();
+      setIsListening(false);
       return;
     }
 
@@ -114,15 +123,18 @@ export default function FreshozBuddy() {
       speak(errorMsg);
       return;
     }
-
-    setIsListening(true);
+    
     setShowInitial(false);
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'hi-IN'; // Can also use 'en-IN' for Hinglish
+    recognition.lang = 'hi-IN';
     recognition.continuous = false; // Process after a pause
     recognition.interimResults = true;
     recognitionRef.current = recognition;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    }
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interimTranscript = '';

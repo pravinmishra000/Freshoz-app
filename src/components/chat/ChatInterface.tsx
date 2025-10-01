@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -9,10 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, Mic } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 type Message = {
   role: 'user' | 'model';
@@ -24,7 +29,40 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+
+      const recog = new SpeechRecognition();
+      recog.lang = 'hi-IN'; // Hindi + English
+      recog.continuous = false;
+      recog.interimResults = false;
+
+      recog.onstart = () => setListening(true);
+      recog.onend = () => setListening(false);
+      recog.onresult = (event: any) => {
+        const text = event.results[0][0].transcript;
+        setInput(text); // Fill the input box with recognized text
+      };
+
+      recognitionRef.current = recog;
+    }
+  }, []);
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
+    if (listening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim() || !authUser) return;
@@ -50,93 +88,107 @@ export function ChatInterface() {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (scrollAreaRef.current) {
-        const scrollContainer = scrollAreaRef.current.querySelector('div');
-        if (scrollContainer) {
-            scrollContainer.scrollTop = scrollContainer.scrollHeight;
-        }
+      const scrollContainer = scrollAreaRef.current.querySelector('div');
+      if (scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
   }, [messages]);
 
-
   return (
     <Card className="flex h-full flex-col glass-card">
-        <CardContent className="flex-1 overflow-hidden p-0">
-            <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
-                <div className="space-y-4">
-                {messages.map((message, index) => (
-                    <div
-                    key={index}
-                    className={cn(
-                        'flex items-start gap-3',
-                        message.role === 'user' ? 'justify-end' : 'justify-start'
-                    )}
-                    >
-                    {message.role === 'model' && (
-                        <Avatar className="h-8 w-8 border-2 border-primary">
-                            <AvatarImage src="/logo-icon.svg" data-ai-hint="logo icon" />
-                            <AvatarFallback>AI</AvatarFallback>
-                        </Avatar>
-                    )}
-                    <div
-                        className={cn(
-                        'max-w-xs rounded-lg px-4 py-2 text-sm md:max-w-md lg:max-w-lg',
-                        message.role === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted'
-                        )}
-                    >
-                        <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                            {message.content}
-                        </ReactMarkdown>
-                    </div>
-                    {message.role === 'user' && authUser && (
-                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-chat/40/40`} data-ai-hint="person face" />
-                            <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
-                        </Avatar>
-                    )}
-                    </div>
-                ))}
-                 {isLoading && (
-                    <div className="flex items-start gap-3 justify-start">
-                         <Avatar className="h-8 w-8 border-2 border-primary">
-                            <AvatarImage src="/logo-icon.svg" />
-                            <AvatarFallback>AI</AvatarFallback>
-                        </Avatar>
-                        <div className="bg-muted rounded-lg px-4 py-2 text-sm flex items-center">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        </div>
-                    </div>
+      <CardContent className="flex-1 overflow-hidden p-0">
+        <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+          <div className="space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={cn(
+                  'flex items-start gap-3',
+                  message.role === 'user' ? 'justify-end' : 'justify-start'
                 )}
+              >
+                {message.role === 'model' && (
+                  <Avatar className="h-8 w-8 border-2 border-primary">
+                    <AvatarImage src="/logo-icon.svg" />
+                    <AvatarFallback>AI</AvatarFallback>
+                  </Avatar>
+                )}
+                <div
+                  className={cn(
+                    'max-w-xs rounded-lg px-4 py-2 text-sm md:max-w-md lg:max-w-lg',
+                    message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  )}
+                >
+                  <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                    {message.content}
+                  </ReactMarkdown>
                 </div>
-            </ScrollArea>
-        </CardContent>
-        <div className="border-t p-4">
-            <div className="relative">
-            <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-                placeholder={authUser ? "Ask about your order..." : "Please log in to use chat"}
-                className="pr-12"
-                disabled={isLoading || !authUser}
-            />
-            <Button
-                type="submit"
-                size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-10 neon-button"
-                onClick={handleSend}
-                disabled={isLoading || !input.trim() || !authUser}
-            >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                <span className="sr-only">Send</span>
-            </Button>
-            </div>
-             {!authUser && <p className="text-xs text-center text-muted-foreground mt-2">Please log in to chat with support for personal queries.</p>}
-        </div>
+                {message.role === 'user' && authUser && (
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={authUser.photoURL || `https://picsum.photos/seed/user-chat/40/40`}
+                    />
+                    <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+                  </Avatar>
+                )}
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex items-start gap-3 justify-start">
+                <Avatar className="h-8 w-8 border-2 border-primary">
+                  <AvatarImage src="/logo-icon.svg" />
+                  <AvatarFallback>AI</AvatarFallback>
+                </Avatar>
+                <div className="bg-muted rounded-lg px-4 py-2 text-sm flex items-center">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </CardContent>
+
+      {/* Input + Mic + Send */}
+      <div className="border-t p-4 flex items-center gap-2">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+          placeholder={authUser ? 'Ask about your order...' : 'Please log in to use chat'}
+          className="flex-1 pr-12"
+          disabled={isLoading || !authUser}
+        />
+
+        {/* Mic Button */}
+        <Button
+          type="button"
+          size="icon"
+          onClick={handleMicClick}
+          className={cn('h-8 w-10 neon-button', listening ? 'bg-green-500' : 'bg-muted')}
+        >
+          {listening ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mic className="h-4 w-4" />}
+        </Button>
+
+        {/* Send Button */}
+        <Button
+          type="submit"
+          size="icon"
+          onClick={handleSend}
+          disabled={isLoading || !input.trim() || !authUser}
+          className="h-8 w-10 neon-button"
+        >
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          <span className="sr-only">Send</span>
+        </Button>
+      </div>
+
+      {!authUser && (
+        <p className="text-xs text-center text-muted-foreground mt-2">
+          Please log in to chat with support for personal queries.
+        </p>
+      )}
     </Card>
   );
 }
