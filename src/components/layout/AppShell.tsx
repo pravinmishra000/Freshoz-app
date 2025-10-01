@@ -222,14 +222,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                 { href: '/products/category', label: 'Categories', icon: LayoutGrid },
                 { href: '/offers', label: 'Offers', icon: Tag },
                 { href: '/chat', label: 'Chat', icon: MessageSquare },
-                { href: '/profile', label: 'Profile', icon: User },
+                { href: '/checkout', label: 'Cart', icon: ShoppingCart },
               ].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
                     'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
-                    pathname.startsWith(item.href)
+                    (pathname === item.href || (item.href === '/products' && pathname.startsWith('/products')))
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-accent/50'
                   )}
