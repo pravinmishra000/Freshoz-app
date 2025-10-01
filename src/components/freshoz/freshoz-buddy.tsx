@@ -66,9 +66,9 @@ export default function FreshozBuddy() {
     });
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent, queryOverride?: string) => {
     e?.preventDefault();
-    const query = inputValue;
+    const query = queryOverride || inputValue;
     if (!query.trim() || isLoading) return;
 
     setShowInitial(false);
@@ -116,7 +116,6 @@ export default function FreshozBuddy() {
 
     } catch (error) {
       console.error('AI Flow Error:', error);
-      const errorText = "Maaf kijiye, kuch gadbad ho gayi. Kripya fir se koshish karein.";
       const errorMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
@@ -131,6 +130,10 @@ export default function FreshozBuddy() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleHintClick = (hint: string) => {
+    handleSubmit(undefined, hint);
   };
 
   return (
@@ -168,51 +171,76 @@ export default function FreshozBuddy() {
               </div>
           </SheetHeader>
           
-          {!showInitial ? (
-            <>
-              <ScrollArea className="flex-1 px-6 py-4" ref={scrollAreaRef}>
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div key={message.id} className={`flex flex-col items-start gap-2 ${message.role === 'user' ? 'items-end' : ''}`}>
-                      <div className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
-                        {message.role === 'assistant' && (
-                          <Avatar className="h-8 w-8 bg-gradient-to-r from-green-500 to-emerald-600">
-                            <AvatarFallback className="bg-transparent">
-                              <Bot size={16} className="text-white" />
-                            </AvatarFallback>
-                          </Avatar>
-                        )}
-                        <div className={cn(
-                          "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
-                          message.role === 'user' 
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                            : 'bg-gray-100 text-gray-800'
-                        )}>
-                          {message.content}
-                        </div>
-                      </div>
-                      {message.role === 'assistant' && message.productSuggestion && (
-                         <Card className="max-w-[80%] ml-11 bg-white border-gray-200 shadow-sm">
-                            <CardContent className="p-3 flex items-center gap-3">
-                                <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
-                                    <Image src={message.productSuggestion.image} alt={message.productSuggestion.name_en} fill className="object-cover" />
-                                </div>
-                                <div className="flex-grow">
-                                    <p className="font-semibold text-sm">{message.productSuggestion.name_en}</p>
-                                    <p className="text-xs text-muted-foreground">{message.productSuggestion.pack_size}</p>
-                                    <p className="font-bold text-sm text-primary">₹{message.productSuggestion.price}</p>
-                                </div>
-                                <Button size="sm" className="bg-positive text-white h-8" onClick={() => handleAddProductFromSuggestion(message.productSuggestion!)}>
-                                    <ShoppingCart className="h-4 w-4 mr-2" />
-                                    Add
+          <div className="flex-1 flex flex-col">
+            <ScrollArea className="flex-1 px-6 py-4" ref={scrollAreaRef}>
+                {showInitial ? (
+                    <div className="flex-1 px-6 py-6 flex flex-col justify-center text-center">
+                        <div className="space-y-4">
+                            <div className="inline-block p-4 bg-green-500/10 rounded-full mb-3">
+                                <Sparkles className="h-10 w-10 text-green-600"/>
+                            </div>
+                            <h3 className="font-semibold text-lg text-primary">Main aapki kaise madad kar sakti hoon?</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Aapki shopping behtar banane ke liye main yahaan hoon!
+                            </p>
+                            <div className="pt-4 space-y-2">
+                                <p className="text-sm text-muted-foreground">Try asking:</p>
+                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Add 1kg tomatoes to cart")}>
+                                    "Add 1kg tomatoes to cart"
                                 </Button>
-                            </CardContent>
-                         </Card>
-                      )}
+                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Mera wallet balance kitna hai?")}>
+                                    "Mera wallet balance kitna hai?"
+                                </Button>
+                                 <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("What are the best deals today?")}>
+                                    "What are the best deals today?"
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                ) : (
+                    <div className="space-y-4">
+                    {messages.map((message) => (
+                        <div key={message.id} className={`flex flex-col items-start gap-2 ${message.role === 'user' ? 'items-end' : ''}`}>
+                        <div className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                            {message.role === 'assistant' && (
+                            <Avatar className="h-8 w-8 bg-gradient-to-r from-green-500 to-emerald-600">
+                                <AvatarFallback className="bg-transparent">
+                                <Bot size={16} className="text-white" />
+                                </AvatarFallback>
+                            </Avatar>
+                            )}
+                            <div className={cn(
+                            "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                            message.role === 'user' 
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
+                                : 'bg-gray-100 text-gray-800'
+                            )}>
+                            {message.content}
+                            </div>
+                        </div>
+                        {message.role === 'assistant' && message.productSuggestion && (
+                            <Card className="max-w-[80%] ml-11 bg-white border-gray-200 shadow-sm">
+                                <CardContent className="p-3 flex items-center gap-3">
+                                    <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
+                                        <Image src={message.productSuggestion.image} alt={message.productSuggestion.name_en} fill className="object-cover" />
+                                    </div>
+                                    <div className="flex-grow">
+                                        <p className="font-semibold text-sm">{message.productSuggestion.name_en}</p>
+                                        <p className="text-xs text-muted-foreground">{message.productSuggestion.pack_size}</p>
+                                        <p className="font-bold text-sm text-primary">₹{message.productSuggestion.price}</p>
+                                    </div>
+                                    <Button size="sm" className="bg-positive text-white h-8" onClick={() => handleAddProductFromSuggestion(message.productSuggestion!)}>
+                                        <ShoppingCart className="h-4 w-4 mr-2" />
+                                        Add
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
+                        </div>
+                    ))}
+                    </div>
+                )}
+            </ScrollArea>
               
               <div className="px-6 py-4 border-t">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
@@ -230,38 +258,20 @@ export default function FreshozBuddy() {
                   </Button>
                 </form>
                 
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="mt-3 w-full" 
-                  onClick={handleReset}
-                  disabled={isLoading}
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Phir se shuru karein
-                </Button>
+                {!showInitial && (
+                    <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="mt-3 w-full" 
+                    onClick={handleReset}
+                    disabled={isLoading}
+                    >
+                    <X className="h-4 w-4 mr-2" />
+                    Phir se shuru karein
+                    </Button>
+                )}
               </div>
-            </>
-          ) : (
-             <div className="flex-1 px-6 py-6 flex flex-col justify-center">
-              <div className="space-y-4">
-                  <div className="text-center mb-6">
-                      <div className="inline-block p-4 bg-green-500/10 rounded-full mb-3">
-                         <Sparkles className="h-10 w-10 text-green-600"/>
-                      </div>
-                      <h3 className="font-semibold text-lg text-primary">Main aapki kaise madad kar sakti hoon?</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Aapki shopping behtar banane ke liye main yahaan hoon!
-                      </p>
-                  </div>
-                  <div className="text-center text-sm text-muted-foreground">
-                    <p>Try asking:</p>
-                    <p className="font-semibold text-primary mt-1">"Add 1kg tomatoes to cart"</p>
-                    <p className="font-semibold text-primary mt-1">"Mera wallet balance kitna hai?"</p>
-                  </div>
-              </div>
-            </div>
-          )}
+          </div>
         </SheetContent>
       </Sheet>
     </>
