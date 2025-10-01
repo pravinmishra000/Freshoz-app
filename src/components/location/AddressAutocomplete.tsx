@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -52,13 +53,13 @@ export default function AddressAutocomplete({ onAddressSelect }: AddressAutocomp
 function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
   const map = useMap();
   const [position, setPosition] = useState({ lat: 25.27, lng: 86.97 }); // Default to Sultanganj
-  const [addressDetails, setAddressDetails] = useState<Partial<Address> | null>(null);
+  const [addressDetails, setAddressDetails] = useState<Partial<Address>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { authUser } = useAuth();
   const { toast } = useToast();
 
   const handleSaveAddress = async () => {
-      if (!authUser || !addressDetails || !addressDetails.address) {
+      if (!authUser || !addressDetails?.address) {
           toast({ variant: 'destructive', title: 'Error', description: 'Incomplete address. Please select a valid location.'});
           return;
       }
@@ -68,13 +69,15 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
           const finalAddress: Omit<Address, 'id'> = {
               name: authUser.displayName || 'Home',
               phone: authUser.phoneNumber || '',
-              address: addressDetails.address || '',
+              address: addressDetails.address,
               city: addressDetails.city || '',
-              district: (addressDetails as any).district || '', // Add district field
+              district: addressDetails.district || '',
               state: addressDetails.state || '',
               pincode: addressDetails.pincode || '',
+              country: addressDetails.country || '',
+              lat: position.lat,
+              lng: position.lng,
               type: 'home',
-              ...addressDetails,
           };
           const savedAddress = await updateUserAddress(authUser.uid, finalAddress);
           toast({ title: 'Address Saved!', description: 'Your new address has been added successfully.' });
@@ -138,8 +141,8 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
       <div className="flex-1 relative">
         <Map
           mapId={MAP_ID}
-          defaultCenter={position}
-          defaultZoom={16}
+          center={position}
+          zoom={16}
           gestureHandling={'greedy'}
           disableDefaultUI={true}
           className="w-full h-full"
@@ -180,7 +183,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
                   </div>
                   <div>
                       <Label htmlFor="district">District</Label>
-                      <Input id="district" readOnly value={(addressDetails as any)?.district || ''} className="bg-gray-100"/>
+                      <Input id="district" readOnly value={addressDetails?.district || ''} className="bg-gray-100"/>
                   </div>
                   <div>
                       <Label htmlFor="pincode">Pincode</Label>
@@ -200,7 +203,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   
-  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = useAutocomplete({
+  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions, getPlacePredictions } = useAutocomplete({
     inputField: inputRef.current,
     options: {
       componentRestrictions: { country: 'in' },
@@ -209,6 +212,13 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     },
   });
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    if(e.target.value) {
+        getPlacePredictions({input: e.target.value})
+    }
+  };
+
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
       if (!place.place_id) return;
       const placesService = new google.maps.places.PlacesService(document.createElement('div'));
@@ -216,8 +226,6 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
           if (status === 'OK' && placeResult) {
               onPlaceSelect(placeResult);
               setInputValue(placeResult.formatted_address || place.description);
-              // Clear suggestions
-              placeAutocomplete?.setPlacePredictions([]);
           }
       })
   }
@@ -231,7 +239,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
                 placeholder="Search for area, street name..."
                 className="w-full pl-10 pr-4 py-2 h-12 text-base"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
             />
             {isPlacePredictionsLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />}
         </div>

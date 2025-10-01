@@ -1,4 +1,5 @@
 
+
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { FieldValue } from 'firebase/firestore';
@@ -210,6 +211,7 @@ export interface Address {
   pincode: string;
   city: string;
   state: string;
+  district: string;
   isDefault?: boolean;
   landmark?: string;
   country?: string;
