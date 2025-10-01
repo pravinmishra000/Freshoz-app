@@ -214,6 +214,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
         componentRestrictions: { country: 'in' },
         bounds: aoiBounds,
         strictBounds: true,
+        types: ['geocode', 'address'],
         fields: ["address_components", "geometry", "formatted_address"],
     },
   });
@@ -257,3 +258,5 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     </div>
   );
 }
+
+    
