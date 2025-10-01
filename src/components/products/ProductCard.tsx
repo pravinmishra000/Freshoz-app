@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import type { Product, ProductVariant } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Sprout, Wheat, Drumstick, Milk, Coffee } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,16 @@ import { cn } from '@/lib/utils';
 interface ProductCardProps {
   product: Product;
 }
+
+const categoryStyles: { [key: string]: { emoji: string; color: string; icon: React.ElementType } } = {
+  'cat-1': { emoji: '🥦', color: 'bg-green-100', icon: Sprout },
+  'cat-6': { emoji: '🍎', color: 'bg-red-100', icon: Sprout },
+  'cat-2': { emoji: '🥛', color: 'bg-blue-100', icon: Milk },
+  'cat-4': { emoji: '🌾', color: 'bg-yellow-100', icon: Wheat },
+  'cat-5': { emoji: '🍗', color: 'bg-rose-100', icon: Drumstick },
+  'cat-3': { emoji: '☕', color: 'bg-orange-100', icon: Coffee },
+};
+
 
 export function ProductCard({ product }: ProductCardProps) {
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
@@ -69,17 +79,31 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
     : 0;
 
+  const hasRealImage = product.image && !product.image.includes('picsum.photos');
+  const categoryStyle = categoryStyles[product.category_id || ''] || { emoji: '🛒', color: 'bg-gray-100', icon: Sprout };
+
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
       <div className="relative aspect-square w-full overflow-hidden">
-        <Image
-          src={product.image}
-          alt={product.name_en}
-          fill
-          sizes="(max-width: 768px) 50vw, 33vw"
-          className="object-cover"
-          data-ai-hint={product.imageHint}
-        />
+        {hasRealImage ? (
+             <Image
+                src={product.image}
+                alt={product.name_en}
+                fill
+                sizes="(max-width: 768px) 50vw, 33vw"
+                className="object-cover"
+                data-ai-hint={product.imageHint}
+              />
+        ) : (
+            <div className={cn(
+                "w-full h-full flex flex-col items-center justify-center text-center p-2",
+                categoryStyle.color
+            )}>
+                 <p className="text-4xl mb-2">{categoryStyle.emoji}</p>
+                 <p className="text-xs font-semibold text-primary">{product.name_en}</p>
+            </div>
+        )}
+       
         {discount > 0 && (
           <div className="absolute top-2 left-2 bg-positive text-white px-2 py-1 rounded-md text-xs font-bold">
             {discount}% OFF
