@@ -27,12 +27,17 @@ interface AddressAutocompleteProps {
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 const MAP_ID = 'freshoz_map_id';
 
-const indiaBounds = {
-  north: 35.501,
-  south: 8.067,
-  west: 68.111,
-  east: 97.415,
+// Centered around Bhagalpur
+const aoiCenter = { lat: 25.2424, lng: 86.9850 };
+
+// Bounding box for suggestions, roughly covering Bhagalpur and Khagaria districts
+const aoiBounds = {
+    north: aoiCenter.lat + 0.5,
+    south: aoiCenter.lat - 0.5,
+    east: aoiCenter.lng + 0.7,
+    west: aoiCenter.lng - 0.7,
 };
+
 
 export default function AddressAutocomplete({ onAddressSelect }: AddressAutocompleteProps) {
   if (!API_KEY) {
@@ -52,7 +57,7 @@ export default function AddressAutocomplete({ onAddressSelect }: AddressAutocomp
 
 function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
   const map = useMap();
-  const [position, setPosition] = useState({ lat: 25.27, lng: 86.97 }); // Default to Sultanganj
+  const [position, setPosition] = useState(aoiCenter); // Default to Bhagalpur
   const [addressDetails, setAddressDetails] = useState<Partial<Address>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { authUser } = useAuth();
@@ -96,7 +101,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
     }
   }, [map, position]);
 
-  const onPlaceSelect = (place: google.maps.places.PlaceResult | null) => {
+  const onPlaceSelect = useCallback((place: google.maps.places.PlaceResult | null) => {
     if (place?.geometry?.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
@@ -128,7 +133,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
             });
         }
     }
-  };
+  }, []);
 
 
   return (
@@ -203,36 +208,35 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   
-  const { isPlacePredictionsLoading, placePredictions, getPlacePredictions } = useAutocomplete({
+  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = useAutocomplete({
     inputField: inputRef.current,
     options: {
       componentRestrictions: { country: 'in' },
-      bounds: indiaBounds,
-      strictBounds: true,
+      locationBias: aoiBounds,
+      strictBounds: false, // Be a bit lenient to find nearby places
+      fields: ["address_components", "geometry", "formatted_address"],
     },
   });
   
-  const filteredPredictions = placePredictions.filter(
-    (prediction) => prediction.description.includes('Bhagalpur') || prediction.description.includes('Khagaria')
-  );
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-    if(e.target.value) {
-        getPlacePredictions({input: e.target.value})
-    }
   };
 
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
-      if (!place.place_id) return;
-      const placesService = new google.maps.places.PlacesService(document.createElement('div'));
-      placesService.getDetails({placeId: place.place_id, fields: ['geometry.location', 'address_components', 'formatted_address']}, (placeResult, status) => {
-          if (status === 'OK' && placeResult) {
-              onPlaceSelect(placeResult);
-              setInputValue(placeResult.formatted_address || place.description);
-          }
+    if (!place.place_id || !placeAutocomplete) return;
+    placeAutocomplete.getPlaceDetails({placeId: place.place_id})
+      .then(placeResult => {
+          onPlaceSelect(placeResult);
+          setInputValue(placeResult.formatted_address || '');
       })
-  }
+      .catch(err => console.error("Error getting place details", err));
+  };
+  
+  // Filter predictions to only show relevant ones
+   const filteredPredictions = placePredictions.filter(
+    (prediction) => prediction.description.includes('Bhagalpur') || prediction.description.includes('Khagaria')
+  );
+
 
   return (
     <div className='relative'>
@@ -259,3 +263,5 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     </div>
   );
 }
+
+  
