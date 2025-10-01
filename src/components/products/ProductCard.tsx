@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import Image from 'next/image';
 import { useState } from 'react';
 import type { Product, ProductVariant } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -18,29 +19,25 @@ export function ProductCard({ product }: ProductCardProps) {
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const { toast } = useToast();
   
-  // Initialize with the first variant, or null if there are no variants
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     (product.variants && product.variants.length > 0) ? product.variants[0] : null
   );
 
-  // Determine current display values based on selected variant or product defaults
   const currentPrice = selectedVariant?.price ?? product.price;
   const currentMrp = selectedVariant?.mrp ?? product.mrp;
   const currentPackSize = selectedVariant?.pack_size ?? product.pack_size;
   const currentVariantId = selectedVariant?.id ?? 'default';
 
-  // Create a unique ID for the cart item based on product and variant
   const cartItemId = `${product.id}-${currentVariantId}`;
   const itemInCart = cartItems.find(item => item.id === cartItemId);
 
   const handleAddToCart = () => {
-    // Only add to cart if there's a valid pack size
     if (!currentPackSize) return;
 
     addToCart({
       productId: product.id,
       variantId: currentVariantId,
-      id: cartItemId, // Use the unique combined ID
+      id: cartItemId,
       name: product.name_en,
       price: currentPrice,
       mrp: currentMrp,
@@ -64,91 +61,89 @@ export function ProductCard({ product }: ProductCardProps) {
     if (itemInCart && itemInCart.quantity > 1) {
       updateQuantity(cartItemId, itemInCart.quantity - 1);
     } else if (itemInCart) {
-      // If quantity is 1, remove it from the cart
       removeFromCart(cartItemId);
     }
   };
 
-  // Calculate discount percentage
   const discount = currentMrp > currentPrice 
     ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
     : 0;
 
   return (
-    <div className="glass-card group flex h-full flex-col overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="light-ray"></div>
+    <div className="bg-white rounded-lg border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
       <div className="relative aspect-square w-full overflow-hidden">
         <Image
           src={product.image}
           alt={product.name_en}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-110"
+          sizes="(max-width: 768px) 50vw, 33vw"
+          className="object-cover"
           data-ai-hint={product.imageHint}
         />
         {discount > 0 && (
-          <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold text-white">
-            - {discount}%
+          <div className="absolute top-2 left-2 bg-positive text-white px-2 py-1 rounded-md text-xs font-bold">
+            {discount}% OFF
           </div>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-3">
-        <h3 className="font-semibold text-sm md:text-base flex-grow text-primary">{product.name_en}</h3>
+      <div className="flex flex-1 flex-col p-2 md:p-3">
+        <div className="flex-grow">
+          {product.variants && product.variants.length > 1 ? (
+              <select
+                  value={selectedVariant?.id}
+                  onChange={(e) => {
+                      const newVariant = product.variants?.find(v => v.id === e.target.value) || null;
+                      setSelectedVariant(newVariant);
+                  }}
+                  className="w-full text-xs text-muted-foreground border-none p-0 focus:ring-0 mb-1 bg-transparent"
+              >
+                  {product.variants.map(variant => (
+                      <option key={variant.id} value={variant.id}>
+                          {variant.pack_size}
+                      </option>
+                  ))}
+              </select>
+          ) : (
+             <p className="text-xs text-muted-foreground mb-1">{currentPackSize}</p>
+          )}
 
-        {/* Variant Selector */}
-        {product.variants && product.variants.length > 1 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-                {product.variants.map(variant => (
-                    <button
-                        key={variant.id}
-                        onClick={() => setSelectedVariant(variant)}
-                        className={cn(
-                            'px-3 py-1 text-xs font-medium rounded-full border transition-colors',
-                            selectedVariant?.id === variant.id
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'bg-transparent text-muted-foreground hover:bg-accent/50 border-input'
-                        )}
-                    >
-                        {variant.pack_size}
-                    </button>
-                ))}
-            </div>
-        )}
-
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <p className="text-lg md:text-xl font-bold text-positive">
-              ₹{currentPrice.toFixed(2)}
-            </p>
-            {currentMrp > currentPrice && (
-              <p className="text-sm text-destructive line-through">
-                ₹{currentMrp.toFixed(2)}
-              </p>
-            )}
+          <h3 className="font-semibold text-sm md:text-base text-foreground leading-tight line-clamp-2">{product.name_en}</h3>
         </div>
         
-        <div className="mt-3 w-full">
-          {itemInCart ? (
-            <div className="flex items-center justify-between gap-2 rounded-lg bg-positive text-white font-bold">
-               <Button size="icon" variant="ghost" onClick={handleDecrement} className="text-white hover:bg-white/20">
-                  {itemInCart.quantity === 1 ? <Trash2 className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-               </Button>
-               <span className="text-lg tabular-nums">{itemInCart.quantity}</span>
-               <Button size="icon" variant="ghost" onClick={handleIncrement} className="text-white hover:bg-white/20">
-                  <Plus className="h-4 w-4" />
-               </Button>
+        <div className="mt-2 flex items-center justify-between">
+            <div className="flex flex-col items-start">
+                {currentMrp > currentPrice && (
+                    <p className="text-xs text-destructive line-through">
+                        ₹{currentMrp.toFixed(0)}
+                    </p>
+                )}
+                <p className="text-base md:text-lg font-bold text-foreground">
+                    ₹{currentPrice.toFixed(0)}
+                </p>
             </div>
-          ) : (
-            <Button 
-              className="bg-positive text-white hover:bg-positive/90 w-full font-bold" 
-              onClick={handleAddToCart}
-              size="lg"
-            >
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              <span>Add to Cart</span>
-            </Button>
-          )}
+            
+            <div>
+            {itemInCart ? (
+                <div className="flex items-center justify-center rounded-lg border-2 border-destructive text-destructive font-bold bg-destructive/10">
+                    <Button size="icon" variant="ghost" onClick={handleDecrement} className="h-8 w-8 text-destructive hover:bg-destructive/20">
+                        <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-base tabular-nums px-1">{itemInCart.quantity}</span>
+                    <Button size="icon" variant="ghost" onClick={handleIncrement} className="h-8 w-8 text-destructive hover:bg-destructive/20">
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
+            ) : (
+                <Button 
+                    variant="outline"
+                    className="border-2 border-destructive text-destructive bg-transparent hover:bg-destructive/10 hover:text-destructive font-bold text-base px-6 h-9" 
+                    onClick={handleAddToCart}
+                >
+                    <span>Add</span>
+                </Button>
+            )}
+            </div>
         </div>
-
       </div>
     </div>
   );
