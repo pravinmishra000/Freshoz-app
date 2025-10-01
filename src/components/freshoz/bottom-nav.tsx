@@ -2,18 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingCart, Wallet, User, Phone } from "lucide-react";
+import { Home, LayoutGrid, Wallet, User, Phone } from "lucide-react";
 
 // Named export bana den
 export const BottomNav = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/", icon: Home, label: "Home" },
-    { href: "/category", icon: ShoppingCart, label: "Categories" },
+    { href: "/products", icon: Home, label: "Home" },
+    { href: "/products/category", icon: LayoutGrid, label: "Categories" },
     { href: "/wallet", icon: Wallet, label: "Wallet" },
     { href: "/profile", icon: User, label: "Profile" },
-    { href: "/contact", icon: Phone, label: "Contact" },
+    { href: "/chat", icon: Phone, label: "Support" },
   ];
 
   return (
@@ -25,7 +25,7 @@ export const BottomNav = () => {
           <div className="flex justify-around items-center py-3 px-4">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = pathname.startsWith(item.href);
               
               return (
                 <Link
