@@ -181,18 +181,21 @@ export default function FreshozBuddy() {
                             </div>
                             <h3 className="font-semibold text-lg text-primary">Main aapki kaise madad kar sakti hoon?</h3>
                             <p className="text-muted-foreground text-sm">
-                                Aapki shopping behtar banane ke liye main yahaan hoon!
+                               <span className="font-bold text-positive">Freshoz</span> aapki shopping ko aur behtar banane ke liye yahaan hai!
                             </p>
                             <div className="pt-4 space-y-2">
                                 <p className="text-sm text-muted-foreground">Try asking:</p>
-                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Add 1kg tomatoes to cart")}>
-                                    "Add 1kg tomatoes to cart"
+                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Aapko kya chahiye? Fal, Sabji ya Doodh..?")}>
+                                    "Aapko kya chahiye? Fal, Sabji ya Doodh..?"
                                 </Button>
                                 <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Mera wallet balance kitna hai?")}>
                                     "Mera wallet balance kitna hai?"
                                 </Button>
                                  <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("What are the best deals today?")}>
                                     "What are the best deals today?"
+                                </Button>
+                                <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => handleHintClick("Kya mere liye aaj koi offer hai?")}>
+                                    "Kya mere liye aaj koi offer hai?"
                                 </Button>
                             </div>
                         </div>
