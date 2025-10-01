@@ -82,6 +82,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasRealImage = product.image && !product.image.includes('picsum.photos');
   const categoryStyle = categoryStyles[product.category_id || ''] || { emoji: '🛒', color: 'bg-gray-100', icon: Sprout };
 
+  const getProductEmoji = () => {
+    const name = product.name_en.toLowerCase();
+    if (name.includes('butter')) return '🧈';
+    if (name.includes('cheese') || name.includes('paneer')) return '🧀';
+    if (name.includes('ghee')) return '🧈';
+    return categoryStyle.emoji;
+  }
+
   return (
     <div className="bg-white rounded-lg border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
       <div className="relative aspect-square w-full overflow-hidden">
@@ -99,8 +107,8 @@ export function ProductCard({ product }: ProductCardProps) {
                 "w-full h-full flex flex-col items-center justify-center text-center p-2",
                 categoryStyle.color
             )}>
-                 <p className="text-4xl mb-2">{categoryStyle.emoji}</p>
-                 <p className="text-xs font-semibold text-primary">{product.name_en}</p>
+                 <p className="text-5xl mb-2">{getProductEmoji()}</p>
+                 <p className="text-base font-semibold text-primary">{product.name_en}</p>
             </div>
         )}
        
