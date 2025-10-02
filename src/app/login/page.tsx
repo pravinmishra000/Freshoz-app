@@ -70,7 +70,7 @@ export default function LoginPage() {
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
-    defaultValues: { phone: '' },
+    defaultValues: { phone: '+1 650-555-1234' },
   });
 
   const otpForm = useForm<OtpFormValues>({
