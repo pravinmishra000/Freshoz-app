@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, MapPin, Search } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/auth-context';
-import { updateUserAddress } from '@/services/firestoreService';
+import { updateUserAddress } from '@/app/actions/userActions';
 import { useToast } from '@/hooks/use-toast';
 import type { Address } from '@/lib/types';
 import { Label } from '../ui/label';

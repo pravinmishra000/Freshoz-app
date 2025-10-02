@@ -200,26 +200,6 @@ export async function createOrder(orderData: CreateOrderData): Promise<string> {
 }
 
 /**
- * Add or update a user's address
- */
-export async function updateUserAddress(userId: string, address: Omit<Address, 'id'>): Promise<Address> {
-    const userRef = doc(db, 'users', userId);
-    
-    // Generate a unique ID for the new address
-    const newAddressId = uuidv4();
-    const newAddress: Address = { ...address, id: newAddressId };
-
-    // Atomically add the new address to the 'addresses' array in the user's document.
-    await updateDoc(userRef, {
-        addresses: arrayUnion(newAddress)
-    });
-
-    // Return the newly created address with its ID.
-    return newAddress;
-}
-
-
-/**
  * Update product stock (optional: prevent negative stock)
  */
 export async function updateProductStock(productId: string, quantityChange: number): Promise<void> {
