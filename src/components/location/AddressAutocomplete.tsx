@@ -5,7 +5,7 @@ import {
   APIProvider,
   Map,
   useMap,
-  AdvancedMarker,
+  Marker,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
@@ -42,7 +42,7 @@ const aoiBounds = {
 export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress, apiKey }: AddressAutocompleteProps) {
   // The check for the API key is removed from here and handled in the parent Server Component.
   return (
-    <APIProvider apiKey={apiKey} libraries={['places']}>
+    <APIProvider apiKey={apiKey} libraries={['places', 'geocoding']}>
       <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
     </APIProvider>
   );
@@ -93,41 +93,61 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
       map.panTo(position);
     }
   }, [map, position]);
+  
+  const parsePlace = useCallback((place: google.maps.places.PlaceResult) => {
+    const addressComponents = place.address_components;
+    if (!addressComponents) return {};
+
+    const getPart = (type: string, nameType: 'long_name' | 'short_name' = 'long_name') =>
+        addressComponents.find(c => c.types.includes(type))?.[nameType] || '';
+
+    const streetNumber = getPart('street_number');
+    const route = getPart('route');
+    const sublocality = getPart('sublocality_level_1');
+
+    let fullAddress = `${streetNumber} ${route}`.trim();
+    if (sublocality && !fullAddress.includes(sublocality)) {
+        fullAddress = fullAddress ? `${fullAddress}, ${sublocality}` : sublocality;
+    }
+
+    return {
+        address: fullAddress || place.name,
+        city: getPart('locality'),
+        district: getPart('administrative_area_level_2'),
+        state: getPart('administrative_area_level_1'),
+        pincode: getPart('postal_code'),
+        country: getPart('country'),
+    };
+  }, []);
 
   const onPlaceSelect = useCallback((place: google.maps.places.PlaceResult | null) => {
     if (place?.geometry?.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
         setPosition({ lat, lng });
-
-        const addressComponents = place.address_components;
-        if (addressComponents) {
-            const getPart = (type: string, nameType: 'long_name' | 'short_name' = 'long_name') => 
-                addressComponents.find(c => c.types.includes(type))?.[nameType] || '';
-            
-            const streetNumber = getPart('street_number');
-            const route = getPart('route');
-            const sublocality = getPart('sublocality_level_1');
-            
-            let fullAddress = `${streetNumber} ${route}`.trim();
-            if (sublocality && !fullAddress.includes(sublocality)) {
-              fullAddress = fullAddress ? `${fullAddress}, ${sublocality}` : sublocality;
-            }
-
-            setAddressDetails({
-                ...initialAddress,
-                address: fullAddress,
-                city: getPart('locality'),
-                district: getPart('administrative_area_level_2'),
-                state: getPart('administrative_area_level_1'),
-                pincode: getPart('postal_code'),
-                country: getPart('country'),
-                lat: lat,
-                lng: lng
-            });
-        }
+        const details = parsePlace(place);
+        setAddressDetails({ ...initialAddress, ...details, lat, lng });
     }
-  }, [initialAddress]);
+  }, [initialAddress, parsePlace]);
+  
+  const handleMapDragEnd = useCallback((e: google.maps.MapDragEvent) => {
+    const newCenter = e.map.getCenter();
+    if(newCenter) {
+      const lat = newCenter.lat();
+      const lng = newCenter.lng();
+      setPosition({ lat, lng });
+      
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const details = parsePlace(results[0]);
+           setAddressDetails(prev => ({...prev, ...details, lat, lng }));
+        } else {
+          console.error('Geocoder failed due to: ' + status);
+        }
+      });
+    }
+  }, [parsePlace]);
 
 
   return (
@@ -150,25 +170,16 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
           gestureHandling={'greedy'}
           disableDefaultUI={true}
           className="w-full h-full"
+          onDragEnd={handleMapDragEnd}
         >
-          <AdvancedMarker
-            position={position}
-            draggable={true}
-            onDragEnd={(e) => {
-                const lat = e.latLng?.lat();
-                const lng = e.latLng?.lng();
-                if (lat && lng) {
-                    setPosition({lat, lng});
-                    // TODO: Trigger reverse geocoding here to update address details
-                }
-            }}
-          >
-            <div className="relative">
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/20 rounded-full blur-md"></div>
+          <Marker position={position} />
+        </Map>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="relative flex flex-col items-center">
+                <div className="absolute -bottom-2 w-4 h-4 bg-black/20 rounded-full blur-md"></div>
                 <MapPin className="h-12 w-12 text-red-500 drop-shadow-lg" fill='currentColor'/>
             </div>
-          </AdvancedMarker>
-        </Map>
+        </div>
       </div>
 
       <Card className="rounded-t-2xl rounded-b-none shadow-2xl z-10">
@@ -209,13 +220,12 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
   const [placeAutocomplete, setPlaceAutocomplete] = useState<google.maps.places.AutocompleteService | null>(null);
   const [placePredictions, setPlacePredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [isPlacePredictionsLoading, setIsPlacePredictionsLoading] = useState(false);
-  const places = window.google?.maps?.places;
-
+  
   useEffect(() => {
-    if (places) {
-      setPlaceAutocomplete(new places.AutocompleteService());
+    if (window.google?.maps?.places) {
+      setPlaceAutocomplete(new window.google.maps.places.AutocompleteService());
     }
-  }, [places]);
+  }, []);
 
   const fetchPredictions = useCallback(
     (value: string) => {
@@ -244,9 +254,9 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
   }
 
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
-    if (!place.place_id || !places) return;
+    if (!place.place_id || !window.google?.maps?.places) return;
     
-    const placesService = new places.PlacesService(document.createElement('div'));
+    const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
     placesService.getDetails({
         placeId: place.place_id,
         fields: ["address_components", "geometry", "formatted_address", "name"],
