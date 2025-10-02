@@ -47,49 +47,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // 🔍 Firestore se user data fetch
   const fetchAppUser = useCallback(async (user: FirebaseUser | null) => {
+    console.log("📡 fetchAppUser called with user:", user?.uid);
+
     if (user) {
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
-      } else {
-        // This can happen if user exists in Auth but not Firestore (e.g., during registration)
-        // The registration functions should handle creating this doc.
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        console.log("📄 Firestore doc exists:", userDoc.exists());
+
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          console.log("✅ Firestore user data:", data);
+          setAppUser({ id: user.uid, ...data } as AppUser);
+        } else {
+          console.warn("⚠️ Firestore doc not found for user:", user.uid);
+          setAppUser(null);
+        }
+      } catch (error) {
+        console.error("🔥 Firestore fetch error:", error);
         setAppUser(null);
       }
     } else {
+      console.log("❌ No auth user logged in");
       setAppUser(null);
     }
   }, []);
 
+  // 🔍 Auth state listener
   useEffect(() => {
+    console.log("🚀 Setting up onAuthStateChanged listener...");
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log("🔥 onAuthStateChanged triggered:", user?.uid || "null");
       setLoading(true);
       setAuthUser(user);
       await fetchAppUser(user);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      console.log("🛑 Cleaning up onAuthStateChanged listener...");
+      unsubscribe();
+    };
   }, [fetchAppUser]);
-  
+
+  // Phone sign-in
   const signInWithPhoneNumber = async (phone: string, role: UserRole, appVerifier: RecaptchaVerifier): Promise<ConfirmationResult> => {
+    console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     sessionStorage.setItem('pendingUserRole', role);
     return firebaseSignInWithPhoneNumber(auth, phone, appVerifier);
   };
 
+  // Confirm OTP
   const confirmOtp = async (confirmationResult: ConfirmationResult, otp: string): Promise<void> => {
+    console.log("🔐 confirmOtp called with OTP:", otp);
     const userCredential = await confirmationResult.confirm(otp);
     const user = userCredential.user;
-    
+
+    console.log("✅ OTP confirmed. Firebase User:", user.uid);
+
     const userDocRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
-      const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
+      console.log("🆕 New user. Creating Firestore doc...");
+      const role = (sessionStorage.getItem('pendingUserRole') as UserRole) || 'customer';
       const displayName = user.displayName || `User ${user.uid.substring(0, 5)}`;
-      
+
       if (!user.displayName) {
         await updateProfile(user, { displayName });
       }
@@ -103,44 +129,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp(),
         addresses: [],
       };
-      
+
       await setDoc(userDocRef, newUser);
       setAppUser({ id: user.uid, ...newUser } as AppUser);
       sessionStorage.removeItem('pendingUserRole');
     } else {
-       setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
+      console.log("📄 Existing Firestore user found.");
+      setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
     }
-     setAuthUser(user);
+    setAuthUser(user);
   };
-  
+
+  // Register with Email
   const registerWithEmail = async (email: string, password: string, name: string): Promise<void> => {
+    console.log("✉️ registerWithEmail called with:", email);
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
+
     await updateProfile(user, { displayName: name });
 
     const newUser: Omit<AppUser, 'id'> = {
-        displayName: name,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        photoURL: user.photoURL,
-        role: 'customer',
-        createdAt: serverTimestamp(),
-        addresses: [],
+      displayName: name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      photoURL: user.photoURL,
+      role: 'customer',
+      createdAt: serverTimestamp(),
+      addresses: [],
     };
-    
+
     await setDoc(doc(db, 'users', user.uid), newUser);
-    // After successful registration, explicitly set the auth and app user states
+
+    console.log("✅ User registered and Firestore doc created.");
     setAuthUser(user);
     setAppUser({ id: user.uid, ...newUser } as AppUser);
   };
-  
+
+  // Sign in with Email
   const signInWithEmail = async (email: string, password: string): Promise<void> => {
-      // onAuthStateChanged will handle the state update after this succeeds
-      await signInWithEmailAndPassword(auth, email, password);
+    console.log("🔑 signInWithEmail called with:", email);
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
+  // Logout
   const logout = async () => {
+    console.log("🚪 Logging out...");
     await signOut(auth);
     setAuthUser(null);
     setAppUser(null);

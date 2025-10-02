@@ -239,7 +239,3 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
-
-    
-
-    
