@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import {
   APIProvider,
   Map,
   useMap,
-  useAutocomplete,
+  usePlacesAutocomplete,
   AdvancedMarker,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -43,7 +44,7 @@ const aoiBounds = {
 export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress, apiKey }: AddressAutocompleteProps) {
   // The check for the API key is removed from here and handled in the parent Server Component.
   return (
-    <APIProvider apiKey={apiKey}>
+    <APIProvider apiKey={apiKey} libraries={['places']}>
       <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
     </APIProvider>
   );
@@ -208,7 +209,7 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(initialValue || '');
   
-  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = useAutocomplete({
+  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = usePlacesAutocomplete({
     inputField: inputRef.current,
     options: {
         componentRestrictions: { country: 'in' },
@@ -221,7 +222,7 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
 
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
     if (!place.place_id || !placeAutocomplete) return;
-    placeAutocomplete.getPlaceDetails({placeId: place.place_id})
+    placeAutocomplete.getDetails({placeId: place.place_id})
       .then(placeResult => {
           onPlaceSelect(placeResult);
           setInputValue(placeResult.formatted_address || place.description);
