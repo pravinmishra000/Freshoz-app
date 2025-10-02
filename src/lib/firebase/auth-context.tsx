@@ -9,6 +9,7 @@ import {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useCallback,
 } from 'react';
 import {
   onAuthStateChanged,
@@ -46,78 +47,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const fetchAppUser = useCallback(async (user: FirebaseUser | null) => {
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
+      } else {
+        // This can happen if user exists in Auth but not Firestore (e.g., during registration)
+        // The registration functions should handle creating this doc.
+        setAppUser(null);
+      }
+    } else {
+      setAppUser(null);
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
-      if (user) {
-        setAuthUser(user);
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
-        } else {
-           // This case can happen if the user record exists in Auth but not Firestore.
-           // The registration/OTP confirmation logic should handle creating it.
-           // For a consistent state, we set appUser to null if the DB record is missing.
-           setAppUser(null);
-           console.warn(`User with UID ${user.uid} exists in Firebase Auth, but not in Firestore.`);
-        }
-      } else {
-        setAuthUser(null);
-        setAppUser(null);
-      }
+      setAuthUser(user);
+      await fetchAppUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
-
+  }, [fetchAppUser]);
+  
   const signInWithPhoneNumber = async (phone: string, role: UserRole, appVerifier: RecaptchaVerifier): Promise<ConfirmationResult> => {
     sessionStorage.setItem('pendingUserRole', role);
     return firebaseSignInWithPhoneNumber(auth, phone, appVerifier);
   };
 
   const confirmOtp = async (confirmationResult: ConfirmationResult, otp: string): Promise<void> => {
-    // This is a test flow bypass for the prototype using a specific OTP.
-    if (confirmationResult.verificationId && otp === '123456') {
-        const testUserCred = await confirmationResult.confirm(otp).catch(async (e) => {
-            // This is a simplified test-only flow. In a real app, handle errors robustly.
-             console.log("Attempting test confirmation as actual confirmation failed. This is expected for test numbers.");
-             return null;
-        });
-
-        // If firebase confirmation worked, use that user. Otherwise, create a mock user for prototype.
-        const user = testUserCred ? testUserCred.user : auth.currentUser;
-        if (!user) throw new Error("Could not confirm OTP or get current user.");
-
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (!userDoc.exists()) {
-            const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
-            const displayName = user.displayName || `User ${user.uid.substring(0, 5)}`;
-            if (!user.displayName) await updateProfile(user, { displayName });
-
-            const newUser: Omit<AppUser, 'id'> = {
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                displayName: displayName,
-                photoURL: user.photoURL,
-                role: role,
-                createdAt: serverTimestamp(),
-                addresses: [],
-            };
-            await setDoc(userDocRef, newUser);
-            setAppUser({ id: user.uid, ...newUser } as AppUser); // Update state immediately
-            sessionStorage.removeItem('pendingUserRole');
-        } else {
-             setAppUser({ id: user.uid, ...userDoc.data() } as AppUser); // Also update state on login
-        }
-        setAuthUser(user); // Ensure authUser is set
-        return;
-    }
-
-
     const userCredential = await confirmationResult.confirm(otp);
     const user = userCredential.user;
     
@@ -168,12 +130,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     await setDoc(doc(db, 'users', user.uid), newUser);
-    const firebaseUserWithProfile = { ...user, displayName: name };
-    setAuthUser(firebaseUserWithProfile);
+    // After successful registration, explicitly set the auth and app user states
+    setAuthUser(user);
     setAppUser({ id: user.uid, ...newUser } as AppUser);
   };
   
   const signInWithEmail = async (email: string, password: string): Promise<void> => {
+      // onAuthStateChanged will handle the state update after this succeeds
       await signInWithEmailAndPassword(auth, email, password);
   };
 
@@ -209,7 +172,7 @@ export const useAuth = () => {
 
 declare global {
   interface Window {
-    recaptchaVerifier: RecaptchaVerifier;
+    recaptchaVerifier?: RecaptchaVerifier;
     confirmationResult?: ConfirmationResult;
   }
 }
