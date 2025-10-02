@@ -76,6 +76,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const confirmOtp = async (confirmationResult: ConfirmationResult, otp: string): Promise<void> => {
+    // For prototype testing: if the number is the test number, bypass Firebase confirmation with a dummy OTP.
+    if (confirmationResult.verificationId && confirmationResult.verificationId.startsWith('test-')) {
+        console.log("Test confirmation detected. Simulating confirmation...");
+        // In a real test setup, you might need to handle this differently.
+        // For now, we proceed to user creation, assuming the OTP is correct.
+        // The actual user object will be null, so we create it manually.
+        const phone = sessionStorage.getItem('pendingTestPhone');
+        if (!phone) throw new Error("Test phone number not found in session.");
+        
+        const pseudoUserId = `test_${phone.replace('+', '')}`;
+        const user = { uid: pseudoUserId, phoneNumber: phone, displayName: `Test User ${pseudoUserId.slice(-4)}`, email: null, photoURL: null };
+
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+          const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
+          const newUser: Omit<AppUser, 'id'> = {
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            role: role,
+            createdAt: serverTimestamp(),
+            addresses: [],
+          };
+          await setDoc(userDocRef, newUser);
+          setAppUser({ id: user.uid, ...newUser } as AppUser);
+        } else {
+          setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
+        }
+        // This won't actually sign the user in with Firebase auth, but will set the app state
+        setAuthUser(user as FirebaseUser);
+        sessionStorage.removeItem('pendingTestPhone');
+        sessionStorage.removeItem('pendingUserRole');
+        return;
+    }
+
+
     const userCredential = await confirmationResult.confirm(otp);
     const user = userCredential.user;
     
@@ -165,5 +204,6 @@ export const useAuth = () => {
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;
+    confirmationResult?: ConfirmationResult;
   }
 }

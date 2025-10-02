@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -154,11 +153,22 @@ export default function LoginPage() {
     }
     try {
       // For prototype testing, if the number is the test number, accept '123456' as OTP.
-      // The `confirmOtp` function handles the logic, but this console log is for debugging.
-      if (phoneNumber === '+16505551234' && data.otp === '123456') {
-        console.log("Test OTP '123456' entered for test number. Proceeding to confirmation...");
+      const isTestNumber = phoneNumber === '+16505551234';
+      const isTestOtp = data.otp === '123456';
+
+      if (isTestNumber && isTestOtp) {
+        console.log("Test OTP '123456' entered for test number. Bypassing actual confirmation.");
+        // Create a mock confirmation result for the context to handle
+        const mockResult: ConfirmationResult = {
+          verificationId: 'test-verification-id',
+          confirm: async () => { throw new Error("This should not be called for test number"); }
+        };
+        sessionStorage.setItem('pendingTestPhone', phoneNumber);
+        await confirmOtp(mockResult, data.otp);
+      } else {
+         await confirmOtp(confirmationResult, data.otp);
       }
-      await confirmOtp(confirmationResult, data.otp);
+
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
     } catch (error: any) {
