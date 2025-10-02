@@ -71,7 +71,7 @@ export default function LoginPage() {
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
-    defaultValues: { phone: '+16505551234' },
+    defaultValues: { phone: '+1 650-555-1234' },
   });
 
   const otpForm = useForm<OtpFormValues>({
@@ -122,7 +122,8 @@ export default function LoginPage() {
   
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
-    setPhoneNumber(data.phone);
+    const sanitizedPhone = data.phone.replace(/[^+\d]/g, '');
+    setPhoneNumber(sanitizedPhone);
     
     const appVerifier = window.recaptchaVerifier;
     if (!appVerifier) {
@@ -132,7 +133,7 @@ export default function LoginPage() {
     }
 
     try {
-      const result = await signInWithPhoneNumber(data.phone, 'customer', appVerifier);
+      const result = await signInWithPhoneNumber(sanitizedPhone, 'customer', appVerifier);
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
@@ -153,8 +154,9 @@ export default function LoginPage() {
     }
     try {
       // For prototype testing, if the number is the test number, accept '123456' as OTP.
+      // The `confirmOtp` function handles the logic, but this console log is for debugging.
       if (phoneNumber === '+16505551234' && data.otp === '123456') {
-        console.log("Test OTP verified.");
+        console.log("Test OTP '123456' entered for test number. Proceeding to confirmation...");
       }
       await confirmOtp(confirmationResult, data.otp);
       toast({ title: 'Login Successful', description: 'Welcome!' });
@@ -330,4 +332,3 @@ export default function LoginPage() {
     
 
     
-

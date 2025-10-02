@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setAppUser({ id: user.uid, ...userDoc.data() } as AppUser);
         } else {
            console.log("User document doesn't exist for new or existing auth user. This can happen on first login.");
+           // This case is handled in confirmOtp and registerWithEmail
            setAppUser(null);
         }
       } else {
@@ -83,9 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!userDoc.exists()) {
       const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
-      const displayName = `User ${user.uid.substring(0, 5)}`;
+      const displayName = user.displayName || `User ${user.uid.substring(0, 5)}`;
       
-      await updateProfile(user, { displayName });
+      if (!user.displayName) {
+        await updateProfile(user, { displayName });
+      }
 
       const newUser: Omit<AppUser, 'id'> = {
         email: user.email,
@@ -121,7 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     await setDoc(doc(db, 'users', user.uid), newUser);
-    setAuthUser({ ...user, displayName: name }); // Update authUser state
+    // Directly update the state to ensure UI consistency
+    const firebaseUserWithProfile = { ...user, displayName: name };
+    setAuthUser(firebaseUserWithProfile);
     setAppUser({ id: user.uid, ...newUser } as AppUser);
   };
   
