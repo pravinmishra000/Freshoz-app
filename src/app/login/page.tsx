@@ -3,8 +3,8 @@
 
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useState, useEffect, type ComponentProps } from 'react';
+import { useForm, SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -41,9 +41,129 @@ const otpSchema = z.object({
 
 type EmailLoginFormValues = z.infer<typeof emailLoginSchema>;
 type EmailRegisterFormValues = z.infer<typeof emailRegisterSchema>;
-type PhoneFormValues = z
-.infer<typeof phoneSchema>;
+type PhoneFormValues = z.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
+
+// Standalone LoginForm component
+function LoginForm({
+  form,
+  onSubmit,
+  isLoading,
+  showPassword,
+  setShowPassword,
+  onSwitchToRegister,
+}: {
+  form: UseFormReturn<EmailLoginFormValues>;
+  onSubmit: SubmitHandler<EmailLoginFormValues>;
+  isLoading: boolean;
+  showPassword: boolean;
+  setShowPassword: (show: boolean) => void;
+  onSwitchToRegister: () => void;
+}) {
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Sign In
+        </Button>
+        <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToRegister}>
+          Don't have an account? Register
+        </Button>
+        <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>
+      </form>
+    </Form>
+  );
+}
+
+// Standalone RegisterForm component
+function RegisterForm({
+  form,
+  onSubmit,
+  isLoading,
+  showPassword,
+  setShowPassword,
+  onSwitchToLogin,
+}: {
+  form: UseFormReturn<EmailRegisterFormValues>;
+  onSubmit: SubmitHandler<EmailRegisterFormValues>;
+  isLoading: boolean;
+  showPassword: boolean;
+  setShowPassword: (show: boolean) => void;
+  onSwitchToLogin: () => void;
+}) {
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Create Account
+        </Button>
+        <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToLogin}>
+          Already have an account? Sign In
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
 
 export default function LoginPage() {
   const { signInWithPhoneNumber, confirmOtp, registerWithEmail, signInWithEmail } = useAuth();
@@ -79,17 +199,22 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    if (!window.recaptchaVerifier) {
+    // Ensure the container exists and reCAPTCHA is only initialized once
+    const recaptchaContainer = document.getElementById('recaptcha-container');
+    if (recaptchaContainer && !window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: () => {
           console.log("reCAPTCHA solved");
         },
+        'expired-callback': () => {
+          // Response expired. Ask user to solve reCAPTCHA again.
+          console.log("reCAPTCHA expired. Please try again.");
+          window.recaptchaVerifier?.clear();
+        }
       });
+      window.recaptchaVerifier.render().catch(console.error);
     }
-    return () => {
-      window.recaptchaVerifier?.clear();
-    };
   }, []);
 
   // Handlers
@@ -139,6 +264,8 @@ export default function LoginPage() {
       console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
+      // In case of error, reset verifier
+      window.recaptchaVerifier?.clear();
     } finally {
       setIsLoading(false);
     }
@@ -158,13 +285,8 @@ export default function LoginPage() {
 
       if (isTestNumber && isTestOtp) {
         console.log("Test OTP '123456' entered for test number. Bypassing actual confirmation.");
-        // Create a mock confirmation result for the context to handle
-        const mockResult: ConfirmationResult = {
-          verificationId: 'test-verification-id',
-          confirm: async () => { throw new Error("This should not be called for test number"); }
-        };
         sessionStorage.setItem('pendingTestPhone', phoneNumber);
-        await confirmOtp(mockResult, data.otp);
+        await confirmOtp(confirmationResult, data.otp);
       } else {
          await confirmOtp(confirmationResult, data.otp);
       }
@@ -178,93 +300,25 @@ export default function LoginPage() {
     }
   };
 
-  const LoginForm = () => (
-    <Form {...emailLoginForm}>
-      <form onSubmit={emailLoginForm.handleSubmit(onEmailLoginSubmit)} className="space-y-6 pt-4">
-        <FormField
-          control={emailLoginForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={emailLoginForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input type={showLoginPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowLoginPassword(!showLoginPassword)}>
-                    {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
-        </Button>
-        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(true)}>
-          Don't have an account? Register
-        </Button>
-        <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>
-      </form>
-    </Form>
+  const emailFormContent = isRegistering ? (
+    <RegisterForm
+      form={emailRegisterForm}
+      onSubmit={onEmailRegisterSubmit}
+      isLoading={isLoading}
+      showPassword={showRegisterPassword}
+      setShowPassword={setShowRegisterPassword}
+      onSwitchToLogin={() => setIsRegistering(false)}
+    />
+  ) : (
+    <LoginForm
+      form={emailLoginForm}
+      onSubmit={onEmailLoginSubmit}
+      isLoading={isLoading}
+      showPassword={showLoginPassword}
+      setShowPassword={setShowLoginPassword}
+      onSwitchToRegister={() => setIsRegistering(true)}
+    />
   );
-
-  const RegisterForm = () => (
-    <Form {...emailRegisterForm}>
-      <form onSubmit={emailRegisterForm.handleSubmit(onEmailRegisterSubmit)} className="space-y-6 pt-4">
-        <FormField
-          control={emailRegisterForm.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={emailRegisterForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={emailRegisterForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input type={showRegisterPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowRegisterPassword(!showRegisterPassword)}>
-                    {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Account
-        </Button>
-        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setIsRegistering(false)}>
-          Already have an account? Sign In
-        </Button>
-      </form>
-    </Form>
-  );
-
-  const emailFormContent = isRegistering ? <RegisterForm /> : <LoginForm />;
 
   const phoneFormContent = !confirmationResult ? (
     <Form {...phoneForm}>
