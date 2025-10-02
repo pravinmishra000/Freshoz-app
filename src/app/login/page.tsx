@@ -246,7 +246,7 @@ export default function LoginPage() {
   
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
-    const sanitizedPhone = data.phone.replace(/[^+\d]/g, '');
+    const sanitizedPhone = data.phone.replace(/[^+\\d]/g, '');
     setPhoneNumber(sanitizedPhone);
     
     const appVerifier = window.recaptchaVerifier;
