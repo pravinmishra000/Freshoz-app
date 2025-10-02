@@ -1,12 +1,10 @@
 
-
 'use client';
 
 import {
   APIProvider,
   Map,
   useMap,
-  usePlacesAutocomplete,
   AdvancedMarker,
 } from '@vis.gl/react-google-maps';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -208,26 +206,59 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
 function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void, initialValue?: string}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(initialValue || '');
-  
-  const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = usePlacesAutocomplete({
-    inputField: inputRef.current,
-    options: {
-        componentRestrictions: { country: 'in' },
-        bounds: aoiBounds,
-        strictBounds: true,
-        types: ['geocode', 'address'],
-        fields: ["address_components", "geometry", "formatted_address", "name"],
+  const [placeAutocomplete, setPlaceAutocomplete] = useState<google.maps.places.AutocompleteService | null>(null);
+  const [placePredictions, setPlacePredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [isPlacePredictionsLoading, setIsPlacePredictionsLoading] = useState(false);
+  const places = window.google?.maps?.places;
+
+  useEffect(() => {
+    if (places) {
+      setPlaceAutocomplete(new places.AutocompleteService());
+    }
+  }, [places]);
+
+  const fetchPredictions = useCallback(
+    (value: string) => {
+      if (!placeAutocomplete) return;
+      setIsPlacePredictionsLoading(true);
+      placeAutocomplete.getPlacePredictions(
+        {
+          input: value,
+          componentRestrictions: { country: 'in' },
+          locationBias: aoiBounds,
+          types: ['geocode', 'address'],
+        },
+        (predictions) => {
+          setPlacePredictions(predictions || []);
+          setIsPlacePredictionsLoading(false);
+        }
+      );
     },
-  });
+    [placeAutocomplete]
+  );
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    fetchPredictions(value);
+  }
 
   const handleSuggestionClick = (place: google.maps.places.AutocompletePrediction) => {
-    if (!place.place_id || !placeAutocomplete) return;
-    placeAutocomplete.getDetails({placeId: place.place_id})
-      .then(placeResult => {
-          onPlaceSelect(placeResult);
-          setInputValue(placeResult.formatted_address || place.description);
-      })
-      .catch(err => console.error("Error getting place details", err));
+    if (!place.place_id || !places) return;
+    
+    const placesService = new places.PlacesService(document.createElement('div'));
+    placesService.getDetails({
+        placeId: place.place_id,
+        fields: ["address_components", "geometry", "formatted_address", "name"],
+    }, (placeResult, status) => {
+        if(status === 'OK' && placeResult){
+            onPlaceSelect(placeResult);
+            setInputValue(placeResult.formatted_address || place.description);
+            setPlacePredictions([]);
+        } else {
+             console.error("Error getting place details", status);
+        }
+    });
   };
   
   return (
@@ -239,18 +270,17 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
                 placeholder="Enter your address"
                 className="w-full pl-10 pr-4 py-2 h-12 text-base"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
                 autoComplete="off"
             />
             {isPlacePredictionsLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />}
         </div>
       {placePredictions.length > 0 && (
           <div className='absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border z-20'>
-              {placePredictions.map(({ description, place_id }) => {
-                const suggestionText = description;
+              {placePredictions.map((prediction) => {
                 return (
-                    <button key={place_id} onClick={() => handleSuggestionClick({ description, place_id } as any)} className="block w-full text-left p-4 hover:bg-gray-100">
-                        {suggestionText}
+                    <button key={prediction.place_id} onClick={() => handleSuggestionClick(prediction)} className="block w-full text-left p-4 hover:bg-gray-100">
+                        {prediction.description}
                     </button>
                 )
               })}
