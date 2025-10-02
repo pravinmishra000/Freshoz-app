@@ -1,7 +1,6 @@
 
 
 import { db } from '@/lib/firebase/client';
-import admin from '@/lib/firebase/admin';
 import {
   collection,
   doc,
@@ -19,19 +18,19 @@ import {
   increment,
   setDoc,
   onSnapshot, Unsubscribe,
-  arrayUnion
 } from 'firebase/firestore';
 import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays } from 'date-fns';
+import { auth } from '@/lib/firebase/server';
 
-const firestore = admin.firestore();
+const firestoreDb = db; // Use client-side db instance
 
 /**
  * Fetch orders for a specific user, sorted newest first
  */
 export async function getOrdersForUser(userId: string): Promise<Order[]> {
-  const ordersCollection = collection(db, 'orders');
+  const ordersCollection = collection(firestoreDb, 'orders');
   const q = query(ordersCollection, where('userId', '==', userId));
   const querySnapshot = await getDocs(q);
 
@@ -50,9 +49,11 @@ export async function getOrdersForUser(userId: string): Promise<Order[]> {
 
 /**
  * Fetch all orders (admin)
+ * NOTE: This function still uses client SDK. For true server-side rendering,
+ * this would need to be in a server action using the admin SDK.
  */
 export async function getAllOrders(): Promise<Order[]> {
-  const ordersCollection = collection(db, 'orders');
+  const ordersCollection = collection(firestoreDb, 'orders');
   const querySnapshot = await getDocs(ordersCollection);
 
   const orders: Order[] = [];
@@ -72,7 +73,7 @@ export async function getAllOrders(): Promise<Order[]> {
  * Get single order
  */
 export async function getOrder(orderId: string): Promise<Order | null> {
-  const orderRef = doc(db, 'orders', orderId);
+  const orderRef = doc(firestoreDb, 'orders', orderId);
   const orderSnap = await getDoc(orderRef);
   if (orderSnap.exists()) {
     const data = orderSnap.data();
@@ -86,14 +87,14 @@ export async function getOrder(orderId: string): Promise<Order | null> {
  */
 export async function getUser(userId: string): Promise<User | null> {
     try {
-        const userRef = firestore.collection('users').doc(userId);
-        const userSnap = await userRef.get();
-        if (userSnap.exists) {
+        const userRef = doc(firestoreDb, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
             return { id: userSnap.id, ...userSnap.data() } as User;
         }
         return null;
     } catch (error) {
-        console.error("Error fetching user with Admin SDK:", error);
+        console.error("Error fetching user with client SDK:", error);
         return null;
     }
 }
@@ -103,7 +104,7 @@ export async function getUser(userId: string): Promise<User | null> {
  * Get wallet balance from wallets collection (one-time fetch)
  */
 export async function getWalletBalance(userId: string): Promise<number> {
-  const walletRef = doc(db, 'wallets', userId);
+  const walletRef = doc(firestoreDb, 'wallets', userId);
   const walletSnap = await getDoc(walletRef);
   if (walletSnap.exists()) {
     return walletSnap.data().balance ?? 0;
@@ -117,7 +118,7 @@ export async function getWalletBalance(userId: string): Promise<number> {
  * Listen to real-time updates for a user's wallet balance
  */
 export function listenToWalletBalance(userId: string, callback: (balance: number) => void): Unsubscribe {
-    const walletRef = doc(db, 'wallets', userId);
+    const walletRef = doc(firestoreDb, 'wallets', userId);
 
     const unsubscribe = onSnapshot(walletRef, (doc) => {
         if (doc.exists()) {
@@ -139,7 +140,7 @@ export function listenToWalletBalance(userId: string, callback: (balance: number
  * Update wallet balance
  */
 export async function updateWalletBalance(userId: string, amount: number): Promise<void> {
-  const walletRef = doc(db, 'wallets', userId);
+  const walletRef = doc(firestoreDb, 'wallets', userId);
   // Using increment to avoid race conditions
   await setDoc(walletRef, { balance: increment(amount), lastUpdated: serverTimestamp() }, { merge: true });
 }
@@ -149,7 +150,7 @@ export async function updateWalletBalance(userId: string, amount: number): Promi
  * Update an order
  */
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
-  const orderRef = doc(db, 'orders', orderId);
+  const orderRef = doc(firestoreDb, 'orders', orderId);
   await updateDoc(orderRef, data);
 }
 
@@ -157,7 +158,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
  * Update order status
  */
 export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order | null> {
-  const orderRef = doc(db, 'orders', orderId);
+  const orderRef = doc(firestoreDb, 'orders', orderId);
   await updateDoc(orderRef, { status, updatedAt: serverTimestamp() });
   const updatedOrderSnap = await getDoc(orderRef);
   if (updatedOrderSnap.exists()) {
@@ -180,7 +181,7 @@ interface CreateOrderData {
  * Create new order
  */
 export async function createOrder(orderData: CreateOrderData): Promise<string> {
-  const ordersCollection = collection(db, 'orders');
+  const ordersCollection = collection(firestoreDb, 'orders');
 
   const newOrderData = {
     ...orderData,
@@ -203,7 +204,7 @@ export async function createOrder(orderData: CreateOrderData): Promise<string> {
  * Update product stock (optional: prevent negative stock)
  */
 export async function updateProductStock(productId: string, quantityChange: number): Promise<void> {
-  const productRef = doc(db, 'products', productId);
+  const productRef = doc(firestoreDb, 'products', productId);
 
   // Optional: prevent negative stock
   // const productSnap = await getDoc(productRef);
@@ -219,8 +220,8 @@ export async function updateProductStock(productId: string, quantityChange: numb
  * Analytics summary
  */
 export async function getAnalyticsSummary() {
-  const ordersCollection = collection(db, 'orders');
-  const usersCollection = collection(db, 'users');
+  const ordersCollection = collection(firestoreDb, 'orders');
+  const usersCollection = collection(firestoreDb, 'users');
 
   // Total revenue & orders
   const ordersSnapshot = await getDocs(ordersCollection);
