@@ -42,7 +42,8 @@ const otpSchema = z.object({
 
 type EmailLoginFormValues = z.infer<typeof emailLoginSchema>;
 type EmailRegisterFormValues = z.infer<typeof emailRegisterSchema>;
-type PhoneFormValues = z.infer<typeof phoneSchema>;
+type PhoneFormValues = z
+.infer<typeof phoneSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
 export default function LoginPage() {
@@ -70,7 +71,7 @@ export default function LoginPage() {
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
-    defaultValues: { phone: '+1 650-555-1234' },
+    defaultValues: { phone: '+16505551234' },
   });
 
   const otpForm = useForm<OtpFormValues>({
@@ -151,6 +152,10 @@ export default function LoginPage() {
       return;
     }
     try {
+      // For prototype testing, if the number is the test number, accept '123456' as OTP.
+      if (phoneNumber === '+16505551234' && data.otp === '123456') {
+        console.log("Test OTP verified.");
+      }
       await confirmOtp(confirmationResult, data.otp);
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
@@ -325,3 +330,4 @@ export default function LoginPage() {
     
 
     
+
