@@ -1,5 +1,7 @@
 
+
 import { db } from '@/lib/firebase/client';
+import admin from '@/lib/firebase/admin';
 import {
   collection,
   doc,
@@ -22,6 +24,8 @@ import {
 import type { Order, User, OrderStatus, Address } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays } from 'date-fns';
+
+const firestore = admin.firestore();
 
 /**
  * Fetch orders for a specific user, sorted newest first
@@ -78,16 +82,22 @@ export async function getOrder(orderId: string): Promise<Order | null> {
 }
 
 /**
- * Get single user
+ * Get single user (SERVER-SIDE)
  */
 export async function getUser(userId: string): Promise<User | null> {
-  const userRef = doc(db, 'users', userId);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    return { id: userSnap.id, ...userSnap.data() } as User;
-  }
-  return null;
+    try {
+        const userRef = firestore.collection('users').doc(userId);
+        const userSnap = await userRef.get();
+        if (userSnap.exists) {
+            return { id: userSnap.id, ...userSnap.data() } as User;
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching user with Admin SDK:", error);
+        return null;
+    }
 }
+
 
 /**
  * Get wallet balance from wallets collection (one-time fetch)
