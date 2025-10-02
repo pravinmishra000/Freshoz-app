@@ -19,6 +19,7 @@ import {
   RecaptchaVerifier,
   ConfirmationResult,
   signOut,
+  updateProfile,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './client';
@@ -82,11 +83,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!userDoc.exists()) {
       const role = sessionStorage.getItem('pendingUserRole') as UserRole || 'customer';
+      const displayName = `User ${user.uid.substring(0, 5)}`;
       
+      await updateProfile(user, { displayName });
+
       const newUser: Omit<AppUser, 'id'> = {
         email: user.email,
         phoneNumber: user.phoneNumber,
-        displayName: user.displayName || `User ${user.uid.substring(0,5)}`,
+        displayName: displayName,
         photoURL: user.photoURL,
         role: role,
         createdAt: serverTimestamp(),
@@ -102,6 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerWithEmail = async (email: string, password: string, name: string): Promise<void> => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    
+    // Update Firebase Auth profile
+    await updateProfile(user, { displayName: name });
 
     const newUser: Omit<AppUser, 'id'> = {
         displayName: name,
@@ -114,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     await setDoc(doc(db, 'users', user.uid), newUser);
+    setAuthUser({ ...user, displayName: name }); // Update authUser state
     setAppUser({ id: user.uid, ...newUser } as AppUser);
   };
   
