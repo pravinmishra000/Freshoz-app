@@ -9,7 +9,8 @@ This document provides a checklist for testing the core features of the Freshoz 
 
 ---
 
-### 1. Login & Authentication
+### 1. Login & Authentication note: Login button not visible on /products page in prototype. Needs addition before real testing.
+
 
 | Feature | Test Case | Expected Result | Status |
 | :--- | :--- | :--- | :--- |
@@ -62,11 +63,6 @@ This document provides a checklist for testing the core features of the Freshoz 
 | **Payment Method** | Select "Cash on Delivery (COD)". | The COD option is highlighted. | Pending |
 | | Select "UPI", enter a valid UPI ID, and click "Verify". | A "Verified" success message appears. | Pending |
 | | Select "UPI", enter an invalid UPI ID, and click "Verify". | An error message "Could not verify UPI ID" is shown. | Pending |
-<h4>Thank you for using our service!</h4>
-  <p>The service you are using has been created by the Skeleto team.</p>
-  <p>If you are satisfied with our service, please consider giving us a star on GitHub.</p>
-  <p><a href="https://github.com/skeleto-dev/skeleto" target="_blank">Star us on GitHub</a></p>
-  <p>Your support is greatly appreciated!</p>
 | **Place Order** | Complete the address form and click "Place Order". | The order is successfully created in Firebase. The cart is cleared. The user is redirected to the "Your Orders" page. | Pending |
 | | Try to checkout with an empty cart. | The page should show a message like "Your cart is empty!" and a button to continue shopping. The address form should not be visible. | Pending |
 
