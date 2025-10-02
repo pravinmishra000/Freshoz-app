@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -24,9 +23,9 @@ interface AddressAutocompleteProps {
   onAddressSelect: (address: Address) => void;
   onCancel: () => void;
   initialAddress?: Address | null;
+  apiKey: string; // The API key is now a required prop
 }
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 const MAP_ID = 'freshoz_map_id';
 
 // Centered around Bhagalpur
@@ -41,25 +40,18 @@ const aoiBounds = {
 };
 
 
-export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress }: AddressAutocompleteProps) {
-  if (!API_KEY) {
-    return (
-        <div className="flex h-screen flex-col items-center justify-center bg-red-50 p-4 text-center">
-            <h2 className="text-xl font-bold text-red-700">Google Maps API Key Missing</h2>
-            <p className="text-red-600">Please provide the NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables.</p>
-        </div>
-    );
-  }
+export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress, apiKey }: AddressAutocompleteProps) {
+  // The check for the API key is removed from here and handled in the parent Server Component.
   return (
-    <APIProvider apiKey={API_KEY}>
+    <APIProvider apiKey={apiKey}>
       <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
     </APIProvider>
   );
 }
 
-function LocationPicker({ onAddressSelect, onCancel, initialAddress }: AddressAutocompleteProps) {
+function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<AddressAutocompleteProps, 'apiKey'>) {
   const map = useMap();
-  const [position, setPosition] = useState(initialAddress ? { lat: initialAddress.lat!, lng: initialAddress.lng! } : aoiCenter);
+  const [position, setPosition] = useState(initialAddress?.lat && initialAddress?.lng ? { lat: initialAddress.lat, lng: initialAddress.lng } : aoiCenter);
   const [addressDetails, setAddressDetails] = useState<Partial<Address>>(initialAddress || {});
   const [isLoading, setIsLoading] = useState(false);
   const { authUser } = useAuth();
@@ -266,4 +258,3 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
     </div>
   );
 }
-
