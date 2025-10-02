@@ -199,9 +199,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     ) : (
-                      <Button asChild variant="ghost" size="icon" className="glass-icon-button">
+                      <Button asChild variant="outline" className="bg-primary/10 border-primary/20 hover:bg-primary/20">
                         <Link href="/login">
-                          <User className="h-5 w-5 text-positive" />
+                          <User className="mr-2 h-4 w-4 text-positive" />
+                          <span className="text-primary font-semibold">Login</span>
                         </Link>
                       </Button>
                     )}
