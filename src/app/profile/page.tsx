@@ -1,21 +1,26 @@
 
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { User, MapPin, LogOut, ChevronRight, Home, Building, PlusCircle, Pencil, Camera } from 'lucide-react';
+import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
 import AddressAutocomplete from '@/components/location/AddressAutocomplete';
 import type { Address } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { updateUserAddress } from '@/app/actions/userActions'; // Assuming this exists for address updates
+import { updateProfile } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/client';
 
-function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: (id: string) => void; onDelete: (id: string) => void; }) {
+
+function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: (address: Address) => void; onDelete: (id: string) => void; }) {
     const Icon = address.type === 'home' ? Home : address.type === 'work' ? Building : MapPin;
     return (
         <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-background/50 hover:bg-background transition-colors">
@@ -31,25 +36,60 @@ function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: 
                 </div>
             </div>
             <div className="flex flex-col gap-2">
-                 <Button variant="ghost" size="sm" onClick={() => onEdit(address.id!)}>Edit</Button>
+                 <Button variant="ghost" size="sm" onClick={() => onEdit(address)}>Edit</Button>
                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => onDelete(address.id!)}>Delete</Button>
             </div>
         </div>
     )
 }
 
-function InfoRow({ label, value, onEdit }: { label: string; value: string | null; onEdit?: () => void }) {
+function EditableInfoRow({ label, value, onSave }: { label: string; value: string | null; onSave: (newValue: string) => Promise<void> }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState(value || '');
+  const { toast } = useToast();
+
+  const handleSave = async () => {
+    try {
+      await onSave(inputValue);
+      toast({ title: `${label} updated successfully!` });
+      setIsEditing(false);
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Update failed', description: `Could not update ${label}.` });
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center justify-between py-3 px-4 rounded-lg bg-muted/50">
+        <div>
+          <p className="text-xs text-muted-foreground">{label}</p>
+          <Input 
+            value={inputValue} 
+            onChange={(e) => setInputValue(e.target.value)} 
+            className="text-base font-semibold text-primary h-8 mt-1"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={handleSave}>
+                <Save className="h-4 w-4 text-positive" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditing(false)}>
+                <X className="h-4 w-4 text-destructive" />
+            </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-muted/50">
       <div>
         <p className="text-xs text-muted-foreground">{label}</p>
         <p className="text-base font-semibold text-primary">{value || 'Not set'}</p>
       </div>
-      {onEdit && (
-        <Button variant="ghost" size="sm" onClick={onEdit}>
+      <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
           <Pencil className="mr-2 h-4 w-4" /> Edit
-        </Button>
-      )}
+      </Button>
     </div>
   );
 }
@@ -58,7 +98,8 @@ function InfoRow({ label, value, onEdit }: { label: string; value: string | null
 export default function ProfilePage() {
   const { appUser, authUser, loading, logout, setAppUser } = useAuth();
   const router = useRouter();
-  const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
+  const [addressToEdit, setAddressToEdit] = useState<Address | null>(null);
 
   const handleLogout = async () => {
     await logout();
@@ -66,20 +107,53 @@ export default function ProfilePage() {
   };
 
   const handleAddressSaved = (newAddress: Address) => {
-    if (appUser) {
-        const updatedAddresses = [...(appUser.addresses || []), newAddress];
+     if (appUser) {
+        let updatedAddresses;
+        if (addressToEdit) { // We were editing an existing address
+            updatedAddresses = appUser.addresses?.map(addr => addr.id === addressToEdit.id ? { ...addr, ...newAddress } : addr) ?? [];
+        } else { // We were adding a new one
+            updatedAddresses = [...(appUser.addresses || []), newAddress];
+        }
         setAppUser({ ...appUser, addresses: updatedAddresses });
     }
-    setIsAddingAddress(false);
+    setIsAddressFormOpen(false);
+    setAddressToEdit(null);
   };
   
-  const handleEditAddress = (id: string) => {
-    console.log("Editing address:", id);
-    setIsAddingAddress(true);
+  const handleEditAddress = (address: Address) => {
+    setAddressToEdit(address);
+    setIsAddressFormOpen(true);
+  };
+
+  const handleAddNewAddress = () => {
+    setAddressToEdit(null);
+    setIsAddressFormOpen(true);
   };
 
   const handleDeleteAddress = (id: string) => {
-    console.log("Deleting address:", id);
+    if (!appUser || !authUser) return;
+    const updatedAddresses = appUser.addresses?.filter(addr => addr.id !== id) ?? [];
+    const userRef = doc(db, "users", authUser.uid);
+    updateDoc(userRef, { addresses: updatedAddresses }).then(() => {
+        setAppUser({ ...appUser, addresses: updatedAddresses });
+    });
+  };
+  
+  const handleSaveName = async (newName: string) => {
+    if (!authUser) throw new Error("Not authenticated");
+    await updateProfile(authUser, { displayName: newName });
+    const userRef = doc(db, "users", authUser.uid);
+    await updateDoc(userRef, { displayName: newName });
+    if(appUser) setAppUser({...appUser, displayName: newName});
+  };
+  
+  const handleSavePhone = async (newPhone: string) => {
+    // Note: Updating phone number with Firebase Auth is complex and requires re-verification.
+    // This is a simplified version that only updates the Firestore record.
+    if (!authUser || !appUser) throw new Error("Not authenticated");
+    const userRef = doc(db, "users", authUser.uid);
+    await updateDoc(userRef, { phoneNumber: newPhone });
+    setAppUser({...appUser, phoneNumber: newPhone});
   };
 
   if (loading) {
@@ -94,8 +168,16 @@ export default function ProfilePage() {
     )
   }
 
-  if (isAddingAddress) {
-      return <AddressAutocomplete onAddressSelect={handleAddressSaved} />;
+  if (isAddressFormOpen) {
+      return (
+        <AppShell>
+          <AddressAutocomplete 
+            onAddressSelect={handleAddressSaved} 
+            onCancel={() => setIsAddressFormOpen(false)}
+            initialAddress={addressToEdit}
+          />
+        </AppShell>
+      );
   }
 
   const user = {
@@ -109,7 +191,7 @@ export default function ProfilePage() {
 
   const getInitials = (name: string) => {
     const names = name.split(' ');
-    if (names.length > 1) {
+    if (names.length > 1 && names[names.length - 1]) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
@@ -149,9 +231,14 @@ export default function ProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="divide-y">
-                <InfoRow label="Full Name" value={user.name} onEdit={() => console.log('Edit name')} />
-                <InfoRow label="Phone Number" value={user.phone} onEdit={() => console.log('Edit phone')} />
-                <InfoRow label="Email Address" value={user.email} />
+                <EditableInfoRow label="Full Name" value={user.name} onSave={handleSaveName} />
+                <EditableInfoRow label="Phone Number" value={user.phone} onSave={handleSavePhone} />
+                <div className="flex items-center justify-between py-3 px-4">
+                    <div>
+                        <p className="text-xs text-muted-foreground">Email Address</p>
+                        <p className="text-base font-semibold text-primary">{user.email || 'Not set'}</p>
+                    </div>
+                </div>
             </CardContent>
           </Card>
 
@@ -180,7 +267,7 @@ export default function ProfilePage() {
               )}
             </CardContent>
              <CardFooter>
-                 <Button variant="outline" className="w-full border-dashed border-primary text-primary hover:bg-primary/5 hover:text-primary" onClick={() => setIsAddingAddress(true)}>
+                 <Button variant="outline" className="w-full border-dashed border-primary text-primary hover:bg-primary/5 hover:text-primary" onClick={handleAddNewAddress}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add New Address
                 </Button>

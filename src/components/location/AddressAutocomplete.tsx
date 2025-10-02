@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, MapPin, Search } from 'lucide-react';
+import { Loader2, MapPin, Search, X } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { updateUserAddress } from '@/app/actions/userActions';
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 interface AddressAutocompleteProps {
   onAddressSelect: (address: Address) => void;
+  onCancel: () => void;
+  initialAddress?: Address | null;
 }
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
@@ -39,7 +41,7 @@ const aoiBounds = {
 };
 
 
-export default function AddressAutocomplete({ onAddressSelect }: AddressAutocompleteProps) {
+export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress }: AddressAutocompleteProps) {
   if (!API_KEY) {
     return (
         <div className="flex h-screen flex-col items-center justify-center bg-red-50 p-4 text-center">
@@ -50,15 +52,15 @@ export default function AddressAutocomplete({ onAddressSelect }: AddressAutocomp
   }
   return (
     <APIProvider apiKey={API_KEY}>
-      <LocationPicker onAddressSelect={onAddressSelect} />
+      <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
     </APIProvider>
   );
 }
 
-function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
+function LocationPicker({ onAddressSelect, onCancel, initialAddress }: AddressAutocompleteProps) {
   const map = useMap();
-  const [position, setPosition] = useState(aoiCenter); // Default to Bhagalpur
-  const [addressDetails, setAddressDetails] = useState<Partial<Address>>({});
+  const [position, setPosition] = useState(initialAddress ? { lat: initialAddress.lat!, lng: initialAddress.lng! } : aoiCenter);
+  const [addressDetails, setAddressDetails] = useState<Partial<Address>>(initialAddress || {});
   const [isLoading, setIsLoading] = useState(false);
   const { authUser } = useAuth();
   const { toast } = useToast();
@@ -82,7 +84,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
               country: addressDetails.country || '',
               lat: position.lat,
               lng: position.lng,
-              type: 'home',
+              type: addressDetails.type || 'home',
           };
           const savedAddress = await updateUserAddress(authUser.uid, finalAddress);
           toast({ title: 'Address Saved!', description: 'Your new address has been added successfully.' });
@@ -122,6 +124,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
             }
 
             setAddressDetails({
+                ...initialAddress,
                 address: fullAddress,
                 city: getPart('locality'),
                 district: getPart('administrative_area_level_2'),
@@ -133,14 +136,19 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
             });
         }
     }
-  }, []);
+  }, [initialAddress]);
 
 
   return (
     <div className="flex h-screen flex-col bg-gray-50">
-      <div className="p-4 border-b bg-white z-10 shadow-sm">
-        <h2 className="text-xl font-bold text-center mb-4">Set Delivery Location</h2>
-        <Autocomplete onPlaceSelect={onPlaceSelect} />
+      <div className="p-4 border-b bg-white z-10 shadow-sm flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={onCancel}>
+            <X className="h-5 w-5" />
+        </Button>
+        <div className="flex-1">
+            <h2 className="text-xl font-bold text-center mb-1">{initialAddress ? 'Edit Address' : 'Set Delivery Location'}</h2>
+            <Autocomplete onPlaceSelect={onPlaceSelect} initialValue={initialAddress?.address} />
+        </div>
       </div>
 
       <div className="flex-1 relative">
@@ -160,7 +168,7 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
                 const lng = e.latLng?.lng();
                 if (lat && lng) {
                     setPosition({lat, lng});
-                    // You might want to trigger reverse geocoding here to update address details
+                    // TODO: Trigger reverse geocoding here to update address details
                 }
             }}
           >
@@ -204,9 +212,9 @@ function LocationPicker({ onAddressSelect }: AddressAutocompleteProps) {
   );
 }
 
-function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void}) {
+function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void, initialValue?: string}) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(initialValue || '');
   
   const { placeAutocomplete, isPlacePredictionsLoading, placePredictions } = useAutocomplete({
     inputField: inputRef.current,
@@ -215,7 +223,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
         bounds: aoiBounds,
         strictBounds: true,
         types: ['geocode', 'address'],
-        fields: ["address_components", "geometry", "formatted_address"],
+        fields: ["address_components", "geometry", "formatted_address", "name"],
     },
   });
 
@@ -224,7 +232,7 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     placeAutocomplete.getPlaceDetails({placeId: place.place_id})
       .then(placeResult => {
           onPlaceSelect(placeResult);
-          setInputValue(placeResult.formatted_address || '');
+          setInputValue(placeResult.formatted_address || place.description);
       })
       .catch(err => console.error("Error getting place details", err));
   };
@@ -247,9 +255,6 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
           <div className='absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border z-20'>
               {placePredictions.map(({ description, place_id }) => {
                 const suggestionText = description;
-                const isServicable = suggestionText.includes('Bhagalpur') || suggestionText.includes('Khagaria');
-                if (!isServicable) return null;
-                
                 return (
                     <button key={place_id} onClick={() => handleSuggestionClick({ description, place_id } as any)} className="block w-full text-left p-4 hover:bg-gray-100">
                         {suggestionText}
@@ -261,3 +266,4 @@ function Autocomplete({onPlaceSelect}: {onPlaceSelect: (place: google.maps.place
     </div>
   );
 }
+
