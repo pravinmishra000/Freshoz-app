@@ -1,11 +1,10 @@
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X } from 'lucide-react';
+import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X, Upload, Video } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
 import AddressAutocomplete from '@/components/location/AddressAutocomplete';
@@ -17,8 +16,10 @@ import { useToast } from '@/hooks/use-toast';
 import { updateUserAddress } from '@/app/actions/userActions';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
-
+import { db, storage } from '@/lib/firebase/client';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import CameraCaptureModal from '@/components/freshoz/CameraCaptureModal';
 
 function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: (address: Address) => void; onDelete: (id: string) => void; }) {
     const Icon = address.type === 'home' ? Home : address.type === 'work' ? Building : MapPin;
@@ -53,8 +54,8 @@ function EditableInfoRow({ label, value, onSave }: { label: string; value: strin
       await onSave(inputValue);
       toast({ title: `${label} updated successfully!` });
       setIsEditing(false);
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Update failed', description: `Could not update ${label}.` });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Update failed', description: error.message || `Could not update ${label}.` });
     }
   };
 
@@ -98,8 +99,11 @@ function EditableInfoRow({ label, value, onSave }: { label: string; value: strin
 function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   const { appUser, authUser, loading, logout, setAppUser } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [addressToEdit, setAddressToEdit] = useState<Address | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -140,21 +144,61 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   };
   
   const handleSaveName = async (newName: string) => {
-    if (!authUser) throw new Error("Not authenticated");
+    if (!authUser || !appUser) throw new Error("Not authenticated");
     await updateProfile(authUser, { displayName: newName });
     const userRef = doc(db, "users", authUser.uid);
     await updateDoc(userRef, { displayName: newName });
-    if(appUser) setAppUser({...appUser, displayName: newName});
+    // This is the fix: correctly update the local state
+    setAppUser(prevUser => prevUser ? { ...prevUser, displayName: newName } : null);
   };
   
   const handleSavePhone = async (newPhone: string) => {
-    // Note: Updating phone number with Firebase Auth is complex and requires re-verification.
-    // This is a simplified version that only updates the Firestore record.
     if (!authUser || !appUser) throw new Error("Not authenticated");
     const userRef = doc(db, "users", authUser.uid);
     await updateDoc(userRef, { phoneNumber: newPhone });
-    setAppUser({...appUser, phoneNumber: newPhone});
+    // This is the fix: correctly update the local state
+    setAppUser(prevUser => prevUser ? { ...prevUser, phoneNumber: newPhone } : null);
   };
+
+  const handlePhotoUpload = async (dataUrl: string) => {
+    if (!authUser) return;
+
+    toast({ title: 'Uploading...', description: 'Your new profile picture is being uploaded.' });
+    const storageRef = ref(storage, `profile-pictures/${authUser.uid}`);
+
+    try {
+      const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Update Firebase Auth profile
+      await updateProfile(authUser, { photoURL: downloadURL });
+      // Update Firestore user document
+      const userRef = doc(db, "users", authUser.uid);
+      await updateDoc(userRef, { photoURL: downloadURL });
+
+      // Update local state
+      if (appUser) {
+        setAppUser({ ...appUser, photoURL: downloadURL });
+      }
+
+      toast({ title: 'Success!', description: 'Profile picture updated.' });
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not update your profile picture.' });
+    }
+  };
+
+  const onFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        handlePhotoUpload(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -167,6 +211,16 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
         </AppShell>
     )
   }
+  
+  if (isCameraModalOpen) {
+    return (
+        <CameraCaptureModal
+            onClose={() => setIsCameraModalOpen(false)}
+            onCapture={handlePhotoUpload}
+        />
+    )
+  }
+
 
   if (isAddressFormOpen) {
       return (
@@ -202,7 +256,13 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     <AppShell>
       <div className="container mx-auto max-w-4xl py-8">
         <div className="space-y-8">
-
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={onFileSelect}
+                accept="image/*"
+                className="hidden"
+            />
           {/* User Header */}
           <Card className="glass-card overflow-hidden">
             <CardContent className="p-6 flex flex-col items-center text-center">
@@ -213,10 +273,24 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
                           {getInitials(user.name)}
                       </AvatarFallback>
                   </Avatar>
-                  <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background group-hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Camera className="h-4 w-4" />
-                      <span className="sr-only">Change profile picture</span>
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                       <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background group-hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Camera className="h-4 w-4" />
+                          <span className="sr-only">Change profile picture</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
+                           <Upload className="mr-2 h-4 w-4" />
+                           <span>Upload from device</span>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem onSelect={() => setIsCameraModalOpen(true)}>
+                           <Video className="mr-2 h-4 w-4" />
+                           <span>Take a photo</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               </div>
               <h2 className="text-2xl font-bold text-primary">{user.name}</h2>
               <p className="text-muted-foreground">{user.email}</p>
@@ -295,7 +369,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
 
 
 export default function ProfilePage() {
-  // This is now a Server Component. It can securely access environment variables.
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   if (!googleMapsApiKey) {
@@ -316,6 +389,5 @@ export default function ProfilePage() {
     );
   }
 
-  // We pass the API key as a prop to the client component.
   return <ProfileClient googleMapsApiKey={googleMapsApiKey} />;
 }
