@@ -170,8 +170,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Avatar className="cursor-pointer">
-                            <AvatarImage src={authUser.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
-                            <AvatarFallback>{authUser.email?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
+                            <AvatarImage key={appUser?.photoURL} src={appUser?.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
+                            <AvatarFallback>{appUser?.displayName?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
                           </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

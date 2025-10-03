@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X, Upload, Video } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { useRouter } from 'next/navigation';
 import AddressAutocomplete from '@/components/location/AddressAutocomplete';
@@ -148,7 +148,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     await updateProfile(authUser, { displayName: newName });
     const userRef = doc(db, "users", authUser.uid);
     await updateDoc(userRef, { displayName: newName });
-    // This is the fix: correctly update the local state
     setAppUser(prevUser => prevUser ? { ...prevUser, displayName: newName } : null);
   };
   
@@ -156,7 +155,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     if (!authUser || !appUser) throw new Error("Not authenticated");
     const userRef = doc(db, "users", authUser.uid);
     await updateDoc(userRef, { phoneNumber: newPhone });
-    // This is the fix: correctly update the local state
     setAppUser(prevUser => prevUser ? { ...prevUser, phoneNumber: newPhone } : null);
   };
 
@@ -176,10 +174,8 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       const userRef = doc(db, "users", authUser.uid);
       await updateDoc(userRef, { photoURL: downloadURL });
 
-      // Update local state
-      if (appUser) {
-        setAppUser({ ...appUser, photoURL: downloadURL });
-      }
+      // Update global appUser state, which will trigger re-renders everywhere
+      setAppUser(prevUser => prevUser ? { ...prevUser, photoURL: downloadURL } : null);
 
       toast({ title: 'Success!', description: 'Profile picture updated.' });
     } catch (error) {
@@ -196,6 +192,10 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
         handlePhotoUpload(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+    }
+    // Reset file input to allow re-uploading the same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -239,7 +239,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     name: appUser?.displayName ?? 'Freshoz User',
     phone: appUser?.phoneNumber ?? 'Not provided',
     email: appUser?.email ?? 'Not provided',
-    photoURL: authUser?.photoURL,
+    photoURL: appUser?.photoURL, // Use appUser's photoURL for consistency
   };
   
   const addresses = appUser?.addresses ?? [];
@@ -268,7 +268,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
             <CardContent className="p-6 flex flex-col items-center text-center">
               <div className="relative group mb-4">
                   <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                      <AvatarImage src={user.photoURL || ''} alt={user.name} />
+                      <AvatarImage key={user.photoURL} src={user.photoURL || ''} alt={user.name} />
                       <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
                           {getInitials(user.name)}
                       </AvatarFallback>
