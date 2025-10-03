@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 interface CameraCaptureModalProps {
   onClose: () => void;
-  onCapture: (dataUrl: string) => void;
+  onCapture?: (dataUrl: string) => void;
 }
 
 export default function CameraCaptureModal({ onClose, onCapture }: CameraCaptureModalProps) {
@@ -22,6 +22,10 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
 
   useEffect(() => {
     const getCameraPermission = async () => {
+      if (!onCapture) {
+          setHasCameraPermission(false);
+          return;
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         streamRef.current = stream;
@@ -49,7 +53,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
             streamRef.current.getTracks().forEach(track => track.stop());
         }
     };
-  }, [toast]);
+  }, [toast, onCapture]);
 
   const handleCapture = () => {
     if (videoRef.current && canvasRef.current) {
@@ -71,7 +75,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
   };
 
   const handleConfirm = () => {
-    if (capturedImage) {
+    if (capturedImage && onCapture) {
       onCapture(capturedImage);
       onClose();
     }
@@ -88,7 +92,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Camera Access Required</AlertTitle>
           <AlertDescription>
-            Camera access was denied. Please enable it in your browser's site settings to take a photo.
+            Camera access was denied or you are not logged in. Please enable it in your browser's site settings to take a photo.
           </AlertDescription>
         </Alert>
       );
@@ -127,7 +131,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Retake
               </Button>
-              <Button onClick={handleConfirm}>
+              <Button onClick={handleConfirm} disabled={!onCapture}>
                 <Check className="mr-2 h-4 w-4" />
                 Confirm & Upload
               </Button>
@@ -139,7 +143,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
                     Cancel
                   </Button>
                 </DialogClose>
-              <Button onClick={handleCapture} disabled={!hasCameraPermission}>
+              <Button onClick={handleCapture} disabled={!hasCameraPermission || !onCapture}>
                 <Camera className="mr-2 h-4 w-4" />
                 Capture
               </Button>

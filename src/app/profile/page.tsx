@@ -159,7 +159,10 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   };
 
   const handlePhotoUpload = async (dataUrl: string) => {
-    if (!authUser) return;
+    if (!authUser) {
+        toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
+        return;
+    }
 
     toast({ title: 'Uploading...', description: 'Your new profile picture is being uploaded.' });
     const storageRef = ref(storage, `profile-pictures/${authUser.uid}`);
@@ -185,6 +188,10 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   };
 
   const onFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!authUser) {
+      toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
+      return;
+    }
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -216,7 +223,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     return (
         <CameraCaptureModal
             onClose={() => setIsCameraModalOpen(false)}
-            onCapture={handlePhotoUpload}
+            onCapture={authUser ? handlePhotoUpload : undefined}
         />
     )
   }
@@ -285,7 +292,13 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
                            <Upload className="mr-2 h-4 w-4" />
                            <span>Upload from device</span>
                         </DropdownMenuItem>
-                         <DropdownMenuItem onSelect={() => setIsCameraModalOpen(true)}>
+                         <DropdownMenuItem onSelect={() => {
+                             if (!authUser) {
+                                toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to use the camera.' });
+                                return;
+                             }
+                             setIsCameraModalOpen(true)
+                         }}>
                            <Video className="mr-2 h-4 w-4" />
                            <span>Take a photo</span>
                         </DropdownMenuItem>
