@@ -64,7 +64,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
       const context = canvas.getContext('2d');
       if (context) {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        const dataUrl = canvas.toDataURL('image/png');
+        const dataUrl = canvas.toDataURL('image/jpeg'); // Use jpeg for smaller file size
         setCapturedImage(dataUrl);
       }
     }

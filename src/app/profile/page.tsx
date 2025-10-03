@@ -166,9 +166,15 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
 
     toast({ title: 'Uploading...', description: 'Your new profile picture is being uploaded.' });
     const storageRef = ref(storage, `profile-pictures/${authUser.uid}`);
+    
+    // Extract content type from data URL
+    const match = dataUrl.match(/^data:(.+);base64,/);
+    const contentType = match ? match[1] : 'image/png';
+    const metadata = { contentType };
 
     try {
-      const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+      // Pass metadata during upload
+      const snapshot = await uploadString(storageRef, dataUrl, 'data_url', metadata);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       // Update Firebase Auth profile
@@ -288,13 +294,19 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
+                        <DropdownMenuItem onSelect={() => {
+                            if (!authUser) {
+                                toast({ variant: 'destructive', title: 'Authentication Required' });
+                                return;
+                            }
+                            fileInputRef.current?.click()
+                        }}>
                            <Upload className="mr-2 h-4 w-4" />
                            <span>Upload from device</span>
                         </DropdownMenuItem>
                          <DropdownMenuItem onSelect={() => {
                              if (!authUser) {
-                                toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to use the camera.' });
+                                toast({ variant: 'destructive', title: 'Authentication Required' });
                                 return;
                              }
                              setIsCameraModalOpen(true)
