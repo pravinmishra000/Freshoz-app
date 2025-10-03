@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X, Upload, Video } from 'lucide-react';
+import { User, MapPin, LogOut, PlusCircle, Pencil, Camera, Home, Building, Save, X, Upload, Video, Loader2 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -44,18 +44,22 @@ function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: 
     )
 }
 
-function EditableInfoRow({ label, value, onSave }: { label: string; value: string | null; onSave: (newValue: string) => Promise<void> }) {
+function EditableInfoRow({ label, value, onSave, isLoading }: { label: string; value: string | null; onSave: (newValue: string) => Promise<void>, isLoading: boolean }) {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value || '');
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   const handleSave = async () => {
+    setIsSaving(true);
     try {
       await onSave(inputValue);
       toast({ title: `${label} updated successfully!` });
       setIsEditing(false);
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Update failed', description: error.message || `Could not update ${label}.` });
+    } finally {
+        setIsSaving(false);
     }
   };
 
@@ -71,8 +75,8 @@ function EditableInfoRow({ label, value, onSave }: { label: string; value: strin
           />
         </div>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleSave}>
-                <Save className="h-4 w-4 text-positive" />
+            <Button variant="ghost" size="icon" onClick={handleSave} disabled={isSaving}>
+                {isSaving ? <Loader2 className="h-4 w-4 animate-spin"/> : <Save className="h-4 w-4 text-positive" />}
             </Button>
             <Button variant="ghost" size="icon" onClick={() => setIsEditing(false)}>
                 <X className="h-4 w-4 text-destructive" />
@@ -88,8 +92,8 @@ function EditableInfoRow({ label, value, onSave }: { label: string; value: strin
         <p className="text-xs text-muted-foreground">{label}</p>
         <p className="text-base font-semibold text-primary">{value || 'Not set'}</p>
       </div>
-      <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-          <Pencil className="mr-2 h-4 w-4" /> Edit
+      <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} disabled={isLoading}>
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Pencil className="mr-2 h-4 w-4" />} Edit
       </Button>
     </div>
   );
@@ -167,23 +171,18 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     toast({ title: 'Uploading...', description: 'Your new profile picture is being uploaded.' });
     const storageRef = ref(storage, `profile-pictures/${authUser.uid}`);
     
-    // Extract content type from data URL
     const match = dataUrl.match(/^data:(.+);base64,/);
     const contentType = match ? match[1] : 'image/png';
     const metadata = { contentType };
 
     try {
-      // Pass metadata during upload
       const snapshot = await uploadString(storageRef, dataUrl, 'data_url', metadata);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // Update Firebase Auth profile
       await updateProfile(authUser, { photoURL: downloadURL });
-      // Update Firestore user document
       const userRef = doc(db, "users", authUser.uid);
       await updateDoc(userRef, { photoURL: downloadURL });
 
-      // Update global appUser state, which will trigger re-renders everywhere
       setAppUser(prevUser => prevUser ? { ...prevUser, photoURL: downloadURL } : null);
 
       toast({ title: 'Success!', description: 'Profile picture updated.' });
@@ -206,7 +205,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       };
       reader.readAsDataURL(file);
     }
-    // Reset file input to allow re-uploading the same file
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -252,7 +250,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     name: appUser?.displayName ?? 'Freshoz User',
     phone: appUser?.phoneNumber ?? 'Not provided',
     email: appUser?.email ?? 'Not provided',
-    photoURL: appUser?.photoURL, // Use appUser's photoURL for consistency
+    photoURL: appUser?.photoURL,
   };
   
   const addresses = appUser?.addresses ?? [];
@@ -331,8 +329,12 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="divide-y">
-                <EditableInfoRow label="Full Name" value={user.name} onSave={handleSaveName} />
-                <EditableInfoRow label="Phone Number" value={user.phone} onSave={handleSavePhone} />
+                {appUser && (
+                  <>
+                    <EditableInfoRow label="Full Name" value={user.name} onSave={handleSaveName} isLoading={loading} />
+                    <EditableInfoRow label="Phone Number" value={user.phone} onSave={handleSavePhone} isLoading={loading} />
+                  </>
+                )}
                 <div className="flex items-center justify-between py-3 px-4">
                     <div>
                         <p className="text-xs text-muted-foreground">Email Address</p>
