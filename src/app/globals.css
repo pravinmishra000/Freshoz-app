@@ -91,7 +91,21 @@
   }
   
   .glass-button {
-     @apply glass-card p-8 rounded-2xl transition-transform duration-300 ease-out hover:scale-105 active:scale-95;
+     @apply glass-card p-4 rounded-2xl transition-transform duration-300 ease-out hover:scale-105 active:scale-95;
+  }
+
+  .neon-button {
+      @apply bg-primary text-primary-foreground shadow-lg transition-all duration-300;
+      box-shadow: 0 0 10px hsl(var(--primary-glow)), 0 0 20px hsl(var(--primary-glow));
+  }
+  .neon-button:hover {
+      @apply bg-primary/90;
+      box-shadow: 0 0 15px hsl(var(--primary-glow)), 0 0 30px hsl(var(--primary-glow));
+  }
+
+  .neon-button-active {
+      @apply bg-primary text-primary-foreground shadow-lg;
+      box-shadow: 0 0 15px hsl(var(--primary-glow)), 0 0 30px hsl(var(--primary-glow)), inset 0 0 5px rgba(255, 255, 255, 0.3);
   }
 
   .light-ray {

@@ -63,9 +63,10 @@ export default function ProductsPage() {
           </Carousel>
         </section>
 
-        {/* Category Section */}
-        <section className="my-8 relative">
-            <div className="bg-gradient-to-r from-orange-400 to-sky-400 rounded-2xl p-4 flex overflow-x-auto no-scrollbar space-x-4">
+        {/* New Category Section Design */}
+        <section className="my-12">
+            <h2 className="text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {CATEGORIES.map((category) => {
                     const Icon = categoryIcons[category.slug] || ShoppingCart;
                     const isActive = activeCategory === category.slug;
@@ -74,17 +75,22 @@ export default function ProductsPage() {
                             key={category.id}
                             href={`/products/category/${category.slug}`}
                             className={cn(
-                                "category-tab-item relative flex-shrink-0 flex flex-col items-center justify-center rounded-xl transition-all duration-300 p-4",
-                                isActive ? "active-category-tab bg-background" : "text-primary-foreground/80 hover:bg-white/20"
+                                "glass-button flex flex-col items-center justify-center p-4 text-center group",
+                                isActive && 'neon-button-active'
                             )}
                         >
-                            <Icon className={cn(
-                                "h-6 w-6 mb-1 transition-all",
-                                isActive ? "text-positive" : "text-white"
-                            )} />
+                             <div className={cn(
+                                "p-3 rounded-full bg-primary/10 mb-2 transition-all duration-300",
+                                isActive ? "bg-white/30" : "group-hover:bg-primary/20"
+                            )}>
+                                <Icon className={cn(
+                                    "h-7 w-7 transition-colors",
+                                    isActive ? "text-white" : "text-primary"
+                                )} />
+                            </div>
                             <span className={cn(
-                                "text-xs font-medium text-center transition-colors",
-                                isActive ? "text-primary" : "text-white"
+                                "text-sm font-semibold transition-colors",
+                                isActive ? "text-white" : "text-primary"
                             )}>
                                 {category.name_en}
                             </span>
@@ -93,6 +99,7 @@ export default function ProductsPage() {
                 })}
             </div>
         </section>
+
 
         {/* Best Deals Section */}
         <section className="my-12">
