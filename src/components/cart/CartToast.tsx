@@ -51,7 +51,7 @@ export function CartToast() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="glass-card rounded-xl bg-primary/80 text-center text-xs font-medium text-primary-foreground p-2 shadow-lg"
+                className="glass-card rounded-xl bg-green-100 text-center text-xs font-semibold text-green-800 p-2 shadow-lg"
               >
                 Add items worth ₹{amountForFreeDelivery.toFixed(2)} more for FREE delivery!
               </motion.div>
