@@ -6,12 +6,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyB0Qz9PY7rWZbTbRKSm8Yd3WpkInJkz0lw",
-  authDomain: "studio-1002855358-a7716.firebaseapp.com",
-  projectId: "studio-1002855358-a7716",
-  storageBucket: "studio-1002855358-a7716.appspot.com",
-  messagingSenderId: "840479392017",
-  appId: "1:840479392017:web:3ea988e80fbfa8bd88ccb0"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase only once
