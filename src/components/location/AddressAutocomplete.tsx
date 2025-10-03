@@ -42,9 +42,30 @@ const aoiBounds = {
 export default function AddressAutocomplete({ onAddressSelect, onCancel, initialAddress, apiKey }: AddressAutocompleteProps) {
   // The check for the API key is removed from here and handled in the parent Server Component.
   return (
-    <APIProvider apiKey={apiKey} libraries={['places', 'geocoding']}>
-      <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
-    </APIProvider>
+    <div className="flex h-screen flex-col bg-gray-50">
+        <div className="p-4 border-b bg-white z-10 shadow-sm flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={onCancel}>
+                <X className="h-5 w-5" />
+            </Button>
+            <APIProvider apiKey={apiKey} libraries={['places', 'geocoding']}>
+                <div className="flex-1">
+                    <h2 className="text-xl font-bold text-center mb-1">{initialAddress ? 'Edit Address' : 'Set Delivery Location'}</h2>
+                    <Autocomplete onPlaceSelect={(place) => {
+                         if (place?.geometry?.location) {
+                            const lat = place.geometry.location.lat();
+                            const lng = place.geometry.location.lng();
+                            // This will be picked up by the LocationPicker component
+                            const event = new CustomEvent('place-selected', { detail: { lat, lng, place } });
+                            window.dispatchEvent(event);
+                        }
+                    }} initialValue={initialAddress?.address} />
+                </div>
+            </APIProvider>
+        </div>
+        <APIProvider apiKey={apiKey} libraries={['places', 'geocoding']}>
+            <LocationPicker onAddressSelect={onAddressSelect} onCancel={onCancel} initialAddress={initialAddress} />
+        </APIProvider>
+    </div>
   );
 }
 
@@ -87,12 +108,6 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
           setIsLoading(false);
       }
   };
-
-  useEffect(() => {
-    if (map && position) {
-      map.panTo(position);
-    }
-  }, [map, position]);
   
   const parsePlace = useCallback((place: google.maps.places.PlaceResult) => {
     const addressComponents = place.address_components;
@@ -120,48 +135,52 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
     };
   }, []);
 
-  const onPlaceSelect = useCallback((place: google.maps.places.PlaceResult | null) => {
-    if (place?.geometry?.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        setPosition({ lat, lng });
-        const details = parsePlace(place);
-        setAddressDetails({ ...initialAddress, ...details, lat, lng });
+  const geocodePosition = useCallback((lat: number, lng: number) => {
+    if (!window.google) return;
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        const details = parsePlace(results[0]);
+         setAddressDetails(prev => ({...prev, ...details, lat, lng }));
+      } else {
+        console.error('Geocoder failed due to: ' + status);
+      }
+    });
+  }, [parsePlace]);
+
+  useEffect(() => {
+    if (map && position) {
+      map.panTo(position);
     }
-  }, [initialAddress, parsePlace]);
+  }, [map, position]);
   
-  const handleMapDragEnd = useCallback((e: google.maps.MapDragEvent) => {
-    const newCenter = e.map.getCenter();
+  const handleMapDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
+    const newCenter = e.latLng;
     if(newCenter) {
       const lat = newCenter.lat();
       const lng = newCenter.lng();
       setPosition({ lat, lng });
-      
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          const details = parsePlace(results[0]);
-           setAddressDetails(prev => ({...prev, ...details, lat, lng }));
-        } else {
-          console.error('Geocoder failed due to: ' + status);
-        }
-      });
+      geocodePosition(lat, lng);
     }
-  }, [parsePlace]);
+  }, [geocodePosition]);
+
+  useEffect(() => {
+    const handlePlaceSelected = (event: Event) => {
+      const { lat, lng, place } = (event as CustomEvent).detail;
+      setPosition({ lat, lng });
+      const details = parsePlace(place);
+      setAddressDetails({ ...initialAddress, ...details, lat, lng });
+    };
+
+    window.addEventListener('place-selected', handlePlaceSelected);
+    return () => {
+      window.removeEventListener('place-selected', handlePlaceSelected);
+    };
+  }, [initialAddress, parsePlace]);
 
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50">
-      <div className="p-4 border-b bg-white z-10 shadow-sm flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onCancel}>
-            <X className="h-5 w-5" />
-        </Button>
-        <div className="flex-1">
-            <h2 className="text-xl font-bold text-center mb-1">{initialAddress ? 'Edit Address' : 'Set Delivery Location'}</h2>
-            <Autocomplete onPlaceSelect={onPlaceSelect} initialValue={initialAddress?.address} />
-        </div>
-      </div>
-
+    <>
       <div className="flex-1 relative">
         <Map
           mapId={MAP_ID}
@@ -174,7 +193,7 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
         >
           <Marker position={position} />
         </Map>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[100%] pointer-events-none">
             <div className="relative flex flex-col items-center">
                 <div className="absolute -bottom-2 w-4 h-4 bg-black/20 rounded-full blur-md"></div>
                 <MapPin className="h-12 w-12 text-red-500 drop-shadow-lg" fill='currentColor'/>
@@ -210,7 +229,7 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
             </Button>
           </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
 
@@ -299,3 +318,4 @@ function Autocomplete({onPlaceSelect, initialValue}: {onPlaceSelect: (place: goo
     </div>
   );
 }
+    
