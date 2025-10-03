@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,6 +41,16 @@ export default function ProductsPage() {
     'staples-grocery': ShoppingCart,
     'non-veg': Drumstick,
   };
+  
+  const categoryStyles: { [key: string]: string } = {
+    'fresh-vegetables': 'bg-gradient-to-br from-green-400 to-lime-500 text-white',
+    'fresh-fruits': 'bg-gradient-to-br from-orange-400 to-yellow-500 text-white',
+    'dairy-bakery': 'bg-gradient-to-br from-blue-100 to-blue-200 text-primary',
+    'staples-grocery': 'bg-gradient-to-br from-amber-200 to-white text-primary',
+    'non-veg': 'bg-gradient-to-br from-red-400 to-yellow-400 text-white',
+    'snacks-beverages': 'bg-gradient-to-br from-sky-500 to-indigo-600 text-white',
+  };
+
 
   return (
     <AppShell>
@@ -69,29 +80,22 @@ export default function ProductsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {CATEGORIES.map((category) => {
                     const Icon = categoryIcons[category.slug] || ShoppingCart;
-                    const isActive = activeCategory === category.slug;
+                    const style = categoryStyles[category.slug] || 'bg-gray-200';
                     return (
                         <Link
                             key={category.id}
                             href={`/products/category/${category.slug}`}
                             className={cn(
-                                "glass-button flex flex-col items-center justify-center p-4 text-center group",
-                                isActive && 'neon-button-active'
+                                "rounded-xl flex flex-col items-center justify-center p-4 text-center group transition-transform duration-300 ease-out hover:scale-105 active:scale-95 shadow-md hover:shadow-xl",
+                                style
                             )}
                         >
                              <div className={cn(
-                                "p-3 rounded-full bg-primary/10 mb-2 transition-all duration-300",
-                                isActive ? "bg-white/30" : "group-hover:bg-primary/20"
+                                "p-3 rounded-full bg-white/30 mb-2 transition-all duration-300"
                             )}>
-                                <Icon className={cn(
-                                    "h-7 w-7 transition-colors",
-                                    isActive ? "text-white" : "text-primary"
-                                )} />
+                                <Icon className="h-7 w-7" />
                             </div>
-                            <span className={cn(
-                                "text-sm font-semibold transition-colors",
-                                isActive ? "text-white" : "text-primary"
-                            )}>
+                            <span className="text-sm font-semibold">
                                 {category.name_en}
                             </span>
                         </Link>
