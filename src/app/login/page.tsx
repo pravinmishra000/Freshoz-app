@@ -202,21 +202,26 @@ export default function LoginPage() {
     // Ensure the container exists and reCAPTCHA is only initialized once
     const recaptchaContainer = document.getElementById('recaptcha-container');
     if (recaptchaContainer && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: () => {
           console.log("reCAPTCHA solved");
         },
         'expired-callback': () => {
-          // Response expired. Ask user to solve reCAPTCHA again.
           console.log("reCAPTCHA expired. Please try again.");
-          if (window.recaptchaVerifier) {
-              window.recaptchaVerifier.clear();
-          }
         }
       });
-      window.recaptchaVerifier.render().catch(console.error);
+      window.recaptchaVerifier = verifier;
+      verifier.render().catch(console.error);
     }
+
+    // Cleanup function to clear the verifier when the component unmounts
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = undefined;
+      }
+    };
   }, []);
 
   // Handlers
@@ -266,8 +271,6 @@ export default function LoginPage() {
       console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
-      // In case of error, do not try to clear the verifier as it can cause another error.
-      // The verifier will reset on its own or on the next attempt.
     } finally {
       setIsLoading(false);
     }
