@@ -266,10 +266,8 @@ export default function LoginPage() {
       console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
-      // In case of error, safely reset verifier
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
+      // In case of error, do not try to clear the verifier as it can cause another error.
+      // The verifier will reset on its own or on the next attempt.
     } finally {
       setIsLoading(false);
     }
@@ -383,5 +381,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
