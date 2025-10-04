@@ -190,7 +190,7 @@ export default function LoginPage() {
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
-    defaultValues: { phone: '+16505551234' },
+    defaultValues: { phone: '+91' },
   });
 
   const otpForm = useForm<OtpFormValues>({
@@ -210,7 +210,9 @@ export default function LoginPage() {
         'expired-callback': () => {
           // Response expired. Ask user to solve reCAPTCHA again.
           console.log("reCAPTCHA expired. Please try again.");
-          window.recaptchaVerifier?.clear();
+          if (window.recaptchaVerifier) {
+              window.recaptchaVerifier.clear();
+          }
         }
       });
       window.recaptchaVerifier.render().catch(console.error);
@@ -246,7 +248,7 @@ export default function LoginPage() {
   
   const onPhoneSubmit: SubmitHandler<PhoneFormValues> = async (data) => {
     setIsLoading(true);
-    const sanitizedPhone = data.phone.replace(/[^+\\d]/g, '');
+    const sanitizedPhone = data.phone.replace(/[^+\d]/g, '');
     setPhoneNumber(sanitizedPhone);
     
     const appVerifier = window.recaptchaVerifier;
@@ -264,8 +266,10 @@ export default function LoginPage() {
       console.error("OTP Send Error:", error);
       toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
       setConfirmationResult(null);
-      // In case of error, reset verifier
-      window.recaptchaVerifier?.clear();
+      // In case of error, safely reset verifier
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -279,18 +283,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      // For prototype testing, if the number is the test number, accept '123456' as OTP.
-      const isTestNumber = phoneNumber === '+16505551234';
-      const isTestOtp = data.otp === '123456';
-
-      if (isTestNumber && isTestOtp) {
-        console.log("Test OTP '123456' entered for test number. Bypassing actual confirmation.");
-        sessionStorage.setItem('pendingTestPhone', phoneNumber);
-        await confirmOtp(confirmationResult, data.otp);
-      } else {
-         await confirmOtp(confirmationResult, data.otp);
-      }
-
+      await confirmOtp(confirmationResult, data.otp);
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
     } catch (error: any) {
@@ -390,3 +383,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
