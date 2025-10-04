@@ -199,9 +199,9 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    // Ensure the container exists and reCAPTCHA is only initialized once
     const recaptchaContainer = document.getElementById('recaptcha-container');
     if (recaptchaContainer && !window.recaptchaVerifier) {
+      auth.useDeviceLanguage();
       const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: () => {
@@ -209,17 +209,22 @@ export default function LoginPage() {
         },
         'expired-callback': () => {
           console.log("reCAPTCHA expired. Please try again.");
+        },
+        parameters: {
+          'authDomain': window.location.hostname
         }
       });
       window.recaptchaVerifier = verifier;
       verifier.render().catch(console.error);
     }
-
-    // Cleanup function to clear the verifier when the component unmounts
+  
     return () => {
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = undefined;
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (error) {
+          console.warn("Failed to clear reCAPTCHA verifier on unmount:", error);
+        }
       }
     };
   }, []);
@@ -310,7 +315,7 @@ export default function LoginPage() {
       isLoading={isLoading}
       showPassword={showLoginPassword}
       setShowPassword={setShowLoginPassword}
-      onSwitchToRegister={() => setIsRegistering(true)}
+      onSwitchToRegister={() => setIsRegistering(false)}
     />
   );
 
