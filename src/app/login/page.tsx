@@ -199,8 +199,10 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    if (window.recaptchaVerifier) return;
+  
     const recaptchaContainer = document.getElementById('recaptcha-container');
-    if (recaptchaContainer && !window.recaptchaVerifier) {
+    if (recaptchaContainer) {
       auth.useDeviceLanguage();
       const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
@@ -209,6 +211,9 @@ export default function LoginPage() {
         },
         'expired-callback': () => {
           console.log("reCAPTCHA expired. Please try again.");
+          if (window.recaptchaVerifier) {
+            window.recaptchaVerifier.render().catch(console.error);
+          }
         },
         parameters: {
           'authDomain': window.location.hostname
@@ -315,7 +320,7 @@ export default function LoginPage() {
       isLoading={isLoading}
       showPassword={showLoginPassword}
       setShowPassword={setShowLoginPassword}
-      onSwitchToRegister={() => setIsRegistering(false)}
+      onSwitchToRegister={() => setIsRegistering(true)}
     />
   );
 
