@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -16,8 +15,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
-import { auth } from '@/lib/firebase/client';
+import { ConfirmationResult } from 'firebase/auth';
 
 // Schemas for validation
 const emailLoginSchema = z.object({
@@ -198,37 +196,14 @@ export default function LoginPage() {
     defaultValues: { otp: '' },
   });
 
+  // Cleanup effect is kept simple
   useEffect(() => {
-    if (window.recaptchaVerifier) return;
-  
-    const recaptchaContainer = document.getElementById('recaptcha-container');
-    if (recaptchaContainer) {
-      auth.useDeviceLanguage();
-      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          console.log("reCAPTCHA solved");
-        },
-        'expired-callback': () => {
-          console.log("reCAPTCHA expired. Please try again.");
-          if (window.recaptchaVerifier) {
-            window.recaptchaVerifier.render().catch(console.error);
-          }
-        },
-        parameters: {
-          'authDomain': window.location.hostname
-        }
-      });
-      window.recaptchaVerifier = verifier;
-      verifier.render().catch(console.error);
-    }
-  
     return () => {
       if (window.recaptchaVerifier) {
         try {
           window.recaptchaVerifier.clear();
         } catch (error) {
-          console.warn("Failed to clear reCAPTCHA verifier on unmount:", error);
+          // ignore error
         }
       }
     };
@@ -266,20 +241,21 @@ export default function LoginPage() {
     const sanitizedPhone = data.phone.replace(/[^+\d]/g, '');
     setPhoneNumber(sanitizedPhone);
     
-    const appVerifier = window.recaptchaVerifier;
-    if (!appVerifier) {
-        toast({ variant: 'destructive', title: 'Error', description: 'reCAPTCHA not initialized. Please refresh.' });
-        setIsLoading(false);
-        return;
-    }
-
     try {
-      const result = await signInWithPhoneNumber(sanitizedPhone, 'customer', appVerifier);
+      // Calls the context function which handles Recaptcha internally
+      const result = await signInWithPhoneNumber(sanitizedPhone, 'customer'); 
+      
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
       console.error("OTP Send Error:", error);
-      toast({ variant: 'destructive', title: 'Failed to Send OTP', description: error.message });
+      
+      let description = error.message;
+      if (error.code === 'auth/internal-error' || error.message.includes('reCAPTCHA') || error.message.includes('failed')) {
+          description = "Security verification failed. Please refresh the page.";
+      }
+      
+      toast({ variant: 'destructive', title: 'Failed to Send OTP', description: description });
       setConfirmationResult(null);
     } finally {
       setIsLoading(false);
@@ -347,30 +323,30 @@ export default function LoginPage() {
       </form>
     </Form>
   ) : (
-     <Form {...otpForm}>
-      <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
-         <p className="text-sm text-center text-muted-foreground">Enter the 6-digit code sent to {phoneNumber}.</p>
-        <FormField
-          control={otpForm.control}
-          name="otp"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Verification Code</FormLabel>
-              <FormControl><Input placeholder="123456" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Verify & Sign In
-        </Button>
-        <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setConfirmationResult(null)}>
+      <Form {...otpForm}>
+       <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-6 pt-4">
+          <p className="text-sm text-center text-muted-foreground">Enter the 6-digit code sent to {phoneNumber}.</p>
+         <FormField
+           control={otpForm.control}
+           name="otp"
+           render={({ field }) => (
+             <FormItem>
+               <FormLabel>Verification Code</FormLabel>
+               <FormControl><Input placeholder="123456" {...field} /></FormControl>
+               <FormMessage />
+             </FormItem>
+           )}
+         />
+         <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+           Verify & Sign In
+         </Button>
+         <Button variant="link" size="sm" className="w-full" type="button" onClick={() => setConfirmationResult(null)}>
             Use a different phone number
-        </Button>
-      </form>
-    </Form>
-  );
+         </Button>
+       </form>
+     </Form>
+   );
 
   return (
     <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center p-4">

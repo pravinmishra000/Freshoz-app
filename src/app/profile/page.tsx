@@ -164,25 +164,36 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
 
   const handlePhotoUpload = async (dataUrl: string) => {
     if (!authUser) {
-        toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
-        return;
+      toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
+      return;
     }
 
     toast({ title: 'Uploading...', description: 'Your new profile picture is being uploaded.' });
-    const storageRef = ref(storage, `profile-pictures/${authUser.uid}`);
     
+    // 1. Content Type और एक्सटेंशन निकालें
     const match = dataUrl.match(/^data:(.+);base64,/);
     const contentType = match ? match[1] : 'image/png';
     const metadata = { contentType };
 
+    // Content Type को एक्सटेंशन में बदलें (जैसे image/jpeg -> jpeg)
+    // NOTE: यह सुरक्षित है क्योंकि डेटा यूआरएल केवल वैध MIME प्रकार प्रदान करता है।
+    const extension = contentType.split('/')[1]; 
+    
+    // 2. फ़ाइल पाथ में एक्सटेंशन का उपयोग करें
+    // फ़ाइल का नाम 'profile' + डायनामिक एक्सटेंशन होगा (जैसे profile.webp)
+    const storageRef = ref(storage, `profile-pictures/${authUser.uid}/profile.${extension}`);
+
     try {
+      // 3. फ़ाइल अपलोड करें
       const snapshot = await uploadString(storageRef, dataUrl, 'data_url', metadata);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
+      // 4. Firebase Auth और Firestore को अपडेट करें
       await updateProfile(authUser, { photoURL: downloadURL });
       const userRef = doc(db, "users", authUser.uid);
       await updateDoc(userRef, { photoURL: downloadURL });
 
+      // 5. ऐप स्टेट अपडेट करें (यदि यह Auth Context में है)
       setAppUser(prevUser => prevUser ? { ...prevUser, photoURL: downloadURL } : null);
 
       toast({ title: 'Success!', description: 'Profile picture updated.' });
@@ -190,7 +201,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       console.error("Error uploading photo:", error);
       toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not update your profile picture.' });
     }
-  };
+};
 
   const onFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!authUser) {
