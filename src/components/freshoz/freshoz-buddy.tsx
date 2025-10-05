@@ -190,22 +190,22 @@ export default function FreshozBuddy() {
                                 <p className="text-sm text-muted-foreground">Try asking:</p>
                                 <Link href="/products/category/fresh-vegetables" passHref>
                                   <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      <span>"Mujhe kuch sabjiyan dikhao"</span>
+                                      "Mujhe kuch sabjiyan dikhao"
                                   </Button>
                                 </Link>
                                 <Link href="/wallet" passHref>
                                   <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      <span>"Mera wallet balance kitna hai?"</span>
+                                      "Mera wallet balance kitna hai?"
                                   </Button>
                                 </Link>
                                  <Link href="/offers" passHref>
                                   <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      <span>"What are the best deals today?"</span>
+                                      "What are the best deals today?"
                                   </Button>
                                 </Link>
                                 <Link href="/offers" passHref>
                                   <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      <span>"Kya mere liye aaj koi offer hai?"</span>
+                                      "Kya mere liye aaj koi offer hai?"
                                   </Button>
                                 </Link>
                             </div>
