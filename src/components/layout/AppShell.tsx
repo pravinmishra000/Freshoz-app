@@ -86,6 +86,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       // Only active if it's exactly /products or starts with /products/ but not /products/category
       return pathname === href || (pathname.startsWith('/products/') && !pathname.startsWith('/products/category'));
     }
+     if (href === '/categories') {
+      return pathname.startsWith('/categories') || pathname.startsWith('/products/category');
+    }
     return pathname.startsWith(href);
   };
 
