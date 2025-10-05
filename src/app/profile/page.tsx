@@ -297,9 +297,9 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
                   </Avatar>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                       <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background group-hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Camera className="h-4 w-4" />
-                          <span className="sr-only">Change profile picture</span>
+                      <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background group-hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="h-4 w-4" />
+                        <span className="sr-only">Change profile picture</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
