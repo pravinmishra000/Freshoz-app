@@ -188,26 +188,18 @@ export default function FreshozBuddy() {
                             </p>
                             <div className="pt-4 space-y-2">
                                 <p className="text-sm text-muted-foreground">Try asking:</p>
-                                <Link href="/products/category/fresh-vegetables" passHref>
-                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      "Mujhe kuch sabjiyan dikhao"
-                                  </Button>
-                                </Link>
-                                <Link href="/wallet" passHref>
-                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      "Mera wallet balance kitna hai?"
-                                  </Button>
-                                </Link>
-                                 <Link href="/offers" passHref>
-                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      "What are the best deals today?"
-                                  </Button>
-                                </Link>
-                                <Link href="/offers" passHref>
-                                  <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
-                                      "Kya mere liye aaj koi offer hai?"
-                                  </Button>
-                                </Link>
+                                <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                  <Link href="/products/category/fresh-vegetables">"Mujhe kuch sabjiyan dikhao"</Link>
+                                </Button>
+                                <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                  <Link href="/wallet">"Mera wallet balance kitna hai?"</Link>
+                                </Button>
+                                <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                  <Link href="/offers">"What are the best deals today?"</Link>
+                                </Button>
+                                <Button asChild variant="outline" size="sm" className="w-full justify-start glass-card p-4 rounded-xl text-primary/80 transition-all hover:bg-primary/5">
+                                  <Link href="/offers">"Kya mere liye aaj koi offer hai?"</Link>
+                                </Button>
                             </div>
                         </div>
                     </div>
