@@ -58,46 +58,53 @@ function LoginForm({
   setShowPassword: (show: boolean) => void;
   onSwitchToRegister: () => void;
 }) {
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
-        </Button>
-        <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToRegister}>
-          Don't have an account? Register
-        </Button>
-        <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>
-      </form>
-    </Form>
-  );
-}
+      return (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                    {/* FIX APPLIED HERE */}
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                        <Input placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                      <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In
+            </Button>
+            <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToRegister}>
+              Don't have an account? Register
+            </Button>
+            <Button variant="link" size="sm" className="w-full text-xs" type="button">Forgot Password?</Button>
+          </form>
+        </Form>
+      );
+    }
 
 // Standalone RegisterForm component
 function RegisterForm({
@@ -115,52 +122,66 @@ function RegisterForm({
   setShowPassword: (show: boolean) => void;
   onSwitchToLogin: () => void;
 }) {
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem><FormLabel>Email Address</FormLabel><FormControl><Input placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Account
-        </Button>
-        <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToLogin}>
-          Already have an account? Sign In
-        </Button>
-      </form>
-    </Form>
-  );
-}
+      return (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                    {/* FIX APPLIED HERE */}
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                    {/* FIX APPLIED HERE */}
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                        <Input placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
+                      <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full bg-positive text-white hover:bg-positive/90" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create Account
+            </Button>
+            <Button variant="link" size="sm" className="w-full" type="button" onClick={onSwitchToLogin}>
+              Already have an account? Sign In
+            </Button>
+          </form>
+        </Form>
+      );
+    }
 
 
 export default function LoginPage() {
