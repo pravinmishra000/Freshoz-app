@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -174,19 +175,27 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   };
 
   const handleAddressSaved = async (newAddress: Partial<Address>) => {
+    // Ensure all required fields for a complete address are present
+    if (!newAddress.address || !newAddress.name || !newAddress.phone || !newAddress.pincode || !newAddress.city || !newAddress.state || !newAddress.district) {
+        toast({ variant: 'destructive', title: 'Incomplete Address', description: 'Please fill in all required address fields.' });
+        return;
+    }
+
     try {
-      setIsAddressSaving(true);
-      const saved = await saveAddressToFirestore(newAddress);
-      toast({ title: 'Address saved', description: 'Your address has been added/updated.' });
-      setIsAddressFormOpen(false);
-      setAddressToEdit(null);
+        setIsAddressSaving(true);
+        // We cast here because we've validated the required fields above.
+        const saved = await saveAddressToFirestore(newAddress as Omit<Address, 'id'> & Partial<Pick<Address, 'id'>>);
+        toast({ title: 'Address saved', description: 'Your address has been added/updated.' });
+        setIsAddressFormOpen(false);
+        setAddressToEdit(null);
     } catch (err) {
-      console.error('Save address error:', err);
-      toast({ variant: 'destructive', title: 'Save failed', description: 'Could not save address.' });
+        console.error('Save address error:', err);
+        toast({ variant: 'destructive', title: 'Save failed', description: 'Could not save address.' });
     } finally {
-      setIsAddressSaving(false);
+        setIsAddressSaving(false);
     }
   };
+
 
   const handleEditAddress = (address: Address) => {
     setAddressToEdit(address);
