@@ -189,7 +189,7 @@ function LocationPicker({ onAddressSelect, onCancel, initialAddress }: Omit<Addr
           gestureHandling={'greedy'}
           disableDefaultUI={true}
           className="w-full h-full"
-          onDragEnd={handleMapDragEnd}
+          onDragend={handleMapDragEnd}
         >
           <Marker position={position} />
         </Map>

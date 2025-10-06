@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase/client';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, uploadString, getDownloadURL } from 'firebase/storage';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import CameraCaptureModal from '@/components/freshoz/CameraCaptureModal';
 

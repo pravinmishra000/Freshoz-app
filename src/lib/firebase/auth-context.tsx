@@ -40,11 +40,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// ✅ NEW: Recaptcha Site Key को environment से load करें
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
 // Global Window Declaration for Recaptcha and ConfirmationResult
 declare global {
   interface Window {
     recaptchaVerifier?: RecaptchaVerifier;
-    confirmationResult?: ConfirmationResult;
+    confirmationResult?: ConfirmationResult; // हालांकि इसे use नहीं किया जा रहा है, इसे यहाँ रहने दें
   }
 }
 
@@ -52,8 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authUser, setAuthUser] = useState<FirebaseUser | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
-  // ⚠️ CHANGE 1: Recaptcha Verifier State हटा दिया गया है क्योंकि यह सीधे window पर प्रबंधित होगा
-  // const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null); 
   const router = useRouter();
 
   const fetchAppUser = useCallback(async (user: FirebaseUser) => {
@@ -77,11 +78,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ----------------------------------------------------
-  // ✅ CHANGE 2: FINAL Recaptcha Initialization useEffect (Cleaned up logic)
+  // ✅ RECAPTCHA INITIALIZATION LOGIC
   // ----------------------------------------------------
   useEffect(() => {
-    // केवल क्लाइंट साइड पर चलाएँ
-    if (typeof window === 'undefined') return;
+    // केवल क्लाइंट साइड पर चलाएँ और सुनिश्चित करें कि Site Key उपलब्ध है
+    if (typeof window === 'undefined' || !RECAPTCHA_SITE_KEY) return;
 
     const containerId = 'recaptcha-container';
     const recaptchaContainer = document.getElementById(containerId);
@@ -92,15 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-        // Recaptcha Verifier को initialize करें और इसे window ऑब्जेक्ट पर स्टोर करें
+        // Recaptcha Verifier को initialize करें
         const verifier = new RecaptchaVerifier(auth, containerId, {
             size: 'invisible',
+            sitekey: RECAPTCHA_SITE_KEY, // ✅ Site Key को explicitly पास करें
             callback: () => {
                 console.log("reCAPTCHA solved in context!");
             },
             'expired-callback': () => {
                 console.warn("reCAPTCHA expired. Re-rendering from context.");
-                // Expiration पर रेंडर को मजबूर करने के लिए:
                 if (window.recaptchaVerifier) {
                     window.recaptchaVerifier.render().catch(console.error);
                 }
@@ -120,10 +121,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Recaptcha Initialization Failed:", error);
     }
 
-    // Cleanup function - Hot Reloading के दौरान पुराने Verifier को साफ़ करने के लिए महत्वपूर्ण
+    // Cleanup function - Hot Reloading/unmount के दौरान पुराने Verifier को साफ़ करने के लिए महत्वपूर्ण
     return () => {
         if (window.recaptchaVerifier) {
             try {
+                console.log("🧹 Clearing reCAPTCHA verifier...");
                 window.recaptchaVerifier.clear();
                 window.recaptchaVerifier = undefined;
             } catch (error) {
@@ -160,7 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     
-    // CHANGE 3: सीधे window.recaptchaVerifier का उपयोग करें
+    // window.recaptchaVerifier का उपयोग करें
     const verifier = window.recaptchaVerifier; 
     
     if (!verifier) {
@@ -172,7 +174,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
         const confirmation = await firebaseSignInWithPhoneNumber(auth, phone, verifier);
-        // window.confirmationResult को हटाने की सिफारिश की जाती है, क्योंकि इसे confirmOtp में पास किया जाता है
         return confirmation;
     } catch (error) {
         throw error;
