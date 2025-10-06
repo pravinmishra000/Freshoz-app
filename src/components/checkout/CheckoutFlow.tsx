@@ -289,8 +289,10 @@ export function CheckoutFlow() {
             ) : (
                 <Button asChild className="w-full text-lg py-6 neon-button">
                     <Link href="/login?redirect=/checkout">
-                        <LogIn className="mr-2 h-5 w-5" />
-                        Login to Place Order
+                        <>
+                            <LogIn className="mr-2 h-5 w-5" />
+                            Login to Place Order
+                        </>
                     </Link>
                 </Button>
             )}
