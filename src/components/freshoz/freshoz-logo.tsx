@@ -28,16 +28,19 @@ export function FreshozLogo({ size = 'md' }: FreshozLogoProps) {
         />
       </div>
       
-      <div className="flex flex-col justify-center">
+      <div className="relative flex flex-col justify-center">
         <h1
           className={`${textSize} font-extrabold tracking-tight text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] leading-none uppercase`}
           style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           FRESHOZ
         </h1>
-        <span className={`${taglineSize} text-primary/80 font-medium mt-0.5 text-center drop-shadow-sm`}>
-          Fresh & Fast
-        </span>
+        <div className="relative text-center">
+            <span className={`${taglineSize} text-primary/80 font-medium drop-shadow-sm`}>
+                Fresh & Fast
+            </span>
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-primary/20 rounded-full shadow-[0_1px_1px_rgba(0,0,0,0.2)]"></div>
+        </div>
       </div>
     </div>
   );
