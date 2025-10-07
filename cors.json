@@ -1,7 +1,13 @@
 [
   {
-    "origin": ["*"],
-    "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
-    "maxAgeSeconds": 3600
+    "origin": [
+      "http://localhost:3000",
+      "https://6000-firebase-studio-1758885407061.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev",
+      "https://freshoz-fresh-fast.firebaseapp.com",
+      "https://freshoz-fresh-fast.web.app"
+    ],
+    "method": ["GET", "POST", "PUT", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization"]
   }
 ]

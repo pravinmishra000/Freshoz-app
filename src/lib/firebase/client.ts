@@ -1,9 +1,8 @@
 
-// lib/firebase/client.ts
-import { initializeApp, getApps, getApp, FirebaseOptions } from 'firebase/app';
+import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,3 +19,23 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+export function uploadFile(file: File, path: string, onProgress?: (percent: number) => void) {
+  const storageRef = ref(storage, path);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Promise<string>((resolve, reject) => {
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        if(onProgress) {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          onProgress(progress);
+        }
+      },
+      (error) => reject(error),
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(url => resolve(url));
+      }
+    );
+  });
+}
