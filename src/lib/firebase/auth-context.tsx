@@ -88,11 +88,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
     try {
       const verifier = new RecaptchaVerifier(
-        auth, // Correct first argument is the auth instance
+        auth,
         containerId,
         {
           size: 'invisible',
-          sitekey: RECAPTCHA_SITE_KEY,
           callback: () => {
             console.log("✅ reCAPTCHA solved in context!");
           },
