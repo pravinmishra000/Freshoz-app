@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -40,14 +41,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ NEW: Recaptcha Site Key को environment से load करें
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
-// Global Window Declaration for Recaptcha and ConfirmationResult
 declare global {
   interface Window {
     recaptchaVerifier?: RecaptchaVerifier;
-    confirmationResult?: ConfirmationResult; // हालांकि इसे use नहीं किया जा रहा है, इसे यहाँ रहने दें
+    confirmationResult?: ConfirmationResult;
   }
 }
 
@@ -77,24 +76,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-// ----------------------------------------------------
-// ✅ RECAPTCHA INITIALIZATION LOGIC (FULLY FIXED)
-// ----------------------------------------------------
-useEffect(() => {
-    // केवल क्लाइंट साइड पर चलाएँ और सुनिश्चित करें कि Site Key उपलब्ध है
+  useEffect(() => {
     if (typeof window === 'undefined' || !RECAPTCHA_SITE_KEY) return;
   
     const containerId = 'recaptcha-container';
     const recaptchaContainer = document.getElementById(containerId);
   
-    // यदि पहले से initialized है, या कंटेनर HTML में मौजूद नहीं है, तो कुछ न करें।
     if ((window as any).recaptchaVerifier || !recaptchaContainer) {
       return;
     }
   
     try {
-      // ✅ Correct argument order: (containerId, config, auth)
       const verifier = new RecaptchaVerifier(
+        auth, // Correct first argument is the auth instance
         containerId,
         {
           size: 'invisible',
@@ -107,8 +101,7 @@ useEffect(() => {
             const v = (window as any).recaptchaVerifier;
             if (v) v.render().catch(console.error);
           },
-        },
-        auth // ✅ Pass auth as 3rd argument (not 1st)
+        }
       );
   
       verifier
@@ -127,7 +120,6 @@ useEffect(() => {
       console.error("❌ Recaptcha Initialization Failed:", error);
     }
   
-    // Cleanup logic
     return () => {
       const v = (window as any).recaptchaVerifier;
       if (v) {
@@ -140,9 +132,7 @@ useEffect(() => {
         }
       }
     };
-  }, []);  
-  
-  // ----------------------------------------------------
+  }, []);
 
   useEffect(() => {
     console.log("🚀 Setting up onAuthStateChanged listener...");
@@ -170,7 +160,6 @@ useEffect(() => {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     
-    // window.recaptchaVerifier का उपयोग करें
     const verifier = window.recaptchaVerifier; 
     
     if (!verifier) {
@@ -208,7 +197,7 @@ useEffect(() => {
       }
 
       const newUser: Omit<AppUser, 'id'> = {
-        email: user.email || null, // email can be null for phone users
+        email: user.email || null,
         phoneNumber: user.phoneNumber || null,
         displayName: displayName,
         photoURL: user.photoURL,
