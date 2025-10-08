@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
-import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, Plus, Minus } from 'lucide-react';
+import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, Plus, Minus, Sun, Sunset, Moon, Leaf, Phone, Bot, Check, AlertTriangle } from 'lucide-react';
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '../ui/scroll-area';
+import { Textarea } from '../ui/textarea';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -35,6 +36,20 @@ const addressSchema = z.object({
 
 type AddressFormValues = z.infer<typeof addressSchema>;
 
+const deliverySlots = [
+    { id: 'morning', label: 'Morning', time: '7 AM - 10 AM', icon: Sun },
+    { id: 'afternoon', label: 'Afternoon', time: '12 PM - 3 PM', icon: Sunset },
+    { id: 'evening', label: 'Evening', time: '5 PM - 8 PM', icon: Moon },
+];
+
+const substitutionOptions = [
+    { id: 'call', label: 'Call me for substitutes', icon: Phone },
+    { id: 'best', label: 'Choose best substitute for me', icon: Bot },
+    { id: 'none', label: 'Do not substitute', icon: XCircle },
+];
+
+const tipOptions = [0, 10, 20, 50];
+
 export function CheckoutFlow() {
   const { cartItems, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
   const { authUser, appUser } = useAuth();
@@ -42,17 +57,16 @@ export function CheckoutFlow() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const [paymentMethod, setPaymentMethod] = React.useState('cod');
-  const [upiId, setUpiId] = React.useState('');
-  const [isVerifyingUpi, setIsVerifyingUpi] = React.useState(false);
-  const [isUpiVerified, setIsUpiVerified] = React.useState(false);
-  const [upiError, setUpiError] = React.useState('');
-
+  const [deliverySlot, setDeliverySlot] = React.useState('morning');
+  const [substitution, setSubstitution] = React.useState('best');
+  const [deliveryTip, setDeliveryTip] = React.useState(0);
+  
   const freeDeliveryThreshold = 120;
   const deliveryFeeAmount = 30;
   const platformFee = 5;
 
   const deliveryFee = cartTotal > 0 && cartTotal < freeDeliveryThreshold ? deliveryFeeAmount : 0;
-  const totalAmount = cartTotal + deliveryFee + platformFee;
+  const totalAmount = cartTotal + deliveryFee + platformFee + deliveryTip;
 
 
   const form = useForm<AddressFormValues>({
@@ -82,40 +96,10 @@ export function CheckoutFlow() {
     }
   }, [appUser, form]);
 
-  const handleUpiIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUpiId(e.target.value);
-    setIsUpiVerified(false);
-    setUpiError('');
-  };
-
-  const handleVerifyUpi = async () => {
-    if (!upiId || !upiId.includes('@')) {
-      setUpiError('Please enter a valid UPI ID (e.g., yourname@okbank).');
-      return;
-    }
-    setIsVerifyingUpi(true);
-    setUpiError('');
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-    
-    if (upiId.length > 5) {
-      setIsUpiVerified(true);
-      setUpiError('');
-    } else {
-      setIsUpiVerified(false);
-      setUpiError('Could not verify UPI ID. Please check and try again.');
-    }
-    setIsVerifyingUpi(false);
-  };
-
   const onSubmit: SubmitHandler<AddressFormValues> = async (data) => {
     if (!authUser || cartItems.length === 0) {
         toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to place an order.' });
         router.push('/login?redirect=/checkout');
-        return;
-    }
-
-    if (paymentMethod === 'upi' && !isUpiVerified) {
-        toast({ variant: 'destructive', title: 'UPI Not Verified', description: 'Please verify your UPI ID before placing the order.' });
         return;
     }
     
@@ -167,7 +151,31 @@ export function CheckoutFlow() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Delivery Slot Selection */}
+          <Card className="glass-card">
+              <CardHeader>
+                  <CardTitle className="font-headline text-xl flex items-center gap-2"><Leaf className="text-primary"/> Delivery Slots</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup value={deliverySlot} onValueChange={setDeliverySlot} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {deliverySlots.map((slot) => (
+                    <div key={slot.id}>
+                      <RadioGroupItem value={slot.id} id={slot.id} className="peer sr-only" />
+                      <Label
+                        htmlFor={slot.id}
+                        className="flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:shadow-inner transition-all hover:bg-accent/50"
+                      >
+                        <slot.icon className="mb-2 h-6 w-6 text-primary" />
+                        <span className="font-semibold text-sm">{slot.label}</span>
+                        <span className="text-xs text-muted-foreground">{slot.time}</span>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </CardContent>
+          </Card>
+
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="font-headline text-xl">Shipping Address</CardTitle>
@@ -200,28 +208,56 @@ export function CheckoutFlow() {
                 name="address"
                 render={({ field }) => (
                   <FormItem className="sm:col-span-2">
-                    <FormLabel>Street Address</FormLabel>
+                    <FormLabel>Street Address, House No.</FormLabel>
                     <FormControl>
-                      <Input placeholder="Station Road, Ghat Road..." {...field} />
+                      <Input placeholder="e.g. Station Road, Ghat Road..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField control={form.control} name="city" render={({ field }) => (
-                  <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="Sultanganj" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>City / Town</FormLabel><FormControl><Input placeholder="e.g. Sultanganj" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
                 <FormField control={form.control} name="district" render={({ field }) => (
-                  <FormItem><FormLabel>District</FormLabel><FormControl><Input placeholder="Bhagalpur" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>District</FormLabel><FormControl><Input placeholder="e.g. Bhagalpur" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="state" render={({ field }) => (
                   <FormItem><FormLabel>State</FormLabel><FormControl><Input {...field} disabled /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="pincode" render={({ field }) => (
-                  <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input placeholder="813213" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input placeholder="e.g. 813213" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
             </CardContent>
           </Card>
+
+          {/* Preferences */}
+          <Card className="glass-card">
+              <CardHeader>
+                  <CardTitle className="font-headline text-xl flex items-center gap-2"><CheckCircle className="text-primary"/> Preferences & Instructions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label className="text-base font-semibold text-foreground">Out of stock items?</Label>
+                  <p className="text-sm text-muted-foreground mb-3">Choose how we should handle items that are not available.</p>
+                  <RadioGroup value={substitution} onValueChange={setSubstitution} className="space-y-2">
+                      {substitutionOptions.map(opt => (
+                        <Label key={opt.id} htmlFor={opt.id} className="flex items-center rounded-md border p-3 cursor-pointer hover:bg-accent/50 transition has-[:checked]:bg-primary/10 has-[:checked]:border-primary">
+                            <RadioGroupItem value={opt.id} id={opt.id} className="mr-3"/>
+                            <opt.icon className="mr-3 h-5 w-5 text-primary" />
+                            <span>{opt.label}</span>
+                        </Label>
+                      ))}
+                  </RadioGroup>
+                </div>
+                <div>
+                  <Label htmlFor="instructions" className="text-base font-semibold text-foreground">Delivery & Packing Instructions</Label>
+                  <p className="text-sm text-muted-foreground mb-3">Any special requests? e.g., "Keep frozen items separate" or "Don't ring bell".</p>
+                  <Textarea id="instructions" placeholder="Type your instructions here..."/>
+                </div>
+              </CardContent>
+          </Card>
+
 
           <Card className="glass-card">
             <CardHeader>
@@ -231,58 +267,20 @@ export function CheckoutFlow() {
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
                 <Label htmlFor="cod" className={cn("flex items-center rounded-md border p-4 cursor-pointer transition", paymentMethod === 'cod' ? 'border-primary bg-primary/10' : 'hover:bg-muted/50')}>
                     <RadioGroupItem value="cod" id="cod" className="mr-4"/>
-                    <CreditCard className="mr-4 h-6 w-6 text-positive" />
+                    <CreditCard className="mr-4 h-6 w-6 text-primary" />
                     <div>
                       <p className="font-semibold">Cash on Delivery (COD)</p>
                       <p className="text-sm text-muted-foreground">Pay with cash when your order arrives.</p>
                     </div>
                 </Label>
-                <Label htmlFor="upi" className={cn("flex items-center rounded-md border p-4 cursor-pointer transition", paymentMethod === 'upi' ? 'border-primary bg-primary/10' : 'hover:bg-muted/50')}>
-                    <RadioGroupItem value="upi" id="upi" className="mr-4"/>
-                    <Smartphone className="mr-4 h-6 w-6 text-positive" />
+                <Label htmlFor="online" className={cn("flex items-center rounded-md border p-4 cursor-pointer transition", paymentMethod === 'online' ? 'border-primary bg-primary/10' : 'hover:bg-muted/50')}>
+                    <RadioGroupItem value="online" id="online" className="mr-4"/>
+                    <Smartphone className="mr-4 h-6 w-6 text-primary" />
                     <div>
-                      <p className="font-semibold">UPI</p>
-                      <p className="text-sm text-muted-foreground">Pay with any UPI app.</p>
+                      <p className="font-semibold">UPI / Cards / NetBanking</p>
+                      <p className="text-sm text-muted-foreground">Pay securely online (Coming Soon).</p>
                     </div>
                 </Label>
-                  {paymentMethod === 'upi' && (
-                    <div className="mt-4 p-4 bg-background/50 rounded-lg border">
-                    <Label htmlFor="upiId" className="text-sm font-medium">
-                      Your UPI ID
-                    </Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="upiId"
-                        placeholder="yourname@upi"
-                        value={upiId}
-                        onChange={handleUpiIdChange}
-                        disabled={isUpiVerified || isVerifyingUpi}
-                      />
-                      {!isUpiVerified && (
-                        <Button
-                          type="button"
-                          onClick={handleVerifyUpi}
-                          disabled={isVerifyingUpi || !upiId}
-                          className="w-28"
-                        >
-                          {isVerifyingUpi ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Verify'}
-                        </Button>
-                      )}
-                    </div>
-                    {isUpiVerified && (
-                      <div className="mt-2 text-sm flex items-center text-green-600">
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        <span>Verified!</span>
-                      </div>
-                    )}
-                      {upiError && (
-                      <div className="mt-2 text-sm flex items-center text-red-600">
-                        <XCircle className="h-4 w-4 mr-1" />
-                        <span>{upiError}</span>
-                      </div>
-                    )}
-                  </div>
-                  )}
               </RadioGroup>
             </CardContent>
           </Card>
@@ -294,16 +292,17 @@ export function CheckoutFlow() {
               <CardTitle className="font-headline text-xl">Order Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="max-h-64 pr-4 -mr-4">
+              <ScrollArea className="max-h-60 pr-4 -mr-4">
                 <div className="space-y-4">
                   {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center gap-4">
+                      <div key={item.id} className="flex items-center gap-3">
                           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border">
                               <Image src={item.image} alt={item.name} fill className="object-cover" />
+                              {item.is_veg === false && <AlertTriangle className="absolute top-0 right-0 h-4 w-4 text-red-500 bg-white rounded-full p-0.5" />}
                           </div>
                           <div className="flex-1">
                               <p className="font-medium text-sm line-clamp-1">{item.name}</p>
-                              <p className="font-semibold text-sm">₹{item.price.toFixed(2)}</p>
+                              <p className="font-semibold text-sm text-primary">₹{item.price.toFixed(2)}</p>
                           </div>
                           <div className="flex items-center gap-1 rounded-md border bg-background">
                               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
@@ -314,13 +313,20 @@ export function CheckoutFlow() {
                                 <Plus className="h-3 w-3"/>
                               </Button>
                           </div>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeFromCart(item.id)}>
-                            <Trash2 className="h-4 w-4"/>
-                          </Button>
                       </div>
                   ))}
                 </div>
               </ScrollArea>
+              <Separator className="my-4"/>
+              <div className="space-y-2 text-sm">
+                  <p className="font-semibold">Tip for the delivery person</p>
+                  <div className="flex gap-2">
+                      {tipOptions.map(tip => (
+                          <Button key={tip} type="button" variant={deliveryTip === tip ? "default" : "outline"} onClick={() => setDeliveryTip(tip)} className="flex-1">₹{tip}</Button>
+                      ))}
+                      <Input type="number" placeholder="Custom" className="w-24" onChange={(e) => setDeliveryTip(Number(e.target.value) || 0)} />
+                  </div>
+              </div>
               <Separator className="my-4"/>
               <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -329,16 +335,22 @@ export function CheckoutFlow() {
                   </div>
                   <div className="flex justify-between">
                       <p className="text-muted-foreground">Delivery Fee</p>
-                      <p>{deliveryFee > 0 ? `₹${deliveryFee.toFixed(2)}` : 'Free'}</p>
+                      <p className={cn(deliveryFee === 0 && "text-primary font-semibold")}>{deliveryFee > 0 ? `₹${deliveryFee.toFixed(2)}` : 'Free'}</p>
                   </div>
-                  <div className="flex justify-between">
+                   <div className="flex justify-between">
                       <p className="text-muted-foreground">Platform Fee</p>
                       <p>₹{platformFee.toFixed(2)}</p>
                   </div>
+                  {deliveryTip > 0 && (
+                     <div className="flex justify-between text-primary">
+                        <p className="font-medium">Delivery Tip</p>
+                        <p className="font-medium">₹{deliveryTip.toFixed(2)}</p>
+                    </div>
+                  )}
               </div>
               <Separator className="my-4" />
               <div className="flex justify-between font-bold text-lg">
-                  <p>Total</p>
+                  <p>Grand Total</p>
                   <p>₹{totalAmount.toFixed(2)}</p>
               </div>
             </CardContent>
@@ -359,6 +371,11 @@ export function CheckoutFlow() {
                   </Button>
               )}
             </CardFooter>
+            <CardContent className="pt-4 text-center">
+                 <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                    <Check className="h-3 w-3 text-primary"/> Freshness & Quality Guaranteed
+                 </p>
+            </CardContent>
           </Card>
         </div>
 
