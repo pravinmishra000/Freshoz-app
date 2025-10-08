@@ -157,7 +157,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="lg:hidden">
                     <SidebarTrigger className="glass-icon-button" />
                   </div>
-                  {!isHomePage && <BackButton />}
                 </div>
 
                 <div className="flex flex-1 items-center justify-end gap-2">
@@ -226,6 +225,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main Body */}
           <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-4">{children}</main>
           
+          {!isHomePage && (
+              <div className="fixed bottom-24 left-4 z-40 md:bottom-6 md:left-6">
+                <BackButton />
+              </div>
+            )}
+            
           {!isAdmin && <CartToast />}
           {!isAdmin && <FreshozBuddy />}
         </SidebarInset>

@@ -1,6 +1,6 @@
+
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BackButton } from '@/components/freshoz/BackButton';
 
 export default function ChatPage() {
   return (
@@ -8,9 +8,6 @@ export default function ChatPage() {
        <Card className="mb-4 border-0 bg-transparent shadow-none">
         <CardHeader>
             <div className="flex items-center gap-4 mb-2">
-             <div className="hidden md:block">
-                <BackButton />
-             </div>
                 <div>
                   <CardTitle className="font-headline text-4xl font-bold text-primary">Support Chat</CardTitle>
                   <CardDescription>

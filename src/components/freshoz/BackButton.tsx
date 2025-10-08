@@ -13,9 +13,9 @@ export function BackButton() {
       variant="ghost"
       size="icon"
       onClick={() => router.back()}
-      className="glass-card rounded-full border-primary/20 text-primary hover:bg-primary/10 transition-all duration-300"
+      className="glass-icon-button h-14 w-14"
     >
-      <ChevronLeft className="h-6 w-6" />
+      <ChevronLeft className="h-7 w-7 text-primary" />
       <span className="sr-only">Go back</span>
     </Button>
   );

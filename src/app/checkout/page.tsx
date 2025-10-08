@@ -1,7 +1,6 @@
 
 import { CheckoutFlow } from '@/components/checkout/CheckoutFlow';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BackButton } from '@/components/freshoz/BackButton';
 
 export default async function CheckoutPage() {
   return (
@@ -9,9 +8,6 @@ export default async function CheckoutPage() {
       <Card className="mb-8 border-0 bg-transparent shadow-none">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="hidden md:block">
-              <BackButton />
-            </div>
             <div>
               <CardTitle className="font-headline text-4xl font-bold text-primary">Checkout</CardTitle>
               <CardDescription>
