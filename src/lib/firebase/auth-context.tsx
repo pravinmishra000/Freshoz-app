@@ -1,3 +1,4 @@
+// /home/user/studio/src/lib/firebase/auth-context.tsx
 
 'use client';
 
@@ -41,8 +42,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-
 declare global {
   interface Window {
     recaptchaVerifier?: RecaptchaVerifier;
@@ -77,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !RECAPTCHA_SITE_KEY) return;
+    if (typeof window === 'undefined' || !auth) return;
   
     const containerId = 'recaptcha-container';
     const recaptchaContainer = document.getElementById(containerId);
@@ -131,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     };
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     console.log("🚀 Setting up onAuthStateChanged listener...");
@@ -159,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     
-    const verifier = window.recaptchaVerifier; 
+    const verifier = (window as any).recaptchaVerifier; 
     
     if (!verifier) {
         console.error("Recaptcha Verifier not initialized. Throwing error.");
@@ -199,7 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: user.email || null,
         phoneNumber: user.phoneNumber || null,
         displayName: displayName,
-        photoURL: user.photoURL,
+        photoURL: user.photoURL || null,
         role: role,
         createdAt: serverTimestamp(),
         addresses: [],
@@ -226,7 +225,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       displayName: name,
       email: user.email,
       phoneNumber: user.phoneNumber || null,
-      photoURL: user.photoURL,
+      photoURL: user.photoURL || null,
       role: 'customer',
       createdAt: serverTimestamp(),
       addresses: [],

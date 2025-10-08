@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -24,7 +23,7 @@ import CameraCaptureModal from '@/components/freshoz/CameraCaptureModal';
 // Helper: convert dataURL to Blob
 function dataURLToBlob(dataUrl: string): Blob {
   const parts = dataUrl.split(',');
-  const meta = parts[0]; // data:image/jpeg;base64
+  const meta = parts[0];
   const base64 = parts[1];
   const m = meta.match(/data:(.*);base64/);
   const contentType = m ? m[1] : 'image/jpeg';
@@ -111,29 +110,6 @@ function EditableInfoRow({ label, value, onSave, isLoading }: { label: string; v
   );
 }
 
-export default function ProfilePageWrapper() {
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  if (!googleMapsApiKey) {
-    return (
-      <AppShell>
-        <div className="container mx-auto max-w-4xl py-8">
-          <Card className="glass-card text-center">
-            <CardHeader>
-              <CardTitle className="text-destructive">Configuration Error</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>The <strong>Google Maps API key</strong> is missing. Address/Map features will not work.</p>
-              <p className="text-sm text-muted-foreground mt-2">Please set <strong>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</strong> in your .env and enable Maps/Places APIs.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </AppShell>
-    );
-  }
-
-  return <ProfileClient googleMapsApiKey={googleMapsApiKey} />;
-}
-
 function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   const { appUser, authUser, loading, logout, setAppUser } = useAuth();
   const router = useRouter();
@@ -195,7 +171,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
         setIsAddressSaving(false);
     }
   };
-
 
   const handleEditAddress = (address: Address) => {
     setAddressToEdit(address);
@@ -474,4 +449,28 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       )}
     </AppShell>
   );
+}
+
+export default function ProfilePageWrapper() {
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  
+  if (!googleMapsApiKey) {
+    return (
+      <AppShell>
+        <div className="container mx-auto max-w-4xl py-8">
+          <Card className="glass-card text-center">
+            <CardHeader>
+              <CardTitle className="text-destructive">Configuration Error</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>The <strong>Google Maps API key</strong> is missing. Address/Map features will not work.</p>
+              <p className="text-sm text-muted-foreground mt-2">Please set <strong>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</strong> in your .env and enable Maps/Places APIs.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </AppShell>
+    );
+  }
+
+  return <ProfileClient googleMapsApiKey={googleMapsApiKey} />;
 }
