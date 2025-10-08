@@ -1,16 +1,24 @@
 
 import { CheckoutFlow } from '@/components/checkout/CheckoutFlow';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { BackButton } from '@/components/freshoz/BackButton';
 
 export default async function CheckoutPage() {
   return (
     <div className="container mx-auto max-w-4xl py-8">
       <Card className="mb-8 border-0 bg-transparent shadow-none">
         <CardHeader>
-          <CardTitle className="font-headline text-4xl font-bold text-primary">Checkout</CardTitle>
-          <CardDescription>
-            Almost there! Please confirm your details to complete the order.
-          </CardDescription>
+          <div className="flex items-center gap-4 mb-4">
+             <div className="hidden md:block">
+                <BackButton />
+             </div>
+            <div>
+              <CardTitle className="font-headline text-4xl font-bold text-primary">Checkout</CardTitle>
+              <CardDescription>
+                Almost there! Please confirm your details to complete the order.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
       </Card>
       <CheckoutFlow />
