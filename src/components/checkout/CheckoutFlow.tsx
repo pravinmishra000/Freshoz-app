@@ -16,7 +16,7 @@ import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, P
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
@@ -79,6 +79,7 @@ export function CheckoutFlow() {
   const [substitution, setSubstitution] = React.useState('best');
   const [deliveryTip, setDeliveryTip] = React.useState(0);
   const [openAccordion, setOpenAccordion] = React.useState("step1");
+  const prevDeliveryTipRef = useRef(deliveryTip);
 
   const freeDeliveryThreshold = 120;
   const deliveryFeeAmount = 30;
@@ -103,7 +104,7 @@ export function CheckoutFlow() {
   
   const formState = form.formState;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (appUser) {
         const defaultAddress = appUser.addresses?.find(a => a.isDefault) || appUser.addresses?.[0];
         form.reset({
@@ -117,6 +118,18 @@ export function CheckoutFlow() {
         });
     }
   }, [appUser, form]);
+
+  useEffect(() => {
+    // Show toast only when a tip is added (and not on initial render or when set to 0)
+    if (deliveryTip > 0 && prevDeliveryTipRef.current === 0) {
+      toast({
+        title: 'Thank you for the tip!',
+        description: `₹${deliveryTip} has been added for the delivery person.`,
+      });
+    }
+    // Update the ref to the current value for the next render
+    prevDeliveryTipRef.current = deliveryTip;
+  }, [deliveryTip, toast]);
 
   const onSubmit: SubmitHandler<AddressFormValues> = async (data) => {
     if (!authUser || cartItems.length === 0) {
