@@ -28,12 +28,11 @@ export default function ProfileClient() {
   
   // States for modals
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
-  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
-  const [imageToCrop, setImageToCrop] = useState<string>('');
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   // Handle cropped image
-  const handleCroppedImage = async (croppedImageUrl: string) => {
+  const handleCroppedImage = async (imageBlob: Blob) => {
     if (!authUser) {
       toast({ variant: 'destructive', title: 'Authentication Required' });
       return;
@@ -42,14 +41,10 @@ export default function ProfileClient() {
     try {
       setIsUploading(true);
       
-      // Convert data URL to blob
-      const response = await fetch(croppedImageUrl);
-      const blob = await response.blob();
-      
       // Upload to Firebase Storage
       const storage = getStorage();
       const storageRef = storageRefFn(storage, `profile-pictures/${authUser.uid}/profile-${Date.now()}.jpg`);
-      await uploadBytes(storageRef, blob);
+      await uploadBytes(storageRef, imageBlob);
       const downloadURL = await getDownloadURL(storageRef);
 
       // Update profile
@@ -60,8 +55,6 @@ export default function ProfileClient() {
 
       toast({ title: 'Success', description: 'Profile picture updated!' });
       
-      // Cleanup
-      URL.revokeObjectURL(croppedImageUrl);
     } catch (err: any) {
       console.error('Error uploading cropped photo:', err);
       toast({ 
@@ -71,6 +64,7 @@ export default function ProfileClient() {
       });
     } finally {
       setIsUploading(false);
+      setImageToCrop(null); // Close crop modal
     }
   };
 
@@ -101,7 +95,6 @@ export default function ProfileClient() {
       const dataUrl = e.target?.result as string;
       if (dataUrl) {
         setImageToCrop(dataUrl);
-        setIsCropModalOpen(true);
       }
     };
     reader.readAsDataURL(file);
@@ -109,8 +102,8 @@ export default function ProfileClient() {
 
   // Handle camera capture - opens crop modal
   const handleCameraCapture = (dataUrl: string) => {
+    setIsCameraModalOpen(false);
     setImageToCrop(dataUrl);
-    setIsCropModalOpen(true);
   };
 
   return (
@@ -181,13 +174,12 @@ export default function ProfileClient() {
       )}
 
       {/* Crop Modal */}
-      {isCropModalOpen && (
+      {imageToCrop && (
         <ImageCropModal
           imageSrc={imageToCrop}
           onCropComplete={handleCroppedImage}
           onClose={() => {
-            setIsCropModalOpen(false);
-            setImageToCrop('');
+            setImageToCrop(null);
             if (fileInputRef.current) fileInputRef.current.value = '';
           }}
           aspect={1} // Square crop for profile pictures
