@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -73,6 +74,7 @@ function OrderItem({ order }: { order: Order }) {
                                 src={`https://picsum.photos/seed/${item.productId}/100/100`} 
                                 alt={item.name} 
                                 fill 
+                                sizes="48px"
                                 className="object-cover"
                             />
                         </div>

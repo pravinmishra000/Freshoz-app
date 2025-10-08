@@ -62,7 +62,14 @@ export default function ProductsPage() {
               {promotions.map((promo) => (
                 <CarouselItem key={promo.id}>
                   <div className="relative h-48 md:h-auto md:aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
-                    <Image src={promo.imageUrl} alt={promo.title} fill className="object-cover" data-ai-hint={promo.imageHint}/>
+                    <Image 
+                      src={promo.imageUrl} 
+                      alt={promo.title} 
+                      fill 
+                      sizes="100vw"
+                      className="object-cover" 
+                      data-ai-hint={promo.imageHint}
+                    />
                     <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-6">
                       <h3 className="text-white text-2xl font-bold">{promo.title}</h3>
                       <p className="text-white/90">{promo.description}</p>

@@ -98,7 +98,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 src={product.image}
                 alt={product.name_en}
                 fill
-                sizes="(max-width: 768px) 50vw, 33vw"
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 className="object-cover"
                 data-ai-hint={product.imageHint}
               />

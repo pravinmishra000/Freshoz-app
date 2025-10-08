@@ -1,8 +1,6 @@
 
 'use client';
 
-'use client';
-
 import { useCart } from '@/lib/cart/cart-context';
 import { useAuth } from '@/lib/firebase/auth-context';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
-import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, Plus, Minus, Sun, Sunset, Moon, Leaf, Phone, Bot, Check, AlertTriangle, Edit, ArrowLeft } from 'lucide-react'; // ArrowLeft add kiya
+import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, Plus, Minus, Sun, Sunset, Moon, Leaf, Phone, Bot, Check, AlertTriangle, Edit, ArrowLeft, MapPin } from 'lucide-react';
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -30,7 +28,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '../ui/skeleton';
 import { AddressManager } from './AddressManager';
 import type { Address } from '@/lib/types';
-import { MapPin } from 'lucide-react';
+
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -256,18 +254,6 @@ export function CheckoutFlow() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         <div className="lg:col-span-2 space-y-6">
-          {/* Back Button Add kiya yahan */}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-
-          <Progress value={progress} className="w-full h-2" />
           
           <Accordion type="single" collapsible value={openAccordion} onValueChange={setOpenAccordion} className="w-full space-y-4">
             
@@ -281,19 +267,42 @@ export function CheckoutFlow() {
               </AccordionTrigger>
               <AccordionContent className="p-6 pt-0">
                 <div className="space-y-6">
-                  {/* ... existing delivery slot content ... */}
+                  {/* Delivery Slots */}
+                  <div className="space-y-3">
+                      <Label className="font-semibold text-base">Choose Delivery Slot</Label>
+                      <RadioGroup value={deliverySlot} onValueChange={setDeliverySlot} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          {deliverySlots.map(slot => (
+                              <Label key={slot.id} htmlFor={slot.id} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer transition-all duration-300", deliverySlot === slot.id ? 'border-primary bg-primary/10 shadow-lg scale-105' : 'border-border hover:bg-muted/50')}>
+                                  <RadioGroupItem value={slot.id} id={slot.id} className="sr-only"/>
+                                  <slot.icon className="h-6 w-6 mb-2 text-primary" />
+                                  <p className="font-semibold text-sm">{slot.label}</p>
+                                  <p className="text-xs text-muted-foreground">{slot.time}</p>
+                              </Label>
+                          ))}
+                      </RadioGroup>
+                  </div>
+                  {/* Substitution Options */}
+                  <div className="space-y-3">
+                      <Label className="font-semibold text-base">If an item is out of stock...</Label>
+                      <RadioGroup value={substitution} onValueChange={setSubstitution} className="space-y-2">
+                      {substitutionOptions.map(option => (
+                          <Label key={option.id} htmlFor={option.id} className={cn("flex items-center rounded-lg border p-3 cursor-pointer transition-colors", substitution === option.id ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50')}>
+                              <RadioGroupItem value={option.id} id={option.id} className="mr-3"/>
+                              <option.icon className="h-5 w-5 mr-3 text-primary"/>
+                              <span className="text-sm font-medium">{option.label}</span>
+                          </Label>
+                      ))}
+                      </RadioGroup>
+                  </div>
+                  {/* Delivery Instructions */}
+                  <div className="space-y-3">
+                    <Label className="font-semibold text-base" htmlFor="instructions">Delivery Instructions</Label>
+                    <Textarea id="instructions" placeholder="e.g. Ring the bell twice, leave at the door..." className="min-h-[80px]" />
+                  </div>
                   
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 pt-4">
                     <Button 
                       type="button" 
-                      variant="outline" 
-                      onClick={handleBack}
-                      className="flex-1"
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Back to Cart
-                    </Button>
-                    <Button 
                       onClick={() => setOpenAccordion("step2")} 
                       className="flex-1 neon-button"
                     >
@@ -617,7 +626,13 @@ export function CheckoutFlow() {
                   {cartItems.map(item => (
                       <div key={item.id} className="flex items-center gap-3 group">
                           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border">
-                              <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-300" />
+                              <Image 
+                                src={item.image} 
+                                alt={item.name} 
+                                fill 
+                                sizes="56px"
+                                className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                              />
                               {item.is_veg === false && <AlertTriangle className="absolute top-0 right-0 h-4 w-4 text-red-500 bg-white rounded-full p-0.5" />}
                           </div>
                           <div className="flex-1">
