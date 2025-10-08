@@ -157,7 +157,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="lg:hidden">
                     <SidebarTrigger className="glass-icon-button !h-12 !w-12" />
                   </div>
-                  {!isHomePage && <div className="hidden lg:block"><BackButton /></div>}
+                  {!isHomePage && <BackButton />}
                 </div>
 
                 <div className="flex flex-1 items-center justify-end gap-2">
@@ -225,11 +225,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           
           {/* Main Body */}
           <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-4">
-             {!isHomePage && (
-              <div className="fixed top-20 left-4 z-40 lg:hidden">
-                <BackButton />
-              </div>
-            )}
             {children}
           </main>
             
