@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
-import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone } from 'lucide-react';
+import { Loader2, CreditCard, LogIn, CheckCircle, XCircle, Smartphone, Trash2, Plus, Minus } from 'lucide-react';
 import { placeOrder } from '@/app/actions/orderActions';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '../ui/scroll-area';
 
 const addressSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -35,7 +36,7 @@ const addressSchema = z.object({
 type AddressFormValues = z.infer<typeof addressSchema>;
 
 export function CheckoutFlow() {
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
   const { authUser, appUser } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -312,20 +313,33 @@ export function CheckoutFlow() {
             <CardTitle className="font-headline text-xl">Order Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="max-h-64 space-y-4 overflow-y-auto pr-2">
+            <ScrollArea className="max-h-64 pr-4">
+              <div className="space-y-4">
                 {cartItems.map(item => (
                     <div key={item.id} className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border">
+                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border">
                             <Image src={item.image} alt={item.name} fill className="object-cover" />
-                             <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.quantity}</span>
                         </div>
                         <div className="flex-1">
-                            <p className="font-medium text-sm">{item.name}</p>
+                            <p className="font-medium text-sm line-clamp-1">{item.name}</p>
+                             <p className="font-semibold text-sm">₹{item.price.toFixed(2)}</p>
                         </div>
-                        <p className="font-semibold text-sm">₹{(item.price * item.quantity).toFixed(2)}</p>
+                        <div className="flex items-center gap-1 rounded-md border bg-background">
+                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                                <Minus className="h-3 w-3"/>
+                             </Button>
+                             <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
+                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                <Plus className="h-3 w-3"/>
+                             </Button>
+                        </div>
+                         <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeFromCart(item.id)}>
+                            <Trash2 className="h-4 w-4"/>
+                        </Button>
                     </div>
                 ))}
-            </div>
+              </div>
+            </ScrollArea>
             <Separator />
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
