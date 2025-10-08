@@ -98,6 +98,18 @@ export interface WarehouseStock {
   warehouse_id: string;
   stock: number;
 }
+export interface Address {
+  id?: string;
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  district: string;
+  state: string;
+  pincode: string;
+  isDefault?: boolean;
+  type?: 'home' | 'work' | 'other';
+}
 
 // ✅ FIXED: AssignedWarehouse should be a string literal type, not an object
 export type AssignedWarehouse = 'Sultanganj' | 'Bhagalpur' | 'Khagaria' | 'N/A';

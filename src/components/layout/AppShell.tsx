@@ -15,7 +15,8 @@ import {
   Tag,
   Users,
   ShoppingCart,
-  LayoutGrid
+  LayoutGrid,
+  Coins
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -57,6 +58,7 @@ const customerNavItems = [
   { href: '/orders', label: 'My Orders', icon: Package },
   { href: '/offers', label: 'Offers & Discounts', icon: Tag },
   { href: '/wallet', label: 'Wallet', icon: Wallet },
+  { href: '/savings', label: 'Savings Hub', icon: Coins },
   { href: '/chat', label: 'Help & Support', icon: MessageSquare },
 ];
 

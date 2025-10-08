@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -24,7 +23,6 @@ const statusMap: { [key in OrderStatus]: { label: string; icon: React.ElementTyp
     cancelled: { label: 'Cancelled', icon: XCircle, color: 'bg-destructive' },
 };
 
-
 function OrderItem({ order }: { order: Order }) {
     const { addToCart } = useCart();
     const { toast } = useToast();
@@ -33,22 +31,23 @@ function OrderItem({ order }: { order: Order }) {
         ? order.createdAt 
         : new Date((order.createdAt as any).seconds * 1000);
 
-    const handleReorder = () => {
-        order.items.forEach(item => {
-            const cartItem: CartItem = {
-                id: item.productId,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image: `https://picsum.photos/seed/${'${item.productId}'}/100/100` // Assuming image URL can be constructed
-            };
-            addToCart(cartItem);
-        });
-        toast({
-            title: 'Items Added to Cart',
-            description: `All items from order #${'${order.id}'} have been added to your cart.`
-        });
-    }
+        const handleReorder = () => {
+          order.items.forEach(item => {
+              const cartItem: CartItem = {
+                  productId: item.productId,  // Yeh add karein
+                  id: item.productId,         // Ya fir id ko productId set karein
+                  name: item.name,
+                  price: item.price,
+                  quantity: item.quantity,
+                  image: `https://picsum.photos/seed/${item.productId}/100/100`
+              };
+              addToCart(cartItem);
+          });
+          toast({
+              title: 'Items Added to Cart',
+              description: `All items from order #${order.id} have been added to your cart.`
+          });
+      }
 
   return (
     <Card className="glass-card">
@@ -70,7 +69,12 @@ function OrderItem({ order }: { order: Order }) {
                 <div key={index} className="flex items-center justify-between py-2">
                     <div className="flex items-center gap-4">
                         <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                            <Image src={`https://picsum.photos/seed/${'${item.productId}'}/100/100`} alt={item.name} fill className="object-cover"/>
+                            <Image 
+                                src={`https://picsum.photos/seed/${item.productId}/100/100`} 
+                                alt={item.name} 
+                                fill 
+                                className="object-cover"
+                            />
                         </div>
                         <div>
                             <p className="font-medium">{item.name}</p>
@@ -87,7 +91,9 @@ function OrderItem({ order }: { order: Order }) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
-        <Button variant="ghost">View Details</Button>
+        <Button asChild variant="ghost">
+          <Link href={`/orders/${order.id}`}>View Details</Link>
+        </Button>
         <Button onClick={handleReorder} className="neon-button">
             <RefreshCw className="mr-2 h-4 w-4" />
             Reorder
@@ -102,20 +108,41 @@ export function OrderHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (authUser?.uid) {
       startTransition(async () => {
         setIsLoading(true);
-        const userOrders = await getOrdersForUser(authUser.uid);
-        setOrders(userOrders as Order[]);
-        setIsLoading(false);
+        try {
+          const result = await getOrdersForUser(authUser.uid);
+          if (result.success && result.orders) {
+            setOrders(result.orders);
+          } else {
+            console.error('Failed to fetch orders:', result.error);
+            setOrders([]);
+            toast({
+              variant: 'destructive',
+              title: 'Error loading orders',
+              description: result.error || 'Please try again later.',
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+          setOrders([]);
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to load orders. Please try again.',
+          });
+        } finally {
+          setIsLoading(false);
+        }
       });
     } else {
         setIsLoading(false);
     }
-  }, [authUser]);
-
+  }, [authUser, toast]);
 
   if (isLoading) {
       return (
