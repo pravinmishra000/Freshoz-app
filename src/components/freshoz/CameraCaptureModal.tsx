@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { Camera, Check, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -119,6 +120,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
       <DialogContent className="sm:max-w-md glass-card">
         <DialogHeader>
           <DialogTitle>Take a Photo</DialogTitle>
+          <DialogDescription className="sr-only">Use your device camera to take a new profile picture.</DialogDescription>
         </DialogHeader>
         
         {renderContent()}

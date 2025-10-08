@@ -4,7 +4,7 @@
 import { useState, useCallback } from 'react';
 import Cropper, { type Point, type Area } from 'react-easy-crop';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 
 interface ImageCropModalProps {
@@ -103,6 +103,7 @@ export default function ImageCropModal({
       <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Crop Profile Picture</DialogTitle>
+          <DialogDescription className="sr-only">Adjust the zoom and position of your photo to crop it for your profile.</DialogDescription>
         </DialogHeader>
         
         <div className="relative h-96 w-full bg-gray-100">
