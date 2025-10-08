@@ -5,13 +5,13 @@ import { BackButton } from '@/components/freshoz/BackButton';
 
 export default async function CheckoutPage() {
   return (
-    <div className="container mx-auto max-w-4xl py-8">
+    <div className="container mx-auto max-w-5xl py-8">
       <Card className="mb-8 border-0 bg-transparent shadow-none">
         <CardHeader>
-          <div className="flex items-center gap-4 mb-4">
-             <div className="hidden md:block">
-                <BackButton />
-             </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:block">
+              <BackButton />
+            </div>
             <div>
               <CardTitle className="font-headline text-4xl font-bold text-primary">Checkout</CardTitle>
               <CardDescription>
