@@ -46,8 +46,13 @@ export function CheckoutFlow() {
   const [isUpiVerified, setIsUpiVerified] = React.useState(false);
   const [upiError, setUpiError] = React.useState('');
 
-  const deliveryFee = cartTotal > 0 ? 5.0 : 0;
-  const totalAmount = cartTotal + deliveryFee;
+  const freeDeliveryThreshold = 120;
+  const deliveryFeeAmount = 30;
+  const platformFee = 5;
+
+  const deliveryFee = cartTotal > 0 && cartTotal < freeDeliveryThreshold ? deliveryFeeAmount : 0;
+  const totalAmount = cartTotal + deliveryFee + platformFee;
+
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
@@ -329,7 +334,11 @@ export function CheckoutFlow() {
                 </div>
                  <div className="flex justify-between">
                     <p className="text-muted-foreground">Delivery Fee</p>
-                    <p>₹{deliveryFee.toFixed(2)}</p>
+                    <p>{deliveryFee > 0 ? `₹${deliveryFee.toFixed(2)}` : 'Free'}</p>
+                </div>
+                 <div className="flex justify-between">
+                    <p className="text-muted-foreground">Platform Fee</p>
+                    <p>₹{platformFee.toFixed(2)}</p>
                 </div>
             </div>
              <Separator />

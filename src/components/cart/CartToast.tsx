@@ -13,7 +13,7 @@ export function CartToast() {
   const { cartItems, cartCount, cartTotal } = useCart();
   const [isVisible, setIsVisible] = useState(true);
 
-  const freeDeliveryThreshold = 199;
+  const freeDeliveryThreshold = 120;
   const amountForFreeDelivery = freeDeliveryThreshold - cartTotal;
   const showFreeDeliveryToast = cartTotal > 0 && cartTotal < freeDeliveryThreshold;
 
