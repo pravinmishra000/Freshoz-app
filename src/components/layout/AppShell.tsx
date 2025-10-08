@@ -48,6 +48,7 @@ import { CartSheet } from '../cart/CartSheet';
 import { SmartSearchBar } from '../products/SmartSearchBar';
 import { CartToast } from '../cart/CartToast';
 import FreshozBuddy from '../freshoz/freshoz-buddy';
+import { BackButton } from '../freshoz/BackButton';
 
 // Customer navigation items
 const customerNavItems = [
@@ -73,6 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   
   const isAdmin = appUser?.role === 'admin';
   const isLoginPage = pathname === '/login';
+  const isHomePage = pathname === '/products';
 
   // If it's the login page, render children without the shell
   if (isLoginPage) {
@@ -151,10 +153,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Header */}
           <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
             <div className="flex w-full items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <div className="lg:hidden">
                     <SidebarTrigger className="glass-icon-button" />
                   </div>
+                  {!isHomePage && <BackButton />}
                 </div>
 
                 <div className="flex flex-1 items-center justify-end gap-2">
