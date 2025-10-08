@@ -19,6 +19,7 @@ import { db, storage } from '@/lib/firebase/client';
 import { ref as storageRefFn, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import CameraCaptureModal from '@/components/freshoz/CameraCaptureModal';
+import ImageCropModal from '@/components/freshoz/ImageCropModal';
 
 // Helper: convert dataURL to Blob
 function dataURLToBlob(dataUrl: string): Blob {
@@ -121,37 +122,30 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
   const [isUploading, setIsUploading] = useState(false);
   const [isAddressSaving, setIsAddressSaving] = useState(false);
 
+  // States for image cropping
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
 
-  // Save new or edited address to Firestore and update local appUser state
   const saveAddressToFirestore = async (addressPayload: Omit<Address, 'id'> & Partial<Pick<Address, 'id'>>) => {
     if (!authUser) throw new Error('Not authenticated');
 
     const userRef = doc(db, 'users', authUser.uid);
-
-    // Ensure we have an id
     const id = (addressPayload as any).id || crypto.randomUUID();
     const addressToSave: Address = { id, ...addressPayload } as Address;
 
-    // Merge into existing addresses
     const existing = appUser?.addresses ?? [];
-    // If editing (id existed), replace; else push
     const updated = existing.some(a => a.id === id) ? existing.map(a => a.id === id ? addressToSave : a) : [...existing, addressToSave];
 
-    // Use setDoc with merge to be safe if doc missing
     await setDoc(userRef, { addresses: updated }, { merge: true });
-
-    // Update local state
     setAppUser(prev => prev ? { ...prev, addresses: updated } : { id: authUser.uid, displayName: authUser.displayName || '', addresses: updated, role: 'customer' } as any);
-
     return addressToSave;
   };
 
   const handleAddressSaved = async (newAddress: Partial<Address>) => {
-    // Ensure all required fields for a complete address are present
     if (!newAddress.address || !newAddress.name || !newAddress.phone || !newAddress.pincode || !newAddress.city || !newAddress.state || !newAddress.district) {
         toast({ variant: 'destructive', title: 'Incomplete Address', description: 'Please fill in all required address fields.' });
         return;
@@ -159,8 +153,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
 
     try {
         setIsAddressSaving(true);
-        // We cast here because we've validated the required fields above.
-        const saved = await saveAddressToFirestore(newAddress as Omit<Address, 'id'> & Partial<Pick<Address, 'id'>>);
+        await saveAddressToFirestore(newAddress as Omit<Address, 'id'> & Partial<Pick<Address, 'id'>>);
         toast({ title: 'Address saved', description: 'Your address has been added/updated.' });
         setIsAddressFormOpen(false);
         setAddressToEdit(null);
@@ -211,7 +204,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     setAppUser(prev => prev ? { ...prev, phoneNumber: newPhone } : prev);
   };
 
-  // Profile photo upload: convert dataURL -> Blob -> uploadBytes -> getDownloadURL -> updateProfile + firestore + app state
   const handlePhotoUpload = async (dataUrl: string) => {
     if (!authUser) {
       toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
@@ -223,58 +215,46 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       toast({ title: 'Uploading...', description: 'Uploading your profile picture.' });
 
       const blob = dataURLToBlob(dataUrl);
-      const mime = blob.type || 'image/jpeg';
-      const ext = mime.split('/')[1] || 'jpg';
-
-      // storage ref: uses default bucket from client.ts (from env) — keeps consistent with your config
-      const storageRef = storageRefFn(storage, `profile-pictures/${authUser.uid}/profile.${ext}`);
-
-      // Upload via uploadBytes to avoid data_url pitfalls
+      const storageRef = storageRefFn(storage, `profile-pictures/${authUser.uid}/profile.jpg`);
+      
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
 
-      // Update firebase auth profile
       await updateProfile(authUser, { photoURL: downloadURL });
 
-      // Update firestore user doc (merge)
       const userRef = doc(db, 'users', authUser.uid);
       await setDoc(userRef, { photoURL: downloadURL }, { merge: true });
 
-      // Update local app state
       setAppUser(prev => prev ? { ...prev, photoURL: downloadURL } : prev);
-
       toast({ title: 'Success', description: 'Profile picture updated.' });
     } catch (err: any) {
       console.error('Error uploading photo:', err);
       toast({ variant: 'destructive', title: 'Upload Failed', description: err?.message || 'Could not upload photo.' });
     } finally {
       setIsUploading(false);
+      setImageToCrop(null); // Close the crop modal
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
   const onFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!authUser) {
-      toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
+      toast({ variant: 'destructive', title: 'Authentication Required' });
       return;
     }
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const MAX_MB = 10;
-    if (file.size > MAX_MB * 1024 * 1024) {
-      toast({ variant: 'destructive', title: 'File Too Large', description: `Max ${MAX_MB}MB allowed.` });
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
-    }
-
-    // read as dataURL and pass to handlePhotoUpload
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      if (dataUrl) handlePhotoUpload(dataUrl);
+    reader.onload = () => {
+      setImageToCrop(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleCameraCapture = (dataUrl: string) => {
+    setIsCameraModalOpen(false);
+    setImageToCrop(dataUrl);
   };
 
   if (loading) {
@@ -309,7 +289,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       <div className="container mx-auto max-w-4xl py-8">
         <input type="file" ref={fileInputRef} onChange={onFileSelect} accept="image/*" className="hidden" />
 
-        {/* User Header */}
         <Card className="glass-card overflow-hidden mb-6">
           <CardContent className="p-6 flex flex-col items-center text-center">
             <div className="relative group mb-4">
@@ -333,16 +312,10 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => {
-                    if (!authUser) { toast({ variant: 'destructive', title: 'Authentication Required' }); return; }
-                    fileInputRef.current?.click();
-                  }}>
+                  <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
                     <Upload className="mr-2 h-4 w-4" /> Upload from device
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => {
-                    if (!authUser) { toast({ variant: 'destructive', title: 'Authentication Required' }); return; }
-                    setIsCameraModalOpen(true);
-                  }}>
+                  <DropdownMenuItem onSelect={() => setIsCameraModalOpen(true)}>
                     <Video className="mr-2 h-4 w-4" /> Take a photo
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -354,7 +327,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
           </CardContent>
         </Card>
 
-        {/* Personal Information */}
         <Card className="glass-card mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-xl">
@@ -378,7 +350,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
           </CardContent>
         </Card>
 
-        {/* Address Book */}
         <Card className="glass-card mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-xl">
@@ -386,7 +357,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
               Address Book
             </CardTitle>
           </CardHeader>
-
           <CardContent className="space-y-4">
             {addresses.length > 0 ? (
               addresses.map((addr) => (
@@ -398,7 +368,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
               </div>
             )}
           </CardContent>
-
           <CardFooter>
             <Button variant="outline" className="w-full border-dashed border-primary text-primary hover:bg-primary/5 hover:text-primary" onClick={handleAddNewAddress}>
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -407,7 +376,6 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
           </CardFooter>
         </Card>
 
-        {/* Account Actions */}
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-xl">Account Actions</CardTitle>
@@ -421,26 +389,30 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
         </Card>
       </div>
 
-      {/* Camera Modal */}
       {isCameraModalOpen && (
         <CameraCaptureModal
           onClose={() => setIsCameraModalOpen(false)}
-          onCapture={(dataUrl) => {
-            // camera returns dataUrl
-            handlePhotoUpload(dataUrl);
-            setIsCameraModalOpen(false);
-          }}
+          onCapture={handleCameraCapture}
         />
       )}
 
-      {/* Address Modal / Screen */}
+      {imageToCrop && (
+        <ImageCropModal
+          imageSrc={imageToCrop}
+          onCropComplete={handlePhotoUpload}
+          onClose={() => {
+            setImageToCrop(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+          }}
+          aspect={1}
+        />
+      )}
+
       {isAddressFormOpen && (
         <AddressAutocomplete
           apiKey={googleMapsApiKey}
           initialAddress={addressToEdit || null}
-          onAddressSelect={(addr) => {
-            handleAddressSaved(addr);
-          }}
+          onAddressSelect={handleAddressSaved}
           onCancel={() => {
             setIsAddressFormOpen(false);
             setAddressToEdit(null);
