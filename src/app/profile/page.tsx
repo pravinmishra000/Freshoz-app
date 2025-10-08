@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -20,22 +21,6 @@ import { ref as storageRefFn, uploadBytes, getDownloadURL } from 'firebase/stora
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import CameraCaptureModal from '@/components/freshoz/CameraCaptureModal';
 import ImageCropModal from '@/components/freshoz/ImageCropModal';
-
-// Helper: convert dataURL to Blob
-function dataURLToBlob(dataUrl: string): Blob {
-  const parts = dataUrl.split(',');
-  const meta = parts[0];
-  const base64 = parts[1];
-  const m = meta.match(/data:(.*);base64/);
-  const contentType = m ? m[1] : 'image/jpeg';
-  const binary = atob(base64);
-  const len = binary.length;
-  const u8arr = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    u8arr[i] = binary.charCodeAt(i);
-  }
-  return new Blob([u8arr], { type: contentType });
-}
 
 function AddressCard({ address, onEdit, onDelete }: { address: Address; onEdit: (address: Address) => void; onDelete: (id: string) => void; }) {
   const Icon = address.type === 'home' ? Home : address.type === 'work' ? Building : MapPin;
@@ -153,7 +138,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
 
     try {
         setIsAddressSaving(true);
-        await saveAddressToFirestore(newAddress as Omit<Address, 'id'> & Partial<Pick<Address, 'id'>>);
+        await saveAddressToFirestore(newAddress as Address);
         toast({ title: 'Address saved', description: 'Your address has been added/updated.' });
         setIsAddressFormOpen(false);
         setAddressToEdit(null);
@@ -204,7 +189,7 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
     setAppUser(prev => prev ? { ...prev, phoneNumber: newPhone } : prev);
   };
 
-  const handlePhotoUpload = async (dataUrl: string) => {
+  const handlePhotoUpload = async (imageBlob: Blob) => {
     if (!authUser) {
       toast({ variant: 'destructive', title: 'Authentication Required', description: 'Please log in to upload a photo.' });
       return;
@@ -214,10 +199,9 @@ function ProfileClient({ googleMapsApiKey }: { googleMapsApiKey: string }) {
       setIsUploading(true);
       toast({ title: 'Uploading...', description: 'Uploading your profile picture.' });
 
-      const blob = dataURLToBlob(dataUrl);
       const storageRef = storageRefFn(storage, `profile-pictures/${authUser.uid}/profile.jpg`);
       
-      await uploadBytes(storageRef, blob);
+      await uploadBytes(storageRef, imageBlob);
       const downloadURL = await getDownloadURL(storageRef);
 
       await updateProfile(authUser, { photoURL: downloadURL });

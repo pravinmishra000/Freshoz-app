@@ -6,10 +6,11 @@ import Cropper, { type Point, type Area } from 'react-easy-crop';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
+import { Loader2 } from 'lucide-react';
 
 interface ImageCropModalProps {
   imageSrc: string;
-  onCropComplete: (croppedImageUrl: string) => void;
+  onCropComplete: (croppedImageBlob: Blob) => void;
   onClose: () => void;
   aspect?: number;
 }
@@ -49,7 +50,7 @@ export default function ImageCropModal({
   const getCroppedImg = async (
     imageSrc: string,
     pixelCrop: Area
-  ): Promise<string> => {
+  ): Promise<Blob> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -73,12 +74,13 @@ export default function ImageCropModal({
       pixelCrop.height
     );
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (!blob) {
-          throw new Error('Canvas is empty');
+          reject(new Error('Canvas is empty'));
+          return;
         }
-        resolve(URL.createObjectURL(blob));
+        resolve(blob);
       }, 'image/jpeg');
     });
   };
@@ -88,8 +90,8 @@ export default function ImageCropModal({
 
     setIsLoading(true);
     try {
-      const croppedImageUrl = await getCroppedImg(imageSrc, croppedAreaPixels);
-      onCropComplete(croppedImageUrl);
+      const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      onCropComplete(croppedImageBlob);
       onClose();
     } catch (error) {
       console.error('Error cropping image:', error);
@@ -100,13 +102,13 @@ export default function ImageCropModal({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-md glass-card">
         <DialogHeader>
           <DialogTitle>Crop Profile Picture</DialogTitle>
           <DialogDescription className="sr-only">Adjust the zoom and position of your photo to crop it for your profile.</DialogDescription>
         </DialogHeader>
         
-        <div className="relative h-96 w-full bg-gray-100">
+        <div className="relative h-80 w-full bg-muted/50 rounded-lg">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -119,7 +121,7 @@ export default function ImageCropModal({
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 pt-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Zoom</label>
             <Slider
@@ -136,8 +138,13 @@ export default function ImageCropModal({
             <Button variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button onClick={handleCrop} disabled={isLoading}>
-              {isLoading ? 'Cropping...' : 'Save Cropped Image'}
+            <Button onClick={handleCrop} disabled={isLoading} className="neon-button">
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cropping...
+                </>
+              ) : 'Save Cropped Image'}
             </Button>
           </div>
         </div>
