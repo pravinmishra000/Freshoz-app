@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   
   const isAdmin = appUser?.role === 'admin';
   const isLoginPage = pathname === '/login';
-  const isHomePage = pathname === '/products';
+  const isHomePage = pathname === '/products' || pathname === '/';
 
   // If it's the login page, render children without the shell
   if (isLoginPage) {
@@ -155,8 +155,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <div className="lg:hidden">
-                    <SidebarTrigger className="glass-icon-button" />
+                    <SidebarTrigger className="glass-icon-button !h-12 !w-12" />
                   </div>
+                  {!isHomePage && <div className="hidden lg:block"><BackButton /></div>}
                 </div>
 
                 <div className="flex flex-1 items-center justify-end gap-2">
@@ -223,13 +224,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
           
           {/* Main Body */}
-          <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-4">{children}</main>
-          
-          {!isHomePage && (
-              <div className="fixed bottom-24 left-4 z-40 md:bottom-6 md:left-6">
+          <main className="flex-1 overflow-y-auto px-4 pb-24 md:pb-4">
+             {!isHomePage && (
+              <div className="fixed top-20 left-4 z-40 lg:hidden">
                 <BackButton />
               </div>
             )}
+            {children}
+          </main>
             
           {!isAdmin && <CartToast />}
           {!isAdmin && <FreshozBuddy />}

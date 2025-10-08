@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -13,9 +12,9 @@ export function BackButton() {
       variant="ghost"
       size="icon"
       onClick={() => router.back()}
-      className="glass-icon-button h-14 w-14"
+      className="glass-icon-button h-12 w-12"
     >
-      <ChevronLeft className="h-7 w-7 text-primary" />
+      <ChevronLeft className="h-6 w-6 text-primary" />
       <span className="sr-only">Go back</span>
     </Button>
   );
