@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -32,6 +33,7 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
         <div className="space-y-3 pr-2">
             {categories.map((category) => {
             const isActive = category.slug === activeSlug;
+            const hasRealImage = category.image && category.image.includes('firebasestorage.googleapis.com');
             
             return (
                 <Link
@@ -48,18 +50,13 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
                     )}
                 >
                     <div className="relative aspect-square w-full mb-2 flex items-center justify-center">
-                    {/* Check if image exists and is from Firebase */}
-                    {category.image && category.image.includes('firebasestorage.googleapis.com') ? (
+                    {hasRealImage ? (
                         <Image
-                            src={category.image}
+                            src={category.image!}
                             alt={category.name_en}
                             fill
                             sizes="(max-width: 768px) 20vw, 10vw"
                             className="object-contain rounded-md"
-                            onError={(e) => {
-                                // If image fails to load, show emoji instead
-                                e.currentTarget.style.display = 'none';
-                            }}
                         />
                     ) : (
                         <span className="text-4xl">
