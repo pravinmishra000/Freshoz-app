@@ -14,7 +14,7 @@ interface CategorySidebarProps {
 }
 
 export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps) {
-  // Hard-coded emoji mapping based on category IDs from your ProductCard
+  // Hard-coded emoji mapping based on category IDs
   const getCategoryEmoji = (categoryId: string) => {
     const emojiMap: { [key: string]: string } = {
       'cat-1': '🥦', // Fresh Vegetables
@@ -33,6 +33,7 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
         <div className="space-y-3 pr-2">
             {categories.map((category) => {
             const isActive = category.slug === activeSlug;
+            // Robust check for a valid Firebase Storage image URL
             const hasRealImage = category.image && category.image.includes('firebasestorage.googleapis.com');
             
             return (
