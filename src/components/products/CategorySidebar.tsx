@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -14,11 +13,26 @@ interface CategorySidebarProps {
 }
 
 export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps) {
+  // Hard-coded emoji mapping based on category IDs from your ProductCard
+  const getCategoryEmoji = (categoryId: string) => {
+    const emojiMap: { [key: string]: string } = {
+      'cat-1': '🥦', // Fresh Vegetables
+      'cat-6': '🍎', // Fresh Fruits  
+      'cat-2': '🥛', // Dairy & Bakery
+      'cat-4': '🌾', // Staples & Grocery
+      'cat-5': '🍗', // Non-Veg
+      'cat-3': '☕',  // Beverages
+    };
+    
+    return emojiMap[categoryId] || '🛒';
+  };
+
   return (
     <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="space-y-3 pr-2">
             {categories.map((category) => {
             const isActive = category.slug === activeSlug;
+            
             return (
                 <Link
                 key={category.id}
@@ -34,16 +48,23 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
                     )}
                 >
                     <div className="relative aspect-square w-full mb-2 flex items-center justify-center">
-                    {category.image ? (
+                    {/* Check if image exists and is from Firebase */}
+                    {category.image && category.image.includes('firebasestorage.googleapis.com') ? (
                         <Image
                             src={category.image}
                             alt={category.name_en}
                             fill
                             sizes="(max-width: 768px) 20vw, 10vw"
                             className="object-contain rounded-md"
+                            onError={(e) => {
+                                // If image fails to load, show emoji instead
+                                e.currentTarget.style.display = 'none';
+                            }}
                         />
                     ) : (
-                        <span className="text-4xl">🛒</span>
+                        <span className="text-4xl">
+                          {getCategoryEmoji(category.id)}
+                        </span>
                     )}
                     </div>
                     <p className={cn(
