@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -76,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
     : 0;
 
-  const hasRealImage = product.image && !product.image.includes('firebasestorage') && !product.image.includes('picsum.photos');
+  const hasRealImage = product.image && product.image.includes('firebasestorage.googleapis.com');
   const categoryStyle = categoryStyles[product.category_id || ''] || { emoji: '🛒', color: 'bg-gray-100', icon: Sprout };
 
   const getProductEmoji = () => {
