@@ -176,22 +176,22 @@ export const promotions: Promotion[] = [
   {
     id: 'promo-1',
     title: 'Smart Grocery Deals',
-    description: 'Save ₹300 on orders above ₹1500 – staples, spices & more!',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-3.webp?alt=media&token=2caedabd-2071-4474-ac15-28143980a111',
-    imageHint: 'berries fruit',
+    description: 'Save big on staples, spices & more!',
+    imageUrl: 'https://picsum.photos/seed/promo1/800/400',
+    imageHint: 'groceries shelf',
   },
   {
     id: 'promo-2',
     title: 'Daily Dairy Fresh',
-    description: 'Get flat 15% off on milk, paneer & ghee this week!',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-2.webp?alt=media&token=e87d815b-fd88-4150-bf65-afdc825c1a44',
-    imageHint: 'fresh bread',
+    description: 'Get flat 15% off on milk, paneer & ghee!',
+    imageUrl: 'https://picsum.photos/seed/promo2/800/400',
+    imageHint: 'milk bread',
   },
   {
     id: 'promo-3',
     title: 'Veggie Freshness',
-    description: 'Save ₹400 when you spend ₹2000 on farm-fresh vegetables.',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-1.webp?alt=media&token=4c61242c-b096-49d4-af1d-742aa1dc7f25',
+    description: 'Farm-fresh vegetables delivered to your door.',
+    imageUrl: 'https://picsum.photos/seed/promo3/800/400',
     imageHint: 'vegetables variety',
   },
 ];
@@ -239,3 +239,4 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
+
