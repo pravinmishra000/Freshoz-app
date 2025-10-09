@@ -8,6 +8,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: true, // ✅ YEH LINE ADD KAREIN - Firebase Studio ke liye
     remotePatterns: [
       {
         protocol: 'https',
@@ -36,7 +37,8 @@ const nextConfig = {
     ],
   },
   experimental: {
-    optimizeCss: false, // CSS optimization disable karein
+    optimizeCss: false,
+    serverComponentsExternalPackages: ['genkit'],
   },
   webpack: (config) => {
     config.watchOptions = {
@@ -46,7 +48,5 @@ const nextConfig = {
     return config;
   },
 };
-
-
 
 module.exports = nextConfig;
