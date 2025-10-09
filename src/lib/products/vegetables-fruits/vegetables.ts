@@ -1,3 +1,4 @@
+
 import { Product } from '../../types';
 
 export const VEGETABLES_PRODUCTS: Product[] = [
@@ -701,7 +702,34 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     variants: [
        { id: 'veg-25-1', pack_size: '1 bunch', mrp: 40, price: 35, stock_qty: 35 },
     ]
+  },
+  {
+    id: 'veg-26',
+    name_en: 'Banana Raw',
+    name_hi: 'Kachcha Kela',
+    description: 'Fresh raw bananas, perfect for making vegetable dishes and curries.',
+    brand: 'Pravin',
+    category_id: 'cat-1',
+    mrp: 20,
+    price: 18,
+    stock_qty: 150,
+    unit: 'pc',
+    pack_size: '6 pc',
+    is_veg: true,
+    delivery_mode: 'quick',
+    image: 'https://picsum.photos/seed/veg-26/400/400',
+    imageHint: 'raw banana',
+    tags: ['vegetable', 'banana', 'raw', 'kachcha kela'],
+    rating: 4.4,
+    rating_count: 80,
+    warehouse_stock: [
+      { warehouse_id: 'sultanganj', stock: 150 }
+    ],
+    variants: [
+       { id: 'veg-26-1', pack_size: '6 pc', mrp: 20, price: 18, stock_qty: 150 },
+    ]
   }
 ];
+
 
 
