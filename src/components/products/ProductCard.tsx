@@ -7,6 +7,7 @@ import { Plus, Minus, Sprout, Wheat, Drumstick, Milk, Coffee, AlertTriangle, Lea
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -75,9 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
     : 0;
 
-  const hasRealImage = product.image && 
-                      product.image.startsWith('https://') && 
-                      !product.image.includes('picsum.photos');
+  const hasRealImage = product.image && !product.image.includes('firebasestorage') && !product.image.includes('picsum.photos');
   const categoryStyle = categoryStyles[product.category_id || ''] || { emoji: '🛒', color: 'bg-gray-100', icon: Sprout };
 
   const getProductEmoji = () => {
@@ -92,10 +91,11 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
       <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
         {hasRealImage ? (
-          // ✅ Normal img tag use karein Next.js Image ki jagah
-          <img
+          <Image
             src={product.image}
             alt={product.name_en}
+            fill
+            sizes="(max-width: 768px) 50vw, 33vw"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
