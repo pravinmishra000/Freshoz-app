@@ -33,14 +33,18 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
                         : 'border-transparent'
                     )}
                 >
-                    <div className="relative aspect-square w-full mb-2">
-                    <Image
-                        src={category.image || 'https://picsum.photos/seed/placeholder/100/100'}
-                        alt={category.name_en}
-                        fill
-                        sizes="(max-width: 768px) 20vw, 10vw"
-                        className="object-contain rounded-md"
-                    />
+                    <div className="relative aspect-square w-full mb-2 flex items-center justify-center">
+                    {category.image ? (
+                        <Image
+                            src={category.image}
+                            alt={category.name_en}
+                            fill
+                            sizes="(max-width: 768px) 20vw, 10vw"
+                            className="object-contain rounded-md"
+                        />
+                    ) : (
+                        <span className="text-4xl">🛒</span>
+                    )}
                     </div>
                     <p className={cn(
                         'text-xs font-semibold',
