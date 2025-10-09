@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCart } from '@/lib/cart/cart-context';
@@ -64,13 +63,15 @@ export function CartToast() {
             <div className="flex items-center">
               <div className="flex -space-x-4">
                 {displayedItems.map((item, index) => (
-                  <div key={item.id} className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-white/50 shadow-md" style={{ zIndex: displayedItems.length - index }}>
-                    <Image
+                  <div 
+                    key={item.id} 
+                    className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-white/50 shadow-md" 
+                    style={{ zIndex: displayedItems.length - index }}
+                  >
+                    <img
                       src={item.image}
                       alt={item.name}
-                      fill
-                      sizes="40px"
-                      className="object-cover"
+                      className="h-full w-full object-cover"
                     />
                   </div>
                 ))}

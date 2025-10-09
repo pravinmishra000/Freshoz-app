@@ -75,7 +75,7 @@ function OrderItem({ order }: { order: Order }) {
                                 alt={item.name} 
                                 fill 
                                 sizes="48px"
-                                className="object-cover"
+                                className="h-full w-full object-cover"
                             />
                         </div>
                         <div>

@@ -489,3 +489,37 @@ export interface Transaction {
   amount: number;
   date: string;
 }
+
+export interface SavingsData {
+  totalSaved: number;
+  deliveryFeesAvoided: number;
+  loyaltyPoints: number;
+  subscriptionBenefits: number;
+  monthlySavings: MonthlySavings[];
+  categorySpending: CategorySpending[];
+  marketComparison: MarketComparison[];
+}
+
+export interface MonthlySavings {
+  month: string;
+  saved: number;
+  spent: number;
+}
+
+export interface CategorySpending {
+  category: string;
+  amount: number;
+  color: string;
+}
+
+export interface MarketComparison {
+  item: string;
+  ourPrice: number;
+  marketPrice: number;
+}
+
+export interface SavingsInsight {
+  type: 'savings' | 'tip' | 'warning';
+  message: string;
+  amount?: number;
+}

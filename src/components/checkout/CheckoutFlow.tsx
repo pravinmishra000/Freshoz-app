@@ -631,7 +631,7 @@ export function CheckoutFlow() {
                                 alt={item.name} 
                                 fill 
                                 sizes="56px"
-                                className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                                className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300" 
                               />
                               {item.is_veg === false && <AlertTriangle className="absolute top-0 right-0 h-4 w-4 text-red-500 bg-white rounded-full p-0.5" />}
                           </div>

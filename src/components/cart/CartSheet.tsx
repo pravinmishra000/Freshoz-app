@@ -59,13 +59,13 @@ export function CartSheet() {
                 <div className="px-6 space-y-4">
               {cartItems.map((item) => (
                 <div key={item.id} className="flex items-center gap-4 py-2">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-md">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border">
                     <Image
                       src={item.image}
                       alt={item.name}
                       fill
                       sizes="64px"
-                      className="object-cover"
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
                   <div className="flex-1">

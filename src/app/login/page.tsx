@@ -370,7 +370,6 @@ export default function LoginPage() {
           <CardDescription>Sign in or create an account to get started.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div id="recaptcha-container"></div>
           <Tabs defaultValue="phone" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="phone">Phone</TabsTrigger>

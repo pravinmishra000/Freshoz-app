@@ -78,55 +78,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === 'undefined' || !auth) return;
   
-    const containerId = 'recaptcha-container';
-    const recaptchaContainer = document.getElementById(containerId);
+    const initializeRecaptcha = () => {
+      const containerId = 'recaptcha-container';
+      const recaptchaContainer = document.getElementById(containerId);
   
-    if ((window as any).recaptchaVerifier || !recaptchaContainer) {
-      return;
-    }
+      // Agar container nahi hai to create karein
+      if (!recaptchaContainer) {
+        console.log("⏳ Recaptcha container not found");
+        return;
+      }
   
-    try {
-      const verifier = new RecaptchaVerifier(
-        auth,
-        containerId,
-        {
-          size: 'invisible',
-          callback: () => {
-            console.log("✅ reCAPTCHA solved in context!");
-          },
-          'expired-callback': () => {
-            console.warn("⚠️ reCAPTCHA expired. Re-rendering...");
-            const v = (window as any).recaptchaVerifier;
-            if (v) v.render().catch(console.error);
-          },
-        }
-      );
+      // Agar already initialized hai to return
+      if ((window as any).recaptchaVerifier) {
+        console.log("✅ Recaptcha already initialized");
+        return;
+      }
   
-      verifier
-        .render()
-        .then(() => {
-          (window as any).recaptchaVerifier = verifier;
-          console.log("✅ Recaptcha Verifier initialized successfully.");
-        })
-        .catch((error: any) => {
-          if (!error.message.includes("already been rendered")) {
-            console.error("❌ Recaptcha render failed:", error);
+      try {
+        console.log("🔄 Setting up Recaptcha...");
+        
+        // ✅ Correct syntax - auth parameter first
+        const verifier = new RecaptchaVerifier(
+          auth, // ✅ Auth parameter first
+          containerId, // ✅ Container ID second
+          {
+            size: 'invisible',
+            callback: () => {
+              console.log("✅ reCAPTCHA solved!");
+            },
+            'expired-callback': () => {
+              console.warn("⚠️ reCAPTCHA expired");
+              (window as any).recaptchaVerifier = null;
+            },
           }
-        });
+        );
   
-    } catch (error) {
-      console.error("❌ Recaptcha Initialization Failed:", error);
-    }
+        // Directly assign without render - let Firebase handle it
+        (window as any).recaptchaVerifier = verifier;
+        console.log("✅ Recaptcha Verifier setup completed");
+  
+      } catch (error) {
+        console.error("❌ Recaptcha Setup Failed:", error);
+        // Simple retry after 3 seconds
+        setTimeout(initializeRecaptcha, 3000);
+      }
+    };
+  
+    // Initial delay for DOM readiness
+    const timer = setTimeout(initializeRecaptcha, 1000);
   
     return () => {
-      const v = (window as any).recaptchaVerifier;
-      if (v) {
+      clearTimeout(timer);
+      const verifier = (window as any).recaptchaVerifier;
+      if (verifier) {
         try {
-          console.log("🧹 Clearing reCAPTCHA verifier...");
-          v.clear();
-          (window as any).recaptchaVerifier = undefined;
+          verifier.clear();
+          (window as any).recaptchaVerifier = null;
         } catch (err) {
-          console.warn("⚠️ Failed to clear reCAPTCHA verifier:", err);
+          console.warn("⚠️ Failed to clear reCAPTCHA:", err);
         }
       }
     };

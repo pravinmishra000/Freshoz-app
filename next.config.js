@@ -35,10 +35,18 @@ const nextConfig = {
       },
     ],
   },
-  webpack(config) {
-    config.experiments = { ...config.experiments, asyncWebAssembly: true };
+  experimental: {
+    optimizeCss: false, // CSS optimization disable karein
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
     return config;
   },
 };
+
+
 
 module.exports = nextConfig;

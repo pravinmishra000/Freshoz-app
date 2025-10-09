@@ -45,6 +45,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
         <SplashScreen />
+        {/* ✅ YEH LINE ADD KAREIN - Recaptcha Container */}
+        <div id="recaptcha-container"></div>
+        
         <AuthProvider>
           <CartProvider>
             {children}
