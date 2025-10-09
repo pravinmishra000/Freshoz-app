@@ -717,7 +717,7 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     pack_size: '6 pc',
     is_veg: true,
     delivery_mode: 'quick',
-    image: 'https://picsum.photos/seed/veg-26/400/400',
+    image: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fvegetables%2Fproducts%2Fbanana-raw.webp?alt=media&token=9c5f969e-a86f-4f92-a01f-90ebcf82a851',
     imageHint: 'raw banana',
     tags: ['vegetable', 'banana', 'raw', 'kachcha kela'],
     rating: 4.4,
@@ -730,6 +730,7 @@ export const VEGETABLES_PRODUCTS: Product[] = [
     ]
   }
 ];
+
 
 
 
