@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -16,7 +17,8 @@ import {
   Users,
   ShoppingCart,
   LayoutGrid,
-  Coins
+  Coins,
+  Heart // Added Heart icon for Wishlist
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -56,6 +58,7 @@ const customerNavItems = [
   { href: '/products', label: 'Home / Shop', icon: Home },
   { href: '/categories', label: 'Categories', icon: LayoutGrid },
   { href: '/orders', label: 'My Orders', icon: Package },
+  { href: '/wishlist', label: 'Wishlist', icon: Heart }, // Added Wishlist
   { href: '/offers', label: 'Offers & Discounts', icon: Tag },
   { href: '/wallet', label: 'Wallet', icon: Wallet },
   { href: '/savings', label: 'Savings Hub', icon: Coins },
@@ -241,8 +244,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               {[ 
                 { href: '/products', label: 'Home', icon: Home },
                 { href: '/categories', label: 'Categories', icon: LayoutGrid },
+                { href: '/wishlist', label: 'Wishlist', icon: Heart },
                 { href: '/offers', label: 'Offers', icon: Tag },
-                { href: '/chat', label: 'Chat', icon: MessageSquare },
                 { href: '/checkout', label: 'Cart', icon: ShoppingCart },
               ].map((item) => (
                 <Link

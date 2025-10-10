@@ -134,10 +134,13 @@ export interface NutritionInfo {
 
 // ✅ Review interface
 export interface Review {
-  user: string;
+  id: string;
+  userId: string;
+  userName: string;
+  userImage?: string;
   rating: number;
-  comment?: string;
-  date?: string;
+  comment: string;
+  createdAt: FieldValue | Date;
 }
 
 export interface ProductVariant {
@@ -246,6 +249,7 @@ export interface User {
   // Merged fields
   name?: string;
   address?: Address;
+  wishlist?: string[]; // Array of product IDs
 }
 
 export interface OrderItem {
@@ -391,12 +395,10 @@ export interface Coupon {
 
 // ✅ ADDED: Wishlist types
 export interface WishlistItem {
-  id: string;
-  userId: string;
   productId: string;
-  product: Product;
-  addedAt: string;
+  addedAt: FieldValue;
 }
+
 
 // ✅ ADDED: Delivery slot types
 export interface DeliverySlot {
