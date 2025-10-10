@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge'; // ✅ YEH LINE ADD KAREIN
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { X, ChefHat } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -40,7 +40,6 @@ export default function DailyDishBanner() {
 
     const fetchDailyDish = async () => {
       try {
-        // FIX: Moved date calculations inside useEffect to prevent hydration mismatch
         const today = new Date();
         const startOfDay = new Date(today.setHours(0, 0, 0, 0));
         const endOfDay = new Date(today.setHours(23, 59, 59, 999));
@@ -88,41 +87,61 @@ export default function DailyDishBanner() {
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden"
       >
-        <Card className="glass-card overflow-hidden shadow-2xl border-primary/20">
+        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
+          {/* Close Button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={handleClose}
-            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/20 text-white hover:bg-black/40 z-10"
+            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/20 text-white hover:bg-white/30 z-10"
           >
             <X className="h-4 w-4" />
           </Button>
 
-          <div className="relative h-40 w-full">
+          {/* Image Section */}
+          <div className="relative h-32 w-full">
             <Image
-              src={dish.imageUrl}
+              src={dish.imageUrl || '/images/default-dish.jpg'}
               alt={dish.dishName}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, 384px"
-              data-ai-hint={`${dish.cuisineType} food`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-             <div className="absolute bottom-2 left-3">
-                <h3 className="font-bold text-xl text-white drop-shadow-md">{dish.dishName}</h3>
-                <Badge variant="secondary" className="text-xs bg-white/90 text-primary">{dish.cuisineType}</Badge>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            
+            {/* Dish Info Overlay */}
+            <div className="absolute bottom-2 left-3 right-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-lg text-white drop-shadow-md line-clamp-1">{dish.dishName}</h3>
+                  <Badge className="bg-white/20 text-white border-0 text-xs mt-1">
+                    {dish.cuisineType}
+                  </Badge>
+                </div>
+                <div className="bg-white/20 rounded-lg px-2 py-1">
+                  <span className="text-white font-bold text-sm">₹{dish.price}</span>
+                </div>
+              </div>
             </div>
           </div>
           
-          <CardContent className="p-4">
-             <CardDescription className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {dish.description}
-             </CardDescription>
+          {/* Content Section */}
+          <CardContent className="p-3">
+            <p className="text-white/90 text-sm mb-3 line-clamp-2">
+              {dish.description}
+            </p>
+            
             <div className="flex items-center justify-between">
-              <p className="text-2xl font-bold text-primary">₹{dish.price}</p>
-              <Button className="neon-button" onClick={() => alert('Booking modal would open!')}>
-                <ChefHat className="mr-2 h-4 w-4" />
-                Book Now
+              <div className="flex items-center gap-1 text-white/80">
+                <ChefHat className="h-4 w-4" />
+                <span className="text-xs">Today's Special</span>
+              </div>
+              
+              <Button 
+                className="bg-white text-green-600 hover:bg-white/90 font-semibold text-sm px-4 py-2 rounded-xl"
+                onClick={() => alert('Adding to cart functionality here')}
+              >
+                Add to Cart
               </Button>
             </div>
           </CardContent>

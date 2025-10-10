@@ -1,14 +1,151 @@
-
 // src/app/pre-home/page.tsx
+'use client';
+
 import { Clock, Shield, Truck, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { auth } from '@/lib/firebase/client';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+
+// Declare recaptchaVerifier in window object
+declare global {
+  interface Window {
+    recaptchaVerifier?: RecaptchaVerifier;
+  }
+}
 
 export default function PreHomeScreen() {
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState('phone'); // 'phone' or 'otp'
+  const [isLoading, setIsLoading] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+
+  // Setup Recaptcha on component mount
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+          'callback': () => {
+            console.log('reCAPTCHA solved');
+          },
+          'expired-callback': () => {
+            console.log('reCAPTCHA expired');
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error setting up recaptcha:', error);
+    }
+  }, []);
+
+  const handleSendOTP = async () => {
+    if (!phone || phone.length !== 10) {
+      alert('Please enter a valid 10-digit phone number');
+      return;
+    }
+    if (!window.recaptchaVerifier) {
+      alert('Recaptcha not initialized. Please refresh the page.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log('Sending OTP to:', phone);
+      
+      const appVerifier = window.recaptchaVerifier;
+      const phoneNumber = `+91${phone}`; // Add country code for India
+      
+      // Actual Firebase OTP sending
+      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      
+      setConfirmationResult(confirmation);
+      setStep('otp');
+      alert(`OTP sent to ${phone}. Please check your messages.`);
+      
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
+      
+      // Specific error handling
+      if (error.code === 'auth/invalid-phone-number') {
+        alert('Invalid phone number format. Please enter a valid Indian number.');
+      } else if (error.code === 'auth/too-many-requests') {
+        alert('Too many attempts. Please try again later.');
+      } else if (error.code === 'auth/quota-exceeded') {
+        alert('SMS quota exceeded. Please try again later.');
+      } else {
+        alert(`Failed to send OTP: ${error.message}`);
+      }
+      
+      // Reset recaptcha on error
+      try {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+        });
+      } catch (recaptchaError) {
+        console.error('Error resetting recaptcha:', recaptchaError);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      alert('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log('Verifying OTP:', otp);
+      
+      // Actual Firebase OTP verification
+      const result = await confirmationResult.confirm(otp);
+      const user = result.user;
+      
+      console.log('User signed in successfully:', user);
+      alert('Login successful! Welcome to Freshoz.');
+      
+      // Redirect to home page after successful login
+      window.location.href = '/products';
+      
+    } catch (error: any) {
+      console.error('Error verifying OTP:', error);
+      
+      if (error.code === 'auth/invalid-verification-code') {
+        alert('Invalid OTP. Please check the code and try again.');
+      } else if (error.code === 'auth/code-expired') {
+        alert('OTP has expired. Please request a new one.');
+      } else {
+        alert(`OTP verification failed: ${error.message}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setPhone(value);
+  };
+
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setOtp(value);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-80 to-orange-200">
       {/* Header - Simple Logo */}
-      <header className="bg-white/80 backdrop-blur-md p-4 border-b border-gray-200">
-        <h1 className="text-2xl font-black text-primary text-center uppercase">Freshoz</h1>
+      <header className="bg-gradient-to-r from-purple-300 to-purple-400 backdrop-blur-md p-4 border-b border-purple-400">
+        <h1 className="text-2xl font-black text-center uppercase relative">
+          <span className="text-green-800 drop-shadow-[0_0_15px_rgba(34,197,94,0.8)] relative z-10">
+            Freshoz
+          </span>
+        </h1>
       </header>
 
       <main className="p-4">
@@ -37,20 +174,69 @@ export default function PreHomeScreen() {
           <div className="flex items-center gap-3 mb-3">
             <Phone className="h-5 w-5 text-primary" />
             <div>
-              <p className="text-sm font-semibold text-gray-800">Login/Sign Up</p>
-              <p className="text-xs text-muted-foreground">Get personalized offers & faster checkout</p>
+              <p className="text-sm font-semibold text-gray-800">
+                {step === 'phone' ? 'Login/Sign Up' : 'Enter OTP'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {step === 'phone' 
+                  ? 'Get personalized offers & faster checkout' 
+                  : `We sent a code to ${phone}`
+                }
+              </p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <input
-              type="tel"
-              placeholder="Enter phone number"
-              className="flex-1 p-3 border border-gray-300 bg-white text-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground"
-            />
-            <button className="bg-primary text-white px-4 py-3 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors">
-              Get OTP
-            </button>
-          </div>
+          
+          {step === 'phone' ? (
+            <div className="flex gap-2">
+              <input
+                type="tel"
+                placeholder="Enter phone number"
+                value={phone}
+                onChange={handlePhoneChange}
+                className="flex-1 p-3 border border-gray-300 bg-white text-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground"
+                maxLength={10}
+              />
+              <button 
+                onClick={handleSendOTP}
+                disabled={isLoading || phone.length !== 10}
+                className="bg-primary text-white px-4 py-3 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Sending...' : 'Get OTP'}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit OTP"
+                  value={otp}
+                  onChange={handleOtpChange}
+                  className="flex-1 p-3 border border-gray-300 bg-white text-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground"
+                  maxLength={6}
+                />
+                <button 
+                  onClick={handleVerifyOTP}
+                  disabled={isLoading || otp.length !== 6}
+                  className="bg-primary text-white px-4 py-3 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Verifying...' : 'Verify OTP'}
+                </button>
+              </div>
+              <button 
+                onClick={() => {
+                  setStep('phone');
+                  setOtp('');
+                }}
+                className="text-xs text-primary hover:underline"
+              >
+                Change phone number
+              </button>
+            </div>
+          )}
+
+          {/* Hidden reCAPTCHA container - IMPORTANT */}
+          <div id="recaptcha-container" className="my-2"></div>
         </div>
 
         {/* Delivery Time Estimate */}
@@ -114,3 +300,4 @@ export default function PreHomeScreen() {
     </div>
   );
 }
+

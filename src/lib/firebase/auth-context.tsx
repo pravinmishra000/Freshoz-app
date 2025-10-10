@@ -1,3 +1,4 @@
+
 // /home/user/studio/src/lib/firebase/auth-context.tsx
 
 'use client';
@@ -89,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
   
       // Agar already initialized hai to return
-      if ((window as any).recaptchaVerifier) {
+      if (window.recaptchaVerifier) {
         console.log("✅ Recaptcha already initialized");
         return;
       }
@@ -97,10 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         console.log("🔄 Setting up Recaptcha...");
         
-        // ✅ Correct syntax - auth parameter first
         const verifier = new RecaptchaVerifier(
-          auth, // ✅ Auth parameter first
-          containerId, // ✅ Container ID second
+          auth,
+          containerId,
           {
             size: 'invisible',
             callback: () => {
@@ -108,32 +108,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
             'expired-callback': () => {
               console.warn("⚠️ reCAPTCHA expired");
-              (window as any).recaptchaVerifier = null;
+              window.recaptchaVerifier = undefined;
             },
           }
         );
   
-        // Directly assign without render - let Firebase handle it
-        (window as any).recaptchaVerifier = verifier;
+        window.recaptchaVerifier = verifier;
         console.log("✅ Recaptcha Verifier setup completed");
   
       } catch (error) {
         console.error("❌ Recaptcha Setup Failed:", error);
-        // Simple retry after 3 seconds
         setTimeout(initializeRecaptcha, 3000);
       }
     };
   
-    // Initial delay for DOM readiness
     const timer = setTimeout(initializeRecaptcha, 1000);
   
     return () => {
       clearTimeout(timer);
-      const verifier = (window as any).recaptchaVerifier;
+      const verifier = window.recaptchaVerifier;
       if (verifier) {
         try {
           verifier.clear();
-          (window as any).recaptchaVerifier = null;
+          window.recaptchaVerifier = undefined;
         } catch (err) {
           console.warn("⚠️ Failed to clear reCAPTCHA:", err);
         }
@@ -167,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     
-    const verifier = (window as any).recaptchaVerifier; 
+    const verifier = window.recaptchaVerifier; 
     
     if (!verifier) {
         console.error("Recaptcha Verifier not initialized. Throwing error.");
