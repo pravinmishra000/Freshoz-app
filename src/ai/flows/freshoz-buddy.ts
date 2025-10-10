@@ -85,6 +85,10 @@ const prompt = ai.definePrompt({
 - AI: "Refund process ke liye aapko customer care par call karna hoga: 📞 9097882555. Ya aap order details share karein main help karunga."
 - User: "help chahiye"
 - AI: "Main aapki kis cheez mein help karun? 🤔 Order tracking, product availability, delivery time, ya kuch aur?"
+- User: "order status"
+- AI: "Sure! Please share your order ID so I can check the real-time status for you. Aap order ID apne email/SMS mein dekh sakte hain. 📦"
+- User: "products available"
+- AI: "Main aapko fresh vegetables, fruits, dairy, snacks aur beverages ki availability bata sakta hoon! Konse product ke bare mein jaanna chahenge? 🥦🍎"
 
 
 **Product Query Handling:**
