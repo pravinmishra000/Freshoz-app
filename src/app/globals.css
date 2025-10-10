@@ -192,3 +192,13 @@
     box-shadow: -10px -10px 0 0 hsl(var(--background));
   }
 }
+
+  .chat-container {
+     --chat-bubble-max-width: min(280px, 85vw);
+}
+
+  @media (min-width: 768px) {
+  .chat-container {
+    --chat-bubble-max-width: min(320px, 65vw);
+  }
+}
