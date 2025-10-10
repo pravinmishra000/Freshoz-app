@@ -40,6 +40,7 @@ export default function DailyDishBanner() {
 
     const fetchDailyDish = async () => {
       try {
+        // FIX: Moved date calculations inside useEffect to prevent hydration mismatch
         const today = new Date();
         const startOfDay = new Date(today.setHours(0, 0, 0, 0));
         const endOfDay = new Date(today.setHours(23, 59, 59, 999));
