@@ -1,7 +1,17 @@
+
 'use server';
 
-import { getAllOrders as getAllOrdersFromDb, updateOrderStatus as updateOrderStatusInDb, getAnalyticsSummary as getAnalyticsFromDb, getUser } from '@/services/firestoreService';
-import { Order, OrderStatus } from '@/lib/types';
+import { 
+    getAllOrders as getAllOrdersFromDb, 
+    updateOrderStatus as updateOrderStatusInDb, 
+    getAnalyticsSummary as getAnalyticsFromDb, 
+    getUser,
+    getAllProducts as getAllProductsFromDb,
+    createProduct,
+    updateProduct as updateProductInDb,
+    deleteProduct as deleteProductInDb
+} from '@/services/firestoreService';
+import type { Order, OrderStatus, Product, ProductInput } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/firebase/server';
 import { sendPushNotification } from '@/services/notificationService';
@@ -69,5 +79,49 @@ export async function getAnalyticsSummary() {
             revenueByDay: [],
             ordersByDay: [],
         };
+    }
+}
+
+export async function getProducts(): Promise<Product[]> {
+    try {
+        await verifyAdmin();
+        const products = await getAllProductsFromDb();
+        return products;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return [];
+    }
+}
+
+export async function addProduct(product: ProductInput): Promise<{ success: boolean; message?: string; productId?: string }> {
+    try {
+        await verifyAdmin();
+        const productId = await createProduct(product);
+        revalidatePath('/admin/products');
+        return { success: true, productId };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Could not add product.' };
+    }
+}
+
+export async function updateProduct(productId: string, product: Partial<ProductInput>): Promise<{ success: boolean; message?: string }> {
+    try {
+        await verifyAdmin();
+        await updateProductInDb(productId, product);
+        revalidatePath('/admin/products');
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Could not update product.' };
+    }
+}
+
+export async function deleteProduct(productId: string): Promise<{ success: boolean; message?: string }> {
+    try {
+        await verifyAdmin();
+        await deleteProductInDb(productId);
+        revalidatePath('/admin/products');
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Could not delete product.' };
     }
 }
