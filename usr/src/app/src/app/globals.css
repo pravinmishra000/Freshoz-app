@@ -1,0 +1,204 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%; 
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 142 71% 45%; /* Vibrant Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142 71% 45%; /* Vibrant Green */
+    --radius: 1.75rem;
+
+    --primary-glow: 142 81% 55%;
+    --positive: 142 71% 45%; /* Vibrant Green for positive actions */
+  }
+
+  .dark {
+    --background: 222 84% 5%;
+    --foreground: 0 0% 97%;
+    --card: 222 84% 8%;
+    --card-foreground: 0 0% 97%;
+    --popover: 222 84% 5%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 142 71% 45%; /* Vibrant Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 84% 12%;
+    --secondary-foreground: 0 0% 97%;
+    --muted: 222 84% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 84% 12%;
+    --input: 222 84% 12%;
+    --ring: 142 71% 45%;
+    
+    --primary-glow: 142 81% 55%;
+    --positive: 142 63% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Styling for react-phone-number-input */
+  .phone-input-dark .PhoneInputInput {
+      @apply bg-transparent border-input text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .phone-input-dark .PhoneInputCountry {
+      @apply bg-transparent text-foreground;
+  }
+
+}
+
+@layer components {
+  .vibrant-gradient {
+      background: linear-gradient(120deg, #f8fafc, #f3f4f6, #eff6ff);
+  }
+
+  .glass-card {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 12px 40px 0 rgba(0, 0, 0, 0.12), /* Softer, deeper outer shadow */
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2); /* Inner shadow for edge highlight */
+    @apply rounded-3xl overflow-hidden relative;
+  }
+  
+  .glass-button {
+     @apply glass-card p-4 rounded-2xl transition-transform duration-300 ease-out hover:scale-105 active:scale-95;
+  }
+
+  .neon-button {
+      @apply bg-primary text-primary-foreground shadow-lg transition-all duration-300;
+      box-shadow: 0 0 10px hsl(var(--primary-glow)), 0 0 20px hsl(var(--primary-glow));
+  }
+  .neon-button:hover {
+      @apply bg-primary/90;
+      box-shadow: 0 0 15px hsl(var(--primary-glow)), 0 0 30px hsl(var(--primary-glow));
+  }
+
+  .neon-button-active {
+      @apply bg-primary text-primary-foreground shadow-lg;
+      box-shadow: 0 0 15px hsl(var(--primary-glow)), 0 0 30px hsl(var(--primary-glow)), inset 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+
+  .light-ray {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 80%);
+    transform: rotate(25deg) translateX(-150%);
+    animation: lightMove 4s ease-in-out 1;
+    pointer-events: none;
+  }
+
+  @keyframes lightMove {
+    0% { transform: rotate(25deg) translateX(-150%); }
+    100% { transform: rotate(25deg) translateX(150%); }
+  }
+
+  /* Glassmorphism App Bar */
+  .glass-app-bar {
+    background: rgba(255, 255, 255, 0.5); /* 50% white transparent */
+    backdrop-filter: blur(10px);          /* glass blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* Safari support */
+    @apply border-b border-white/30;
+  }
+
+  /* Sidebar background */
+  [data-sidebar="sidebar"] {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Mobile Sidebar background */
+  [data-sidebar="sidebar"][data-mobile="true"] {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+
+  /* Icon Button with Glass Effect */
+  .glass-icon-button {
+     @apply bg-primary/10 backdrop-blur-lg border border-primary/20 rounded-full shadow-lg p-3 text-center text-primary transition-transform duration-300 ease-out hover:scale-110 active:scale-95;
+  }
+
+  /* For hiding scrollbars but keeping scroll functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* New Category Tab styles */
+  .category-tab-item {
+    z-index: 1;
+  }
+  
+  .active-category-tab {
+    color: hsl(var(--primary));
+    font-weight: 600;
+  }
+  .active-category-tab::before,
+  .active-category-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  .active-category-tab::before {
+    left: -20px;
+    box-shadow: 10px -10px 0 0 hsl(var(--background));
+  }
+
+  .active-category-tab::after {
+    right: -20px;
+    box-shadow: -10px -10px 0 0 hsl(var(--background));
+  }
+}
+
+  .chat-container .prose {
+    max-width: var(--chat-bubble-max-width, 80%);
+  }
+
+  @media (min-width: 640px) {
+    .chat-container .prose {
+      max-width: var(--chat-bubble-max-width, 60%);
+    }
+  }
