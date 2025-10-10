@@ -207,8 +207,8 @@ export function ChatInterface() {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-         <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef}>
+      <CardContent className="flex-1 p-0 overflow-hidden">
+         <ScrollArea className="h-full p-4 md:p-6" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -273,8 +273,8 @@ export function ChatInterface() {
             )}
           </div>
         </ScrollArea>
-
-        <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
+      </CardContent>
+      <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
           {authUser && messages.length <= 2 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (
@@ -303,7 +303,6 @@ export function ChatInterface() {
             </div>
           </div>
         </div>
-      </CardContent>
     </Card>
   );
 }
