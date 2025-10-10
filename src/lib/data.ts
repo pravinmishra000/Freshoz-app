@@ -175,25 +175,46 @@ export const products: Product[] = [
 export const promotions: Promotion[] = [
   {
     id: 'promo-1',
-    title: 'Smart Grocery Deals',
-    description: 'Save big on staples, spices & more!',
-    imageUrl: 'https://picsum.photos/seed/promo1/800/400',
-    imageHint: 'groceries shelf',
+    title: 'Fresh Vegetables',
+    description: 'Get up to 30% off on fresh vegetables',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-1.webp?alt=media&token=4c61242c-b096-49d4-af1d-742aa1dc7f25',
+    imageHint: 'fresh vegetables'
   },
   {
     id: 'promo-2',
-    title: 'Daily Dairy Fresh',
-    description: 'Get flat 15% off on milk, paneer & ghee!',
-    imageUrl: 'https://picsum.photos/seed/promo2/800/400',
-    imageHint: 'milk bread',
+    title: 'Fresh Fruits',
+    description: 'Sweet and fresh fruits delivered daily', 
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fbanner-1.webp?alt=media&token=878867c1-6392-47ab-a63e-20a95ba5a89d',
+    imageHint: 'fresh fruits'
   },
   {
     id: 'promo-3',
-    title: 'Veggie Freshness',
-    description: 'Farm-fresh vegetables delivered to your door.',
-    imageUrl: 'https://picsum.photos/seed/promo3/800/400',
-    imageHint: 'vegetables variety',
+    title: 'Dairy & Bakery',
+    description: 'Fresh dairy products and bakery items',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-2.webp?alt=media&token=e87d815b-fd88-4150-bf65-afdc825c1a44',
+    imageHint: 'dairy products'
   },
+  {
+    id: 'promo-4',
+    title: 'Non-Veg Products', 
+    description: 'Quality non-vegetarian products',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fnon-veg%2Fnon-veg-banner.webp?alt=media&token=5b2639fd-9b7e-4919-8664-9844f2b9843c',
+    imageHint: 'non-veg products'
+  },
+  {
+    id: 'promo-5',
+    title: 'Staples & Grocery',
+    description: 'All your kitchen essentials in one place',
+    imageUrl: 'firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-3.webp?alt=media&token=2caedabd-2071-4474-ac15-28143980a111',
+    imageHint: 'staples grocery'
+  },
+  {
+    id: 'promo-6',
+    title: 'Snacks & Beverages',
+    description: 'Wide range of snacks and beverages',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fbanner-2.webp?alt=media&token=db8af574-a480-4c33-9e97-b8e72e0558c5',
+    imageHint: 'snacks beverages'
+  }
 ];
 
 export const earningsData: EarningPeriod[] = [

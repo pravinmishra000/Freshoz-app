@@ -253,6 +253,9 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  image: string; // ✅ YEH LINE ADD KAREIN
+  variantId?: string;
+  pack_size?: string;
 }
 
 export type OrderStatus = 'placed' | 'preparing' | 'out for delivery' | 'delivered' | 'cancelled';
