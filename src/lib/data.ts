@@ -184,7 +184,7 @@ export const promotions: Promotion[] = [
     id: 'promo-2',
     title: 'Fresh Fruits',
     description: 'Sweet and fresh fruits delivered daily', 
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fbanner-1.webp?alt=media&token=878867c1-6392-47ab-a63e-20a95ba5a89d',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-5.webp?alt=media&token=ed80c7f0-f618-40f8-8f89-d4a87444da81',
     imageHint: 'fresh fruits'
   },
   {
@@ -198,21 +198,21 @@ export const promotions: Promotion[] = [
     id: 'promo-4',
     title: 'Non-Veg Products', 
     description: 'Quality non-vegetarian products',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/categories%2Fnon-veg%2Fnon-veg-banner.webp?alt=media&token=5b2639fd-9b7e-4919-8664-9844f2b9843c',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-4.webp?alt=media&token=40a8aae2-6dfa-4bd9-8a46-4bb39bae72f4',
     imageHint: 'non-veg products'
   },
   {
     id: 'promo-5',
     title: 'Staples & Grocery',
     description: 'All your kitchen essentials in one place',
-    imageUrl: 'firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-3.webp?alt=media&token=2caedabd-2071-4474-ac15-28143980a111',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-6.webp?alt=media&token=f2e7af5d-43d3-418b-b47c-d481e3f139a8',
     imageHint: 'staples grocery'
   },
   {
     id: 'promo-6',
     title: 'Snacks & Beverages',
     description: 'Wide range of snacks and beverages',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fbanner-2.webp?alt=media&token=db8af574-a480-4c33-9e97-b8e72e0558c5',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fcarousel%2Fcarousel-8.webp?alt=media&token=c800db93-71ef-40ac-9cb9-5a2ab596f532',
     imageHint: 'snacks beverages'
   }
 ];

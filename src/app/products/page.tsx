@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
+import DailyDishBanner from '@/components/promotional/DailyDishBanner';
 
 export default function ProductsPage() {
   const pathname = usePathname();
@@ -159,6 +159,9 @@ export default function ProductsPage() {
           </div>
         </section>
       </main>
+
+      {/* ✅ Daily Dish Banner - AppShell ke andar add karein */}
+      <DailyDishBanner />
 
       {/* Fixed Call & Help Buttons */}
       <a href="tel:9097882555" className="glass-icon-button fixed bottom-24 left-4 z-40 h-14 w-14 md:left-6 md:bottom-6">
