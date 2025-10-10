@@ -201,20 +201,20 @@ export function ChatInterface() {
               </div>
             </div>
             <p className="text-white/80 text-sm font-normal mt-1">
-              {authUser ? `Welcome back, ${authUser.displayName || 'Valued Customer'}! 👋` : 'Your AI Support Companion'}
+              {authUser ? `Welcome back, ${authUser.displayName?.split(' ')[0] || 'Valued Customer'}! 👋` : 'Your AI Support Companion'}
             </p>
           </div>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 p-0 overflow-hidden">
-         <ScrollArea className="h-full p-4 md:p-6" ref={scrollAreaRef}>
+      <div className="flex-1 flex flex-col overflow-hidden chat-container">
+        <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={cn(
-                  'flex items-start gap-3 group',
+                  'flex items-start gap-3 group w-full',
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 )}
               >
@@ -228,13 +228,15 @@ export function ChatInterface() {
                 )}
                 <div
                   className={cn(
-                    'max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-md transition-all duration-300',
+                    'rounded-2xl px-4 py-3 text-sm shadow-md transition-all duration-300',
+                    'prose prose-sm max-w-none break-words leading-relaxed',
+                    'w-fit',
                     message.role === 'user' 
                       ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-br-lg' 
                       : 'bg-white/80 backdrop-blur-sm border border-white/30 rounded-bl-lg'
                   )}
                 >
-                  <ReactMarkdown className="prose prose-sm max-w-none break-words leading-relaxed text-sm">
+                  <ReactMarkdown>
                     {message.content as string}
                   </ReactMarkdown>
                   <div className={cn("text-xs mt-2 opacity-70", message.role === 'user' ? 'text-blue-100' : 'text-gray-500')}>
@@ -273,36 +275,36 @@ export function ChatInterface() {
             )}
           </div>
         </ScrollArea>
-      </CardContent>
-      <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
-          {authUser && messages.length <= 2 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (
-                <Button key={suggestion} variant="outline" size="sm" className="rounded-full h-8" onClick={() => setInput(suggestion.replace(/^[^\s]+\s/, ''))}>
-                  {suggestion}
+        <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
+            {authUser && messages.length <= 1 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (
+                  <Button key={suggestion} variant="outline" size="sm" className="rounded-full h-8" onClick={() => setInput(suggestion.replace(/^[^\s]+\s/, ''))}>
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            )}
+            <div className="relative">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder={ authUser ? 'Ask about your orders...' : 'Please log in to chat' }
+                className="h-12 rounded-full border-2 border-gray-200 bg-white/80 pl-5 pr-24 text-base"
+                disabled={isLoading || !authUser}
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <Button type="button" size="icon" variant="ghost" onClick={handleMicClick} className={cn('rounded-full h-9 w-9', listening ? 'bg-red-100 text-red-600' : 'text-gray-500')} disabled={!authUser}>
+                  <Mic className="h-5 w-5" />
                 </Button>
-              ))}
-            </div>
-          )}
-          <div className="relative">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder={ authUser ? 'Ask about your orders...' : 'Please log in to chat' }
-              className="h-12 rounded-full border-2 border-gray-200 bg-white/80 pl-5 pr-24 text-base"
-              disabled={isLoading || !authUser}
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <Button type="button" size="icon" variant="ghost" onClick={handleMicClick} className={cn('rounded-full h-9 w-9', listening ? 'bg-red-100 text-red-600' : 'text-gray-500')} disabled={!authUser}>
-                <Mic className="h-5 w-5" />
-              </Button>
-              <Button type="submit" size="icon" onClick={handleSend} disabled={isLoading || !input.trim() || !authUser} className="rounded-full h-9 w-9 bg-primary text-primary-foreground">
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </Button>
+                <Button type="submit" size="icon" onClick={handleSend} disabled={isLoading || !input.trim() || !authUser} className="rounded-full h-9 w-9 bg-primary text-primary-foreground">
+                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+      </div>
     </Card>
   );
 }
