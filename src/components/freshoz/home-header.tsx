@@ -66,13 +66,6 @@ export default function HomeHeader() {
               </Button>
             </Link>
 
-            {/* Phone Button */}
-            <a href="tel:9097882555">
-              <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/30 text-white rounded-full h-10 w-10">
-                <Phone className="h-5 w-5" />
-              </Button>
-            </a>
-
             {/* WhatsApp Button */}
             <a href="https://wa.me/9097882555" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="icon" className="bg-white/20 hover:bg-white/30 text-white rounded-full h-10 w-10">

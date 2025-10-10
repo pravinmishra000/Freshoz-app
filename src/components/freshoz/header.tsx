@@ -113,13 +113,6 @@ export function Header({
             )}
           </Button>
 
-          {/* Phone */}
-          <a href="tel:9097882555">
-            <Button variant="ghost" size="icon" className="text-white/90 hover:text-white hover:bg-orange-500/20 hidden sm:flex">
-              <Phone className="h-5 w-5" />
-            </Button>
-          </a>
-
           {/* WhatsApp */}
           <a href="https://wa.me/9097882555" target="_blank" rel="noopener noreferrer">
             <Button variant="ghost" size="icon" className="text-white/90 hover:text-white hover:bg-orange-500/20 hidden sm:flex">

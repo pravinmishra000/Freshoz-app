@@ -163,12 +163,6 @@ export default function ProductsPage() {
       {/* ✅ Daily Dish Banner - AppShell ke andar add karein */}
       <DailyDishBanner />
 
-      {/* Fixed Call & Help Buttons */}
-      <a href="tel:9097882555" className="glass-icon-button fixed bottom-24 left-4 z-40 h-14 w-14 md:left-6 md:bottom-6">
-        <Phone className="h-7 w-7 text-positive" />
-        <span className="sr-only">Call to Order</span>
-      </a>
-
       {/* Help Button */}
       <button className="glass-icon-button fixed bottom-24 right-4 z-40 h-14 w-14 md:right-6 md:bottom-6">
         <HelpCircle className="h-7 w-7 text-positive" />
