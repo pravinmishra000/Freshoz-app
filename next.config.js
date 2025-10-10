@@ -1,6 +1,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export', // ✅ YEH LINE ADD KAREIN - Capacitor ke liye
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
