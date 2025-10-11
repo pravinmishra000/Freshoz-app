@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { getAiResponse } from '@/ai/flows/freshoz-buddy';
+import type { FreshozBuddyInput, FreshozBuddyOutput } from '@/ai/flows/freshoz-buddy';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/types';
@@ -96,7 +96,19 @@ export default function FreshozBuddy() {
 
     try {
       const currentCartItems = getCartItems();
-      const result = await getAiResponse({ query, cartItems: currentCartItems });
+      const payload: FreshozBuddyInput = { query, cartItems: currentCartItems };
+
+      const response = await fetch('/api/freshoz-buddy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result: FreshozBuddyOutput = await response.json();
       
       const responseText = result.response;
       let productSuggestion: Product | undefined;

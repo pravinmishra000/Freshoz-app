@@ -5,7 +5,7 @@ import { useState, useTransition, useCallback } from 'react';
 import { Search, Mic } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { generateSearchSuggestions } from '@/ai/flows/smart-search-suggestions';
+import type { SearchSuggestionsInput, SearchSuggestionsOutput } from '@/ai/flows/smart-search-suggestions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -33,7 +33,18 @@ export function SmartSearchBar() {
       return;
     }
     try {
-      const result = await generateSearchSuggestions({ searchQuery, searchHistory });
+      const payload: SearchSuggestionsInput = { searchQuery, searchHistory };
+      const response = await fetch('/api/search-suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result: SearchSuggestionsOutput = await response.json();
       setSuggestions(result.suggestions);
     } catch (error) {
       console.error("Failed to get search suggestions:", error);

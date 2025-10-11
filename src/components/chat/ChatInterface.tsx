@@ -4,7 +4,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/firebase/auth-context';
-import { supportChat } from '@/ai/flows/customer-support-chat';
+import type { SupportChatInput, SupportChatOutput } from '@/ai/flows/customer-support-chat';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,9 +86,8 @@ export function ChatInterface() {
   const handleSend = async () => {
     if (!input.trim()) return;
   
-    const userMessage = { 
-      id: Date.now().toString(),
-      role: 'user' as const, 
+    const userMessage: Message = { 
+      role: 'user', 
       content: input,
       timestamp: new Date()
     };
@@ -98,19 +97,24 @@ export function ChatInterface() {
     setIsLoading(true);
   
     try {
-      // Use userId if logged in, otherwise use 'guest'
       const userId = authUser ? authUser.uid : 'guest';
       
-      // Use the CORRECT format - { userId, message }
-      const result = await supportChat({ 
-        userId: userId,
-        message: input
-        // history: messages // Remove this line if you were using it
+      const response = await fetch('/api/support-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, message: input } as SupportChatInput),
       });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result: SupportChatOutput = await response.json();
       
-      const modelMessage = { 
-        id: (Date.now() + 1).toString(),
-        role: 'model' as const, 
+      const modelMessage: Message = { 
+        role: 'model', 
         content: result.message,
         timestamp: new Date()
       };
@@ -120,10 +124,8 @@ export function ChatInterface() {
     } catch (error) {
       console.error('Chat error:', error);
       
-      // User-friendly error message
-      const errorMessage = { 
-        id: (Date.now() + 1).toString(),
-        role: 'model' as const, 
+      const errorMessage: Message = { 
+        role: 'model', 
         content: authUser ? 
           "I'm having trouble right now. Please try again in a moment or call us at 📞 9097882555 for immediate help." :
           "Please login for personalized support. Or you can call us at 📞 9097882555 for immediate help.",
