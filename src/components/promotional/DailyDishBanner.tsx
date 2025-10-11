@@ -4,10 +4,9 @@
 import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, Timestamp, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { X, ChefHat } from 'lucide-react';
+import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
@@ -96,18 +95,16 @@ export default function DailyDishBanner() {
         className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden"
       >
         <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
-          {/* Close Button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={handleClose}
-            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/20 text-white hover:bg-white/30 z-10"
+            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/30 text-white hover:bg-black/50 z-10"
           >
             <X className="h-4 w-4" />
           </Button>
 
-          {/* Image Section */}
-          <div className="relative h-32 w-full">
+          <div className="relative h-64 w-full">
             <Image
               src={dish.imageUrl}
               alt={dish.dishName}
@@ -116,44 +113,7 @@ export default function DailyDishBanner() {
               sizes="(max-width: 640px) 100vw, 384px"
               data-ai-hint="indian thali"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            
-            {/* Dish Info Overlay */}
-            <div className="absolute bottom-2 left-3 right-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-lg text-white drop-shadow-md line-clamp-1">{dish.dishName}</h3>
-                  <Badge className="bg-white/20 text-white border-0 text-xs mt-1">
-                    {dish.cuisineType}
-                  </Badge>
-                </div>
-                <div className="bg-white/20 rounded-lg px-2 py-1">
-                  <span className="text-white font-bold text-sm">₹{dish.price}</span>
-                </div>
-              </div>
-            </div>
           </div>
-          
-          {/* Content Section */}
-          <CardContent className="p-3">
-            <p className="text-white/90 text-sm mb-3 line-clamp-2">
-              {dish.description}
-            </p>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-white/80">
-                <ChefHat className="h-4 w-4" />
-                <span className="text-xs">Today's Special</span>
-              </div>
-              
-              <Button 
-                className="bg-white text-green-600 hover:bg-white/90 font-semibold text-sm px-4 py-2 rounded-xl"
-                onClick={() => alert('Adding to cart functionality here')}
-              >
-                Add to Cart
-              </Button>
-            </div>
-          </CardContent>
         </Card>
       </motion.div>
     </AnimatePresence>
