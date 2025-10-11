@@ -161,6 +161,7 @@ Available products: ${JSON.stringify(products.map(p => ({id: p.id, name: p.name_
 {{else}}Assistant: {{content}}
 {{/if}}{{/each}}
 Assistant:`,
+  input: { schema: SupportChatInputSchema }
 });
 
 const customerSupportFlow = ai.defineFlow(
@@ -170,7 +171,7 @@ const customerSupportFlow = ai.defineFlow(
     outputSchema: SupportChatOutputSchema,
   },
   async (input) => {
-    const llmResponse = await ai.run(prompt, { input });
+    const llmResponse = await prompt(input);
     return { message: llmResponse.text };
   }
 );
