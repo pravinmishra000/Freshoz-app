@@ -5,12 +5,12 @@ import *admin from "firebase-admin";
 admin.initializeApp();
 const db = admin.firestore();
 
-// Array of 7 dishes to rotate through
+// Array of 7 dishes to rotate through with updated image URLs
 const DISHES = [
   {
     dishName: "Paneer Butter Masala",
     description: "Creamy paneer in a rich tomato and butter gravy.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fpaneer-butter-masala.webp?alt=media&token=example-token-1",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-1.jpg?alt=media",
     price: 250,
     cuisineType: "North Indian",
     preparationTime: "25 mins",
@@ -18,7 +18,7 @@ const DISHES = [
   {
     dishName: "Chicken Biryani",
     description: "Aromatic basmati rice with tender chicken pieces.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fchicken-biryani.webp?alt=media&token=example-token-2",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-2.jpg?alt=media",
     price: 300,
     cuisineType: "Mughlai",
     preparationTime: "45 mins",
@@ -26,7 +26,7 @@ const DISHES = [
   {
     dishName: "Masala Dosa",
     description: "Crispy rice crepe filled with spiced potatoes.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fmasala-dosa.webp?alt=media&token=example-token-3",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-3.jpg?alt=media",
     price: 150,
     cuisineType: "South Indian",
     preparationTime: "20 mins",
@@ -34,7 +34,7 @@ const DISHES = [
   {
     dishName: "Dal Makhani",
     description: "Slow-cooked black lentils in a creamy sauce.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fdal-makhani.webp?alt=media&token=example-token-4",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-4.jpg?alt=media",
     price: 200,
     cuisineType: "North Indian",
     preparationTime: "40 mins",
@@ -42,7 +42,7 @@ const DISHES = [
   {
     dishName: "Veg Hakka Noodles",
     description: "Stir-fried noodles with fresh vegetables.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fhakka-noodles.webp?alt=media&token=example-token-5",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-5.jpg?alt=media",
     price: 180,
     cuisineType: "Indo-Chinese",
     preparationTime: "15 mins",
@@ -50,7 +50,7 @@ const DISHES = [
   {
     dishName: "Chole Bhature",
     description: "Spicy chickpea curry with fluffy fried bread.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Fchole-bhature.webp?alt=media&token=example-token-6",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-6.jpg?alt=media",
     price: 170,
     cuisineType: "Punjabi",
     preparationTime: "30 mins",
@@ -58,7 +58,7 @@ const DISHES = [
   {
     dishName: "Fish Curry",
     description: "Tangy fish curry made in traditional style.",
-    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/dishes%2Ffish-curry.webp?alt=media&token=example-token-7",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdish-7.jpg?alt=media",
     price: 280,
     cuisineType: "Bengali",
     preparationTime: "35 mins",
@@ -117,4 +117,3 @@ export const dailyDishScheduler = functions.pubsub
       return null;
     }
   });
-
