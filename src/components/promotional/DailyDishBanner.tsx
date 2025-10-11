@@ -2,12 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, Timestamp, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 interface DailyDish {
@@ -43,20 +38,21 @@ export default function DailyDishBanner() {
         setIsLoading(true);
         setError(null);
         
-        const dishesRef = collection(db, 'daily_dishes');
-        const q = query(dishesRef, where('isActive', '==', true), limit(1));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];
-            setDish({ id: doc.id, ...doc.data() } as DailyDish);
-            setIsVisible(true);
-        } else {
-            console.log("No active daily dish found.");
-        }
+        // Mock data as requested by the user
+        const mockDish: DailyDish = {
+          id: 'biryani-special-mock',
+          dishName: 'Special Biryani',
+          description: 'Aromatic and flavorful biryani, a daily delight.',
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fbiryani-special.jpg?alt=media&token=eaa4ec82-a8ef-4e79-8394-c690164c82ee',
+          price: 199,
+          cuisineType: 'Mughlai'
+        };
+        
+        setDish(mockDish);
+        setIsVisible(true);
         
       } catch (error) {
-        console.error('Error fetching daily dish:', error);
+        console.error('Error setting up mock daily dish:', error);
         setError('Unable to load daily special');
       } finally {
         setIsLoading(false);
@@ -86,36 +82,19 @@ export default function DailyDishBanner() {
   }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 100, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 100, scale: 0.9 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden"
-      >
+    <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
         <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/30 text-white hover:bg-black/50 z-10"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-
-          <div className="relative h-64 w-full">
-            <Image
-              src={dish.imageUrl}
-              alt={dish.dishName}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 384px"
-              data-ai-hint="indian thali"
-            />
-          </div>
+            <div className="relative h-64 w-full">
+                <Image
+                    src={dish.imageUrl}
+                    alt={dish.dishName}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 384px"
+                    priority
+                />
+            </div>
         </Card>
-      </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }
