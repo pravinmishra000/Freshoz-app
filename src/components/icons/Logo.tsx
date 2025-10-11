@@ -15,6 +15,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
           alt="Freshoz Logo"
           fill
           className="relative z-10 rounded-full object-contain"
+          priority={true}
         />
       </div>
       <div className="flex flex-col">

@@ -37,7 +37,7 @@ export default function SplashScreen() {
                 width={120}
                 height={120}
                 className="object-contain"
-                priority
+                priority={true}
               />
             </motion.div>
           </div>
