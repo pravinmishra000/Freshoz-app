@@ -2,6 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,26 +43,22 @@ export default function DailyDishBanner() {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // Mock data - Firestore access fix karne tak
-        const mockDish: DailyDish = {
-          id: 'mock-dish',
-          dishName: 'Special Veg Thali',
-          description: 'Fresh vegetables with homemade spices and chapati',
-          imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-          price: 299,
-          cuisineType: 'Indian'
-        };
-        
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        setDish(mockDish);
-        setIsVisible(true);
+
+        const dishesRef = collection(db, 'daily_dishes');
+        const q = query(dishesRef, where('isActive', '==', true));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          setDish({ id: doc.id, ...doc.data() } as DailyDish);
+          setIsVisible(true);
+        } else {
+          console.log("No active daily dish found.");
+        }
         
       } catch (error) {
         console.error('Error fetching daily dish:', error);
-        setError('Unable to load daily special');
+        setError('Unable to load daily special.');
       } finally {
         setIsLoading(false);
       }
