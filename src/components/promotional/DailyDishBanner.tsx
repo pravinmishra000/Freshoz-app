@@ -1,9 +1,6 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,22 +40,25 @@ export default function DailyDishBanner() {
       try {
         setIsLoading(true);
         setError(null);
-
-        const dishesRef = collection(db, 'daily_dishes');
-        const q = query(dishesRef, where('isActive', '==', true));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          setDish({ id: doc.id, ...doc.data() } as DailyDish);
-          setIsVisible(true);
-        } else {
-          console.log("No active daily dish found.");
-        }
+        
+        // Mock data - Firestore access fix karne tak
+        const mockDish: DailyDish = {
+          id: 'mock-dish',
+          dishName: 'Special Veg Thali',
+          description: 'Fresh vegetables with homemade spices and chapati',
+          imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
+          price: 299,
+          cuisineType: 'Indian'
+        };
+        
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+        
+        setDish(mockDish);
+        setIsVisible(true);
         
       } catch (error) {
         console.error('Error fetching daily dish:', error);
-        setError('Unable to load daily special.');
+        setError('Unable to load daily special');
       } finally {
         setIsLoading(false);
       }
@@ -80,7 +80,7 @@ export default function DailyDishBanner() {
     return (
       <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
         <Card className="bg-orange-100 border-orange-200 p-4">
-          <p className="text-orange-700 text-sm">{error}</p>
+          <p className="text-orange-700 text-sm">Daily special unavailable.</p>
         </Card>
       </div>
     );
