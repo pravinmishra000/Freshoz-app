@@ -27,6 +27,7 @@ export default function GroupSelectionModal({ products, isOpen, onClose, groupNa
                 price: product.price,
                 quantity: 1,
                 image: product.image,
+                productId: product.id,
             });
         });
         toast({

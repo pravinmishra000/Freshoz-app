@@ -105,7 +105,7 @@ export default function ImageCropModal({
       <DialogContent className="max-w-md glass-card">
         <DialogHeader>
           <DialogTitle>Crop Profile Picture</DialogTitle>
-          <DialogDescription className="sr-only">Adjust the zoom and position of your photo to crop it for your profile.</DialogDescription>
+          <DialogDescription>Adjust the zoom and position of your photo to crop it for your profile.</DialogDescription>
         </DialogHeader>
         
         <div className="relative h-80 w-full bg-muted/50 rounded-lg">

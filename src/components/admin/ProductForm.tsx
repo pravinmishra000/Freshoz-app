@@ -96,7 +96,9 @@ export default function ProductForm({ product, onClose, onSubmitSuccess }: Produ
             <DialogContent className="sm:max-w-2xl glass-card">
                 <DialogHeader>
                     <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-                    <DialogDescription>Add a new product or edit an existing one.</DialogDescription>
+                    <DialogDescription>
+                        Fill in the details below to {isEditing ? 'update the' : 'add a new'} product in your store.
+                    </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto p-1 pr-4">

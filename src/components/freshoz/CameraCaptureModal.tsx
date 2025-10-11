@@ -120,7 +120,7 @@ export default function CameraCaptureModal({ onClose, onCapture }: CameraCapture
       <DialogContent className="sm:max-w-md glass-card">
         <DialogHeader>
           <DialogTitle>Take a Photo</DialogTitle>
-          <DialogDescription className="sr-only">Use your device camera to take a new profile picture.</DialogDescription>
+          <DialogDescription>Use your device camera to take a new profile picture.</DialogDescription>
         </DialogHeader>
         
         {renderContent()}
