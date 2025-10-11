@@ -83,42 +83,58 @@ export function ChatInterface() {
     }
   };
 
-  const handleSend = useCallback(async () => {
-    if (!input.trim() || !authUser) return;
-
-    const userMessage: Message = { 
-      role: 'user', 
+  const handleSend = async () => {
+    if (!input.trim()) return;
+  
+    const userMessage = { 
+      id: Date.now().toString(),
+      role: 'user' as const, 
       content: input,
       timestamp: new Date()
     };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-
+  
     try {
-      const history = newMessages.map(m => ({ role: m.role, content: m.content as string }));
-
-      const result = await supportChat({ userId: authUser.uid, history: history });
+      // Use userId if logged in, otherwise use 'guest'
+      const userId = authUser ? authUser.uid : 'guest';
       
-      const modelMessage: Message = { 
-        role: 'model', 
+      // Use the CORRECT format - { userId, message }
+      const result = await supportChat({ 
+        userId: userId,
+        message: input
+        // history: messages // Remove this line if you were using it
+      });
+      
+      const modelMessage = { 
+        id: (Date.now() + 1).toString(),
+        role: 'model' as const, 
         content: result.message,
         timestamp: new Date()
       };
+      
       setMessages((prev) => [...prev, modelMessage]);
+      
     } catch (error) {
       console.error('Chat error:', error);
-      const errorMessage: Message = {
-        role: 'model',
-        content: "❌ **We're experiencing technical difficulties**\n\nPlease try again in a moment or contact us directly at **📞 9097882555**",
+      
+      // User-friendly error message
+      const errorMessage = { 
+        id: (Date.now() + 1).toString(),
+        role: 'model' as const, 
+        content: authUser ? 
+          "I'm having trouble right now. Please try again in a moment or call us at 📞 9097882555 for immediate help." :
+          "Please login for personalized support. Or you can call us at 📞 9097882555 for immediate help.",
         timestamp: new Date()
       };
+      
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
-  }, [input, authUser, messages]);
+  };
 
   const scrollToBottom = useCallback(() => {
     if (scrollAreaRef.current) {

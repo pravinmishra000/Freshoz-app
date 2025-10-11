@@ -33,13 +33,38 @@ export default function HomePage() {
   }, [authUser, loading, router]);
 
   return (
-    <div>
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Loading Freshoz...</p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-80 to-orange-200">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-purple-300 to-purple-400 backdrop-blur-md p-4 border-b border-purple-400">
+        <h1 className="text-2xl font-black text-center uppercase relative">
+          <span className="text-green-800 drop-shadow-[0_0_15px_rgba(34,197,94,0.8)] relative z-10">
+            Freshoz
+          </span>
+        </h1>
+      </header>
+
+      {/* Main Content */}
+      <main className="p-4">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Welcome to Freshoz! 🎉
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Your quick commerce grocery store with 25-35 mins delivery
+          </p>
+          
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-white shadow-lg">
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              Get Started
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Use the chat widget in the bottom right to get help with orders, products, or delivery!
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Chat Widget */}
       <ChatWidget />
     </div>
   );

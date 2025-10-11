@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json();
+    const { message, userId } = await request.json();
     
+    // Use the CORRECT input format
     const result = await supportChat({
-      userId: 'test-user',
+      userId: userId || 'test-user',
       message: message
     });
     
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
 export async function GET() {
   return NextResponse.json({ 
     status: 'AI Test API is running',
-    hasApiKey: !!process.env.GEMINI_API_KEY
+    hasApiKey: !!process.env.GEMINI_API_KEY,
+    note: 'Use POST method with { message: "your query", userId: "optional-user-id" }'
   });
 }

@@ -16,6 +16,7 @@ import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConfirmationResult } from 'firebase/auth';
+import React from 'react';
 
 // Schemas for validation
 const emailLoginSchema = z.object({
@@ -284,9 +285,8 @@ export default function LoginPage() {
     }
   };
 
-  // 1. FIXED: Wrap email conditional content in a single <div> for TabsContent
   const emailFormContent = (
-    <div>
+    <React.Fragment>
       {isRegistering ? (
         <RegisterForm
           form={emailRegisterForm}
@@ -306,12 +306,11 @@ export default function LoginPage() {
           onSwitchToRegister={() => setIsRegistering(true)}
         />
       )}
-    </div>
+    </React.Fragment>
   );
 
-  // 2. FIXED: Wrap phone conditional content in a single <div> for TabsContent
   const phoneFormContent = (
-    <div>
+    <React.Fragment>
       {!confirmationResult ? (
         <Form {...phoneForm}>
           <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-6 pt-4">
@@ -359,7 +358,7 @@ export default function LoginPage() {
           </form>
         </Form>
       )}
-    </div>
+    </React.Fragment>
   );
 
   return (
@@ -375,7 +374,6 @@ export default function LoginPage() {
               <TabsTrigger value="phone">Phone</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
             </TabsList>
-            {/* The single div wrapper resolves the React.Children.only error */}
             <TabsContent value="phone">{phoneFormContent}</TabsContent>
             <TabsContent value="email">{emailFormContent}</TabsContent>
           </Tabs>
