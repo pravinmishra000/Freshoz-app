@@ -1,3 +1,4 @@
+// src/components/chat/ChatWidget.tsx
 'use client';
 
 import { useState } from 'react';

@@ -20,15 +20,18 @@ const MessageSchema = z.object({
 });
 
 const SupportChatInputSchema = z.object({
-  userId: z.string().describe('The ID of the user initiating the chat.'),
-  history: z.array(MessageSchema).describe('The chat history.'),
+  userId: z.string(),
+  history: z.array(MessageSchema),
 });
-export type SupportChatInput = z.infer<typeof SupportChatInputSchema>;
 
 const SupportChatOutputSchema = z.object({
-  message: z.string().describe("The chatbot's response message."),
+  message: z.string(),
+  success: z.boolean(),
 });
+
+export type SupportChatInput = z.infer<typeof SupportChatInputSchema>;
 export type SupportChatOutput = z.infer<typeof SupportChatOutputSchema>;
+
 
 // This tool is a placeholder. In a real app, you would fetch this from a database.
 const getOrderDetails = ai.defineTool(
@@ -161,7 +164,6 @@ Available products: ${JSON.stringify(products.map(p => ({id: p.id, name: p.name_
 {{else}}Assistant: {{content}}
 {{/if}}{{/each}}
 Assistant:`,
-  input: { schema: SupportChatInputSchema }
 });
 
 const customerSupportFlow = ai.defineFlow(
@@ -171,13 +173,33 @@ const customerSupportFlow = ai.defineFlow(
     outputSchema: SupportChatOutputSchema,
   },
   async (input) => {
-    const llmResponse = await prompt(input);
-    return { message: llmResponse.text };
+    try {
+      const response = await prompt(input);
+      
+      return {
+        message: response.text || "Main Freshoz AI Assistant hoon! Aap order tracking, product availability, ya delivery time ke bare mein pooch sakte hain. 🛒",
+        success: true
+      };
+      
+    } catch (error) {
+      console.error('Genkit error:', error);
+      
+      // Fallback responses based on language
+      const latestMessage = input.history[input.history.length - 1]?.content || '';
+      const isHindi = /[\u0900-\u097F]/.test(latestMessage) || 
+                     latestMessage.includes('hai') || 
+                     latestMessage.includes('kaise');
+      
+      return {
+        message: isHindi ? 
+          "Namaste! Main Freshoz AI Assistant hoon. Aap order tracking, product availability, ya delivery time ke bare mein pooch sakte hain. 🛒" 
+          : "Hello! I'm Freshoz AI Assistant. You can ask me about order tracking, product availability, or delivery time. 🛒",
+        success: false
+      };
+    }
   }
 );
 
-
 export async function supportChat(input: SupportChatInput): Promise<SupportChatOutput> {
-    const response = await customerSupportFlow(input);
-    return response;
+  return await customerSupportFlow(input);
 }

@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/auth-context';
+import { ChatWidget } from '@/components/chat/ChatWidget';
+
 
 export default function HomePage() {
   const router = useRouter();
@@ -31,11 +33,14 @@ export default function HomePage() {
   }, [authUser, loading, router]);
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">Loading Freshoz...</p>
+    <div>
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading Freshoz...</p>
+        </div>
       </div>
+      <ChatWidget />
     </div>
   );
 }
