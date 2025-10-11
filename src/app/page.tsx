@@ -4,19 +4,31 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/lib/firebase/auth-context';
 
 export default function HomePage() {
   const router = useRouter();
+  const { authUser, loading } = useAuth();
 
   useEffect(() => {
-    // After the splash screen (which is in layout.tsx), redirect to the pre-home page.
-    // A timeout can make the transition feel smoother if the splash screen is very fast.
+    // We don't want to redirect until we are sure about the auth status.
+    if (loading) {
+      return;
+    }
+
+    // After the splash screen, redirect based on auth status.
     const timer = setTimeout(() => {
-      router.replace('/pre-home');
-    }, 500); // Adjust delay as needed, or remove if splash is long enough
+      if (authUser) {
+        // If user is logged in, go directly to the products page.
+        router.replace('/products');
+      } else {
+        // If user is not logged in, go to the pre-home/login page.
+        router.replace('/pre-home');
+      }
+    }, 500); // A small delay can make the transition feel smoother.
 
     return () => clearTimeout(timer);
-  }, [router]);
+  }, [authUser, loading, router]);
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background">
