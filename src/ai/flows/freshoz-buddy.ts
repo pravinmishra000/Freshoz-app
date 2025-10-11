@@ -5,11 +5,64 @@
  * @fileOverview AI flows for the Freshoz Buddy assistant.
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
+import type { FreshozBuddyInput, FreshozBuddyOutput, CartAction } from '@/lib/types';
 import { products } from '@/lib/data';
 
-// Zod schemas for the tool
+// This is a mock implementation that does not call the Genkit AI.
+// It uses simple keyword matching to provide responses.
+
+export async function getAiResponse(input: FreshozBuddyInput): Promise<FreshozBuddyOutput> {
+  const userMessage = input.query.toLowerCase().trim();
+  const isHindi = /[\u0900-\u097F]/.test(input.query) || 
+                 input.query.includes('hai') || input.query.includes('kaise') ||
+                 input.query.includes('kahan') || input.query.includes('mera');
+
+  let responseText = "";
+  let cartAction: CartAction | undefined;
+
+  // Rule-based logic
+  if (userMessage.includes('add') && (userMessage.includes('potato') || userMessage.includes('aalu'))) {
+    responseText = "Zaroor! Main aapke cart mein 1kg aalu daal doon?";
+    cartAction = { action: 'add', itemName: 'Potato', quantity: '1 kg' };
+  } else if (userMessage.includes('order') || userMessage.includes('आर्डर')) {
+    responseText = isHindi 
+      ? "Aapka order track karne ke liye, kripya apna order ID bataein. 🚚"
+      : "To track your order, please provide your order ID. 🚚";
+  } else if (userMessage.includes('doodh') || userMessage.includes('milk')) {
+    const milkProduct = products.find(p => p.name_en.toLowerCase().includes('amul gold milk'));
+    if (milkProduct) {
+        responseText = isHindi
+        ? `Haan! ${milkProduct.name_en} (500ml) ₹${milkProduct.variants?.[0].price || milkProduct.price} mein available hai. Cart mein add karun? 🥛`
+        : `Yes! ${milkProduct.name_en} (500ml) is available for ₹${milkProduct.variants?.[0].price || milkProduct.price}. Should I add it to the cart? 🥛`;
+        cartAction = { action: 'add', itemName: 'Amul Gold Milk', quantity: '1 packet' };
+    } else {
+        responseText = isHindi ? "Maaf kijiye, abhi doodh uplabdh nahi hai." : "Sorry, milk is currently unavailable.";
+    }
+  } else if (userMessage.includes('delivery') || userMessage.includes('time')) {
+    responseText = isHindi 
+      ? "Hamari delivery 25-35 minute mein hoti hai! ⚡" 
+      : "Our delivery usually takes 25-35 minutes! ⚡";
+  } else if (userMessage.includes('hi') || userMessage.includes('hello') || userMessage.includes('namaste')) {
+    responseText = isHindi ? "Namaste! Main aapki kaise sahayata kar sakti hoon?" : "Hello! How can I help you today?";
+  }
+  else {
+    responseText = isHindi
+      ? "Main aapki sahayata kaise kar sakti hoon? Aap order, products, ya delivery ke baare mein pooch sakte hain. 🛒"
+      : "How can I assist you? You can ask about orders, products, or delivery times. 🛒";
+  }
+
+  return {
+    response: responseText,
+    cartAction: cartAction,
+  };
+}
+
+
+/*
+// GENKIT AI IMPLEMENTATION (Currently commented out to use mock)
+import { ai } from '@/ai/genkit';
+
 const CartActionSchema = z.object({
   action: z.enum(['add', 'remove', 'update', 'clear']),
   itemName: z.string().describe('The name of the item, e.g., "Tomato" or "Amul Gold Milk".'),
@@ -192,3 +245,4 @@ export async function getAiResponse(input: FreshozBuddyInput): Promise<FreshozBu
 
   return result;
 }
+*/
