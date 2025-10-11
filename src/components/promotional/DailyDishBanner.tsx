@@ -1,11 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { X, ChefHat } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -25,9 +24,9 @@ export default function DailyDishBanner() {
   const [dish, setDish] = useState<DailyDish | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if the banner was already closed today
     const closedTimestamp = localStorage.getItem(STORAGE_KEY);
     if (closedTimestamp) {
       const today = new Date().toDateString();
@@ -40,26 +39,28 @@ export default function DailyDishBanner() {
 
     const fetchDailyDish = async () => {
       try {
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-        const q = query(
-          collection(db, 'daily_dishes'),
-          where('isActive', '==', true),
-          where('availableDate', '>=', Timestamp.fromDate(startOfDay)),
-          where('availableDate', '<=', Timestamp.fromDate(endOfDay))
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          setDish({ id: doc.id, ...doc.data() } as DailyDish);
-          setIsVisible(true);
-        }
+        setIsLoading(true);
+        setError(null);
+        
+        // Mock data - Firestore access fix karne tak
+        const mockDish: DailyDish = {
+          id: 'mock-dish',
+          dishName: 'Special Veg Thali',
+          description: 'Fresh vegetables with homemade spices and chapati',
+          imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
+          price: 299,
+          cuisineType: 'Indian'
+        };
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        setDish(mockDish);
+        setIsVisible(true);
+        
       } catch (error) {
         console.error('Error fetching daily dish:', error);
+        setError('Unable to load daily special');
       } finally {
         setIsLoading(false);
       }
@@ -70,12 +71,21 @@ export default function DailyDishBanner() {
 
   const handleClose = () => {
     setIsVisible(false);
-    // Store the timestamp when the banner was closed
     localStorage.setItem(STORAGE_KEY, Date.now().toString());
   };
 
   if (isLoading || !isVisible || !dish) {
     return null;
+  }
+
+  if (error) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
+        <Card className="bg-orange-100 border-orange-200 p-4">
+          <p className="text-orange-700 text-sm">{error}</p>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -101,11 +111,12 @@ export default function DailyDishBanner() {
           {/* Image Section */}
           <div className="relative h-32 w-full">
             <Image
-              src={dish.imageUrl || '/images/default-dish.jpg'}
+              src={dish.imageUrl}
               alt={dish.dishName}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, 384px"
+              data-ai-hint="indian thali"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             
