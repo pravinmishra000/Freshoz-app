@@ -1,7 +1,5 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // ✅ YEH LINE ADD KAREIN - Capacitor ke liye
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
@@ -10,7 +8,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true, // ✅ YEH LINE ADD KAREIN - Firebase Studio ke liye
+    unoptimized: true, // For environments that don't support image optimization
     remotePatterns: [
       {
         protocol: 'https',
@@ -33,6 +31,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
         port: '',
         pathname: '/**',
       },
