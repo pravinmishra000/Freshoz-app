@@ -214,6 +214,21 @@ export default function LoginPage() {
     defaultValues: { otp: '' },
   });
 
+  const handleError = (error: any, action: 'Login' | 'Registration' | 'OTP Send') => {
+    let description = 'An unexpected error occurred. Please try again.';
+    if (typeof error.message === 'string') {
+        if (error.code?.includes('auth/network-request-failed') || error.message.includes('403')) {
+            description = 'Your domain is not authorized. Please check Firebase API key restrictions.';
+        } else if (error.message.includes('reCAPTCHA') || error.message.includes('Security verification')) {
+            description = 'Security verification failed. Please refresh the page and try again.';
+        } else {
+            description = error.message;
+        }
+    }
+    toast({ variant: 'destructive', title: `${action} Failed`, description });
+  };
+
+
   // Handlers
   const onEmailLoginSubmit: SubmitHandler<EmailLoginFormValues> = async (data) => {
     setIsLoading(true);
@@ -222,11 +237,7 @@ export default function LoginPage() {
       toast({ title: 'Login Successful', description: 'Welcome back!' });
       router.push('/products');
     } catch (error: any) {
-      let description = error.message;
-      if (error.code === 'auth/network-request-failed' || (error.message && error.message.includes('403'))) {
-        description = 'Access denied. Please check your Firebase API key restrictions and ensure your domain is whitelisted.';
-      }
-      toast({ variant: 'destructive', title: 'Login Failed', description: description });
+      handleError(error, 'Login');
     } finally {
       setIsLoading(false);
     }
@@ -239,11 +250,7 @@ export default function LoginPage() {
       toast({ title: 'Registration Successful', description: 'Welcome to Freshoz!' });
       router.push('/products');
     } catch (error: any) {
-      let description = error.message;
-      if (error.code === 'auth/network-request-failed' || (error.message && error.message.includes('403'))) {
-        description = 'Access denied. Please check your Firebase API key restrictions and ensure your domain is whitelisted.';
-      }
-      toast({ variant: 'destructive', title: 'Registration Failed', description: description });
+      handleError(error, 'Registration');
     } finally {
       setIsLoading(false);
     }
@@ -255,20 +262,12 @@ export default function LoginPage() {
     setPhoneNumber(sanitizedPhone);
     
     try {
-      // Calls the context function which handles Recaptcha internally
       const result = await signInWithPhoneNumber(sanitizedPhone, 'customer'); 
-      
       setConfirmationResult(result);
       toast({ title: 'OTP Sent', description: `An OTP has been sent to ${data.phone}.` });
     } catch (error: any) {
       console.error("OTP Send Error:", error);
-      
-      let description = error.message;
-      if (error.code === 'auth/internal-error' || error.message.includes('reCAPTCHA') || error.message.includes('failed')) {
-          description = "Security verification failed. Please refresh the page.";
-      }
-      
-      toast({ variant: 'destructive', title: 'Failed to Send OTP', description: description });
+      handleError(error, 'OTP Send');
       setConfirmationResult(null);
     } finally {
       setIsLoading(false);
@@ -287,7 +286,7 @@ export default function LoginPage() {
       toast({ title: 'Login Successful', description: 'Welcome!' });
       router.push('/products');
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
+      handleError(error, 'Login');
     } finally {
       setIsLoading(false);
     }
