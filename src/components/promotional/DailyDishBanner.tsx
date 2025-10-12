@@ -73,7 +73,7 @@ export default function DailyDishBanner() {
 
   if (error) {
     return (
-      <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
+      <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-xs md:hidden">
         <Card className="bg-orange-100 border-orange-200 p-4">
           <p className="text-orange-700 text-sm">Daily special unavailable.</p>
         </Card>
@@ -82,7 +82,7 @@ export default function DailyDishBanner() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
+    <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-xs md:hidden">
         <Card className="overflow-hidden shadow-2xl border-0">
             <div className="relative aspect-[9/16] w-full">
                 <Image
@@ -90,7 +90,7 @@ export default function DailyDishBanner() {
                     alt={dish.dishName}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 100vw, 384px"
+                    sizes="(max-width: 640px) 100vw, 320px"
                     priority
                 />
             </div>
