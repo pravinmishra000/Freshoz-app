@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -90,18 +89,22 @@ export default function DailyDishBanner() {
             <Button variant="ghost" size="icon" onClick={handleClose} className="absolute top-2 right-2 h-6 w-6 text-white/70 hover:bg-white/20 hover:text-white rounded-full">
                 <X className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-5 w-5 text-yellow-300" />
-                <h3 className="text-lg font-bold">Aaj Ka Special</h3>
-            </div>
-            <p className="text-xl font-bold mb-1">{dish.dishName}</p>
-            <p className="text-sm text-white/80 mb-3">{dish.description}</p>
-            <div className="flex justify-between items-center">
-                <Badge variant="secondary" className="bg-yellow-400 text-yellow-900 font-bold">
-                    {dish.cuisineType}
-                </Badge>
-                <div className="text-2xl font-black">
-                    ₹{dish.price}
+            <div className="flex flex-col items-start gap-2">
+                <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-yellow-300" />
+                    <h3 className="text-lg font-bold">Aaj Ka Special</h3>
+                </div>
+                <div>
+                    <p className="text-xl font-bold mb-1">{dish.dishName}</p>
+                    <p className="text-sm text-white/80 mb-3">{dish.description}</p>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                    <Badge variant="secondary" className="bg-yellow-400 text-yellow-900 font-bold">
+                        {dish.cuisineType}
+                    </Badge>
+                    <div className="text-2xl font-black">
+                        ₹{dish.price}
+                    </div>
                 </div>
             </div>
         </CardContent>
