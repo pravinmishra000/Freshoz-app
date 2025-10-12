@@ -2,8 +2,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { Button } from '../ui/button';
 
 interface DailyDish {
   id: string;
@@ -83,18 +85,18 @@ export default function DailyDishBanner() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-xs md:hidden">
-        <Card className="overflow-hidden shadow-2xl border-0">
-            <div className="relative aspect-[9/16] w-full">
-                <Image
-                    src={dish.imageUrl}
-                    alt={dish.dishName}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, 320px"
-                    priority
-                />
-            </div>
-        </Card>
+      <Card className="overflow-hidden shadow-2xl border-0">
+        <div className="relative w-full aspect-[9/16]">
+          <Image
+            src={dish.imageUrl}
+            alt={dish.dishName}
+            fill
+            className="object-cover"
+            sizes="(max-width: 240px) 100vw, 240px"
+            priority
+          />
+        </div>
+      </Card>
     </div>
   );
 }
