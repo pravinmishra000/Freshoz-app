@@ -222,7 +222,11 @@ export default function LoginPage() {
       toast({ title: 'Login Successful', description: 'Welcome back!' });
       router.push('/products');
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
+      let description = error.message;
+      if (error.code === 'auth/network-request-failed' || (error.message && error.message.includes('403'))) {
+        description = 'Access denied. Please check your Firebase API key restrictions and ensure your domain is whitelisted.';
+      }
+      toast({ variant: 'destructive', title: 'Login Failed', description: description });
     } finally {
       setIsLoading(false);
     }
@@ -235,7 +239,11 @@ export default function LoginPage() {
       toast({ title: 'Registration Successful', description: 'Welcome to Freshoz!' });
       router.push('/products');
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Registration Failed', description: error.message });
+      let description = error.message;
+      if (error.code === 'auth/network-request-failed' || (error.message && error.message.includes('403'))) {
+        description = 'Access denied. Please check your Firebase API key restrictions and ensure your domain is whitelisted.';
+      }
+      toast({ variant: 'destructive', title: 'Registration Failed', description: description });
     } finally {
       setIsLoading(false);
     }
