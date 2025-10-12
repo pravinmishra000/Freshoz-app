@@ -83,8 +83,8 @@ export default function DailyDishBanner() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm md:hidden">
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
-            <div className="relative h-64 w-full">
+        <Card className="overflow-hidden shadow-2xl border-0">
+            <div className="relative aspect-[9/16] w-full">
                 <Image
                     src={dish.imageUrl}
                     alt={dish.dishName}
