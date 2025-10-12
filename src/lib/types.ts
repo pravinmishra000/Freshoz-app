@@ -257,7 +257,7 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
-  image: string; // ✅ YEH LINE ADD KAREIN
+  image: string;
   variantId?: string;
   pack_size?: string;
 }
