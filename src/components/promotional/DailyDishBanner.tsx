@@ -1,8 +1,11 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Sparkles, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface DailyDish {
   id: string;
@@ -37,7 +40,7 @@ export default function DailyDishBanner() {
         setIsLoading(true);
         setError(null);
         
-        // Mock data as requested by the user
+        // Mock data
         const mockDish: DailyDish = {
           id: 'biryani-special-mock',
           dishName: 'Special Biryani',
@@ -82,17 +85,26 @@ export default function DailyDishBanner() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-xs md:hidden">
-      <Card className="overflow-hidden shadow-2xl border-0">
-        <div className="relative w-full aspect-[9/16]">
-          <Image
-            src={dish.imageUrl}
-            alt={dish.dishName}
-            fill
-            className="object-cover"
-            sizes="(max-width: 240px) 100vw, 240px"
-            priority
-          />
-        </div>
+      <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
+        <CardContent className="p-4 relative">
+            <Button variant="ghost" size="icon" onClick={handleClose} className="absolute top-2 right-2 h-6 w-6 text-white/70 hover:bg-white/20 hover:text-white rounded-full">
+                <X className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-yellow-300" />
+                <h3 className="text-lg font-bold">Aaj Ka Special</h3>
+            </div>
+            <p className="text-xl font-bold mb-1">{dish.dishName}</p>
+            <p className="text-sm text-white/80 mb-3">{dish.description}</p>
+            <div className="flex justify-between items-center">
+                <Badge variant="secondary" className="bg-yellow-400 text-yellow-900 font-bold">
+                    {dish.cuisineType}
+                </Badge>
+                <div className="text-2xl font-black">
+                    ₹{dish.price}
+                </div>
+            </div>
+        </CardContent>
       </Card>
     </div>
   );
