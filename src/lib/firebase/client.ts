@@ -15,7 +15,7 @@ const firebaseConfig: FirebaseOptions = {
 
 // Check if all necessary config values are present
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.authDomain) {
-  console.error("Firebase configuration is missing. Please check your NEXT_PUBLIC_... environment variables.");
+  console.error("CRITICAL ERROR: Firebase configuration is missing or incomplete. Please check your NEXT_PUBLIC_... environment variables in the .env file. The application will not work correctly without them.");
 }
 
 // Initialize Firebase only once

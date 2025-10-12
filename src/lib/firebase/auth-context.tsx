@@ -25,7 +25,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from "@/lib/firebase/client";
+import { auth, db } from "./client"; // Corrected Path
 import type { User as AppUser, UserRole } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
@@ -232,7 +232,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = async (email: string, password: string): Promise<void> => {
     console.log("🔑 signInWithEmail called with:", email);
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+        if (error.code === 'auth/network-request-failed' || error.message.includes('403')) {
+            console.error("🚨 CRITICAL: Firebase authentication failed with 403 Forbidden. This is likely an API Key restriction issue. Check your Google Cloud Console settings for your API key and ensure your app's domain is in the allowed HTTP referrers list.");
+        }
+        // Re-throw the error so the UI can handle it
+        throw error;
+    }
   };
 
   const logout = async () => {
