@@ -1,4 +1,3 @@
-
 // /home/user/studio/src/lib/firebase/auth-context.tsx
 
 'use client';
@@ -25,7 +24,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from "./client"; // Corrected Path
+import { auth, db } from "./client";
 import type { User as AppUser, UserRole } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
@@ -78,50 +77,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
    useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    // Ensure auth is initialized before setting up reCAPTCHA
     if (!auth) {
         console.warn("Auth not initialized, delaying reCAPTCHA setup.");
         return;
     }
 
-    const containerId = 'recaptcha-container';
-    let recaptchaContainer = document.getElementById(containerId);
+    const setupRecaptcha = () => {
+      const containerId = 'recaptcha-container';
+      let recaptchaContainer = document.getElementById(containerId);
+      if (!recaptchaContainer) {
+          recaptchaContainer = document.createElement('div');
+          recaptchaContainer.id = containerId;
+          document.body.appendChild(recaptchaContainer);
+      }
 
-    // If container doesn't exist, create it.
-    if (!recaptchaContainer) {
-        recaptchaContainer = document.createElement('div');
-        recaptchaContainer.id = containerId;
-        document.body.appendChild(recaptchaContainer);
+      try {
+          console.log("🔄 Setting up new Recaptcha Verifier...");
+          const verifier = new RecaptchaVerifier(auth, containerId, {
+              'size': 'invisible',
+              'callback': () => { console.log("✅ reCAPTCHA solved!"); },
+              'expired-callback': () => {
+                  console.warn("⚠️ reCAPTCHA expired, will re-initialize on next attempt.");
+                  window.recaptchaVerifier = undefined;
+              }
+          });
+          verifier.render();
+          window.recaptchaVerifier = verifier;
+          console.log("✅ Recaptcha Verifier setup complete.");
+      } catch (error) {
+          console.error("❌ Recaptcha Setup Failed:", error);
+      }
     }
-
-    // Initialize reCAPTCHA only if it hasn't been initialized yet.
+    
     if (!window.recaptchaVerifier) {
-        try {
-            console.log("🔄 Setting up new Recaptcha Verifier...");
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-                'size': 'invisible',
-                'callback': () => {
-                    console.log("✅ reCAPTCHA solved!");
-                },
-                'expired-callback': () => {
-                    console.warn("⚠️ reCAPTCHA expired, re-initializing...");
-                    // Clear and re-initialize
-                    window.recaptchaVerifier?.clear();
-                    window.recaptchaVerifier = undefined;
-                    // Optionally re-trigger initialization
-                }
-            });
-            window.recaptchaVerifier.render(); // Explicitly render the verifier
-            console.log("✅ Recaptcha Verifier setup and rendered.");
-        } catch (error) {
-            console.error("❌ Recaptcha Setup Failed:", error);
-        }
+      setupRecaptcha();
     } else {
         console.log("✅ Recaptcha already initialized.");
     }
-    
-    // No cleanup needed that would destroy the verifier on every navigation
   }, []);
 
   useEffect(() => {
@@ -150,21 +142,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPhoneNumber = async (phone: string, role: UserRole): Promise<ConfirmationResult> => {
     console.log("📲 signInWithPhoneNumber called with:", phone, "role:", role);
     
-    const verifier = window.recaptchaVerifier; 
-    
-    if (!verifier) {
+    if (!window.recaptchaVerifier) {
         console.error("Recaptcha Verifier not initialized. Throwing error.");
-        throw new Error("Security verification is not ready. Please refresh and try again.");
+        throw new Error("Security verification (reCAPTCHA) is not ready. Please refresh and try again.");
     }
     
     sessionStorage.setItem('pendingUserRole', role);
     
     try {
-        const confirmation = await firebaseSignInWithPhoneNumber(auth, phone, verifier);
+        const confirmation = await firebaseSignInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
         return confirmation;
-    } catch (error) {
-        // If there's an error, try to reset the verifier for the next attempt.
-        window.recaptchaVerifier?.render().catch(err => console.error("Failed to re-render reCAPTCHA", err));
+    } catch (error: any) {
+        console.error("Phone sign-in error:", error);
+        // If there's an error (like referer blocked), it's useful to log it clearly.
+        if (error.code === 'auth/requests-from-referer-are-blocked') {
+            console.error("🚨 CRITICAL: Firebase is blocking requests from this app's URL. Check your API key restrictions in Google Cloud Console.");
+        }
+        // It's often best to re-throw the error to be handled by the UI.
         throw error;
     }
   };

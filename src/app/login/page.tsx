@@ -215,17 +215,27 @@ export default function LoginPage() {
   });
 
   const handleError = (error: any, action: 'Login' | 'Registration' | 'OTP Send') => {
+    let title = `${action} Failed`;
     let description = 'An unexpected error occurred. Please try again.';
+
     if (typeof error.message === 'string') {
-        if (error.code?.includes('auth/network-request-failed') || error.message.includes('403')) {
-            description = 'Your domain is not authorized. Please check Firebase API key restrictions.';
-        } else if (error.message.includes('reCAPTCHA') || error.message.includes('Security verification')) {
-            description = 'Security verification failed. Please refresh the page and try again.';
-        } else {
+        if (error.code === 'auth/network-request-failed') {
+            title = 'Network Error';
+            description = 'Please check your internet connection.';
+        } else if (error.code === 'auth/requests-from-referer-are-blocked' || error.message.includes('403')) {
+            title = 'Domain Not Authorized';
+            description = 'This app\'s URL is not authorized for Firebase. Please check API key restrictions in Google Cloud Console.';
+        } else if (error.message.includes('reCAPTCHA')) {
+            title = 'Security Verification Failed';
+            description = 'Please refresh the page and try again.';
+        } else if (error.code === 'auth/invalid-credential') {
+             description = 'Invalid email or password. Please check your credentials.';
+        }
+         else {
             description = error.message;
         }
     }
-    toast({ variant: 'destructive', title: `${action} Failed`, description });
+    toast({ variant: 'destructive', title, description });
   };
 
 
