@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -87,7 +88,7 @@ export default function DailyDishBanner() {
       <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden shadow-2xl border-0">
         <CardContent className="p-4 relative">
             <Button variant="ghost" size="icon" onClick={handleClose} className="absolute top-2 right-2 h-6 w-6 text-white/70 hover:bg-white/20 hover:text-white rounded-full">
-                <X className="h-4 w-4" />
+                <X className="h-6 w-4" />
             </Button>
             <div className="flex flex-col items-start gap-2">
                 <div className="flex items-center gap-2">
