@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/firebase/auth-context';
 
 interface DailyDish {
   id: string;
@@ -12,6 +13,7 @@ interface DailyDish {
 const STORAGE_KEY = 'dailyDishBannerClosed';
 
 export const useDailyDish = () => {
+  const { appUser } = useAuth();
   const [dish, setDish] = useState<DailyDish | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +54,11 @@ export const useDailyDish = () => {
   };
 
   useEffect(() => {
+    if (!appUser) {
+        setIsLoading(false);
+        return;
+      }
+  
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -99,7 +106,7 @@ export const useDailyDish = () => {
     fetchDailyDish();
 
     return () => clearInterval(timer);
-  }, []);
+  }, [appUser]);
 
   return {
     dish,

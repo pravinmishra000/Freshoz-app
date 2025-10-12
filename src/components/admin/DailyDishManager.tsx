@@ -8,12 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Save, Upload, Calendar, RotateCcw, Image as ImageIcon } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import { dailyDishService, DailyDish } from '@/services/dailyDishService';
 
 export function DailyDishManager() {
-  const [dish, setDish] = useState<Omit<DailyDish, 'id' | 'createdAt' | 'updatedAt'>>({
+  const [dish, setDish] = useState({
     dishName: '',
     description: '',
     imageUrl: '',
@@ -26,34 +24,35 @@ export function DailyDishManager() {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  const { toast } = useToast();
+  const [message, setMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
     loadCurrentDailyDish();
   }, []);
 
+  const showMessage = (text: string, type: 'success' | 'error' = 'success') => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage(null), 3000);
+  };
+
   const loadCurrentDailyDish = async () => {
     try {
-      const currentDish = await dailyDishService.getCurrentDailyDish();
-      if (currentDish) {
-        setDish({
-          dishName: currentDish.dishName,
-          description: currentDish.description,
-          imageUrl: currentDish.imageUrl,
-          price: currentDish.price,
-          cuisineType: currentDish.cuisineType,
-          isActive: currentDish.isActive,
-          scheduledDate: currentDish.scheduledDate
-        });
-        setImagePreview(currentDish.imageUrl);
-      }
+      // Mock data for testing
+      const mockDish = {
+        dishName: 'Special Biryani',
+        description: 'Authentic biryani with tender chicken and aromatic spices',
+        imageUrl: 'https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/banners%2Fdaily-dishes%2Fmobile%2Fdaily-dish.png?alt=media&token=2a14d382-760e-4fe6-a780-cc43156e2ef7',
+        price: 299,
+        cuisineType: 'Special',
+        isActive: true,
+        scheduledDate: new Date().toISOString().split('T')[0]
+      };
+      
+      setDish(mockDish);
+      setImagePreview(mockDish.imageUrl);
     } catch (error) {
       console.error('Error loading daily dish:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load current daily dish.',
-        variant: 'destructive',
-      });
+      showMessage('Failed to load current daily dish.', 'error');
     }
   };
 
@@ -61,20 +60,12 @@ export function DailyDishManager() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast({
-          title: 'File too large',
-          description: 'Please select an image smaller than 2MB.',
-          variant: 'destructive',
-        });
+        showMessage('Please select an image smaller than 2MB.', 'error');
         return;
       }
 
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Invalid file type',
-          description: 'Please select an image file.',
-          variant: 'destructive',
-        });
+        showMessage('Please select an image file.', 'error');
         return;
       }
 
@@ -88,56 +79,29 @@ export function DailyDishManager() {
     e.preventDefault();
     
     if (!dish.dishName.trim() || !dish.description.trim() || dish.price <= 0) {
-      toast({
-        title: 'Validation Error',
-        description: 'Please fill all required fields correctly.',
-        variant: 'destructive',
-      });
+      showMessage('Please fill all required fields correctly.', 'error');
       return;
     }
 
     if (!imageFile && !dish.imageUrl) {
-      toast({
-        title: 'Image Required',
-        description: 'Please upload an image for the dish.',
-        variant: 'destructive',
-      });
+      showMessage('Please upload an image for the dish.', 'error');
       return;
     }
 
     setLoading(true);
 
     try {
-      let imageUrl = dish.imageUrl;
+      // Mock save for testing
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (imageFile) {
-        imageUrl = await dailyDishService.uploadImage(imageFile);
-      }
-
-      const dishData = {
-        ...dish,
-        imageUrl,
-        isActive: true
-      };
-
-      await dailyDishService.saveDailyDish(dishData);
-
-      toast({
-        title: 'Success!',
-        description: 'Daily dish has been updated successfully.',
-        variant: 'default',
-      });
+      showMessage('Daily dish has been updated successfully!', 'success');
 
       await loadCurrentDailyDish();
       setImageFile(null);
 
     } catch (error) {
       console.error('Error saving daily dish:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save daily dish. Please try again.',
-        variant: 'destructive',
-      });
+      showMessage('Failed to save daily dish. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -169,206 +133,219 @@ export function DailyDishManager() {
   });
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Set Tomorrow's Special
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800 font-medium">
-              Setting dish for: <span className="font-bold">{tomorrowReadable}</span>
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Message Display */}
+      {message && (
+        <div className={`p-4 rounded-lg ${
+          message.type === 'success' 
+            ? 'bg-green-50 border border-green-200 text-green-800' 
+            : 'bg-red-50 border border-red-200 text-red-800'
+        }`}>
+          {message.text}
+        </div>
+      )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="dishName">Dish Name *</Label>
-              <Input
-                id="dishName"
-                value={dish.dishName}
-                onChange={(e) => setDish(prev => ({ ...prev, dishName: e.target.value }))}
-                placeholder="e.g., Special Biryani"
-                required
-              />
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Set Tomorrow's Special
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800 font-medium">
+                Setting dish for: <span className="font-bold">{tomorrowReadable}</span>
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
-              <Textarea
-                id="description"
-                value={dish.description}
-                onChange={(e) => setDish(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe the dish in 2-3 lines..."
-                rows={3}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="price">Price (₹) *</Label>
+                <Label htmlFor="dishName">Dish Name *</Label>
                 <Input
-                  id="price"
-                  type="number"
-                  value={dish.price || ''}
-                  onChange={(e) => setDish(prev => ({ ...prev, price: Number(e.target.value) }))}
-                  placeholder="299"
-                  min="1"
+                  id="dishName"
+                  value={dish.dishName}
+                  onChange={(e) => setDish(prev => ({ ...prev, dishName: e.target.value }))}
+                  placeholder="e.g., Special Biryani"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cuisineType">Cuisine Type</Label>
-                <select
-                  id="cuisineType"
-                  value={dish.cuisineType}
-                  onChange={(e) => setDish(prev => ({ ...prev, cuisineType: e.target.value }))}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  {cuisineTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="image">Dish Image *</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="flex-1"
+                <Label htmlFor="description">Description *</Label>
+                <Textarea
+                  id="description"
+                  value={dish.description}
+                  onChange={(e) => setDish(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe the dish in 2-3 lines..."
+                  rows={3}
+                  required
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById('image')?.click()}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price (₹) *</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={dish.price || ''}
+                    onChange={(e) => setDish(prev => ({ ...prev, price: Number(e.target.value) }))}
+                    placeholder="299"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cuisineType">Cuisine Type</Label>
+                  <select
+                    id="cuisineType"
+                    value={dish.cuisineType}
+                    onChange={(e) => setDish(prev => ({ ...prev, cuisineType: e.target.value }))}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    {cuisineTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image">Dish Image *</Label>
+                <div className="flex items-center gap-4">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('image')?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Recommended: 400x267px WebP/JPEG format, max 2MB
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="flex-1"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
+                  {loading ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Daily Dish
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={resetForm}
+                  disabled={loading}
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
                 </Button>
               </div>
-              <p className="text-xs text-gray-500">
-                Recommended: 400x267px WebP/JPEG format, max 2MB
-              </p>
-            </div>
+            </form>
+          </CardContent>
+        </Card>
 
-            <div className="flex gap-3 pt-4">
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="flex-1"
-              >
-                {loading ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Daily Dish
-                  </>
-                )}
-              </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={resetForm}
-                disabled={loading}
-              >
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Live Preview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-              {imagePreview ? (
-                <div className="space-y-2">
-                  <div className="relative h-40 w-full rounded-lg overflow-hidden">
-                    <Image
-                      src={imagePreview}
-                      alt="Dish preview"
-                      fill
-                      className="object-cover"
-                    />
+        <Card>
+          <CardHeader>
+            <CardTitle>Live Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                {imagePreview ? (
+                  <div className="space-y-2">
+                    <div className="relative h-40 w-full rounded-lg overflow-hidden">
+                      <Image
+                        src={imagePreview}
+                        alt="Dish preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">Image Preview</p>
                   </div>
-                  <p className="text-xs text-gray-500">Image Preview</p>
-                </div>
-              ) : (
-                <div className="py-8">
-                  <ImageIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No image selected</p>
-                  <p className="text-xs text-gray-400">Upload an image to see preview</p>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="py-8">
+                    <ImageIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">No image selected</p>
+                    <p className="text-xs text-gray-400">Upload an image to see preview</p>
+                  </div>
+                )}
+              </div>
 
-            <div className="space-y-3 p-3 border rounded-lg">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-lg">
-                    {dish.dishName || 'Dish Name'}
-                  </h3>
-                  <Badge variant="outline" className="mt-1 bg-green-50 text-green-700 border-green-200">
-                    {dish.cuisineType}
+              <div className="space-y-3 p-3 border rounded-lg">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {dish.dishName || 'Dish Name'}
+                    </h3>
+                    <Badge variant="outline" className="mt-1 bg-green-50 text-green-700 border-green-200">
+                      {dish.cuisineType}
+                    </Badge>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-black text-green-600">
+                      ₹{dish.price || '0'}
+                    </p>
+                    <p className="text-sm text-gray-500 line-through">₹399</p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600">
+                  {dish.description || 'Dish description will appear here...'}
+                </p>
+
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span className="bg-red-500 text-white px-2 py-1 rounded-full font-bold">
+                    🎉 25% OFF TOMORROW ONLY
+                  </span>
+                  <span>Delivery after 11:45 AM</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold text-sm mb-2">Current Status</h4>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Active Dish:</span>
+                  <Badge variant={dish.isActive ? "default" : "secondary"}>
+                    {dish.isActive ? 'Active' : 'Not Set'}
                   </Badge>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black text-green-600">
-                    ₹{dish.price || '0'}
-                  </p>
-                  <p className="text-sm text-gray-500 line-through">₹399</p>
+                <div className="flex items-center justify-between text-sm mt-1">
+                  <span className="text-gray-600">Scheduled For:</span>
+                  <span className="text-gray-500 font-medium">{tomorrowReadable}</span>
                 </div>
               </div>
-
-              <p className="text-sm text-gray-600">
-                {dish.description || 'Dish description will appear here...'}
-              </p>
-
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span className="bg-red-500 text-white px-2 py-1 rounded-full font-bold">
-                  🎉 25% OFF TOMORROW ONLY
-                </span>
-                <span>Delivery after 11:45 AM</span>
-              </div>
             </div>
-
-            <div className="pt-4 border-t">
-              <h4 className="font-semibold text-sm mb-2">Current Status</h4>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Active Dish:</span>
-                <Badge variant={dish.isActive ? "default" : "secondary"}>
-                  {dish.isActive ? 'Active' : 'Not Set'}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm mt-1">
-                <span className="text-gray-600">Scheduled For:</span>
-                <span className="text-gray-500 font-medium">{tomorrowReadable}</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

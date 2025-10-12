@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/lib/firebase/auth-context';
 import { useDailyDish } from './hooks/useDailyDish';
 import { usePreOrder } from './hooks/usePreOrder';
 import BannerCard from './components/BannerCard';
@@ -8,6 +9,8 @@ import PolicyDialog from './components/PolicyDialog';
 import ReopenHint from './components/ReopenHint';
 
 export default function DailyDishBanner() {
+  const { appUser, loading: authLoading } = useAuth();
+  
   const {
     dish,
     isVisible,
@@ -31,6 +34,11 @@ export default function DailyDishBanner() {
     getTodayReadable,
     getTomorrowReadable
   } = usePreOrder(dish);
+
+  // Agar user logged in nahi hai ya auth loading chal raha hai toh kuch na dikhayen
+  if (!appUser || authLoading) {
+    return null;
+  }
 
   // Reopen Hint Button
   if (showReopenHint && !isVisible) {
