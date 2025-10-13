@@ -191,14 +191,14 @@
     right: -20px;
     box-shadow: -10px -10px 0 0 hsl(var(--background));
   }
-}
 
-  .chat-container {
-     --chat-bubble-max-width: min(280px, 85vw);
-}
+  .chat-container .prose {
+    max-width: var(--chat-bubble-max-width, 80%);
+  }
 
-  @media (min-width: 768px) {
-  .chat-container {
-    --chat-bubble-max-width: min(320px, 65vw);
+  @media (min-width: 640px) {
+    .chat-container .prose {
+      max-width: var(--chat-bubble-max-width, 60%);
+    }
   }
 }

@@ -1,4 +1,3 @@
-
 // src/components/chat/ChatInterface.tsx
 'use client';
 
@@ -140,14 +139,15 @@ export function ChatInterface() {
 
   const scrollToBottom = useCallback(() => {
     if (scrollAreaRef.current) {
-        const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        const scrollContainer = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
         if (scrollContainer) {
             setTimeout(() => {
                 scrollContainer.scrollTop = scrollContainer.scrollHeight;
             }, 100);
         }
     }
-  }, []);
+}, []);
+
 
   useEffect(() => {
     scrollToBottom();
@@ -227,104 +227,102 @@ export function ChatInterface() {
         </CardTitle>
       </CardHeader>
 
-      <div className="flex-1 flex flex-col overflow-hidden chat-container">
-        <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef}>
-          <div className="space-y-4">
-            {messages.map((message, index) => (
+      <ScrollArea className="flex-1 p-4 md:p-6 chat-container" ref={scrollAreaRef}>
+        <div className="space-y-4">
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={cn(
+                'flex items-start gap-3 group w-full',
+                message.role === 'user' ? 'justify-end' : 'justify-start'
+              )}
+            >
+              {message.role === 'model' && (
+                <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                  <AvatarImage src="/logo-icon.svg" />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
+                    <Bot className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
               <div
-                key={index}
                 className={cn(
-                  'flex items-start gap-3 group w-full',
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
+                  'rounded-2xl px-4 py-3 text-sm shadow-md transition-all duration-300',
+                  'prose prose-sm max-w-none break-words leading-relaxed',
+                  'w-fit',
+                  message.role === 'user' 
+                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-br-lg' 
+                    : 'bg-white/80 backdrop-blur-sm border border-white/30 rounded-bl-lg'
                 )}
               >
-                {message.role === 'model' && (
-                  <Avatar className="h-10 w-10 border-2 border-white shadow-md">
-                    <AvatarImage src="/logo-icon.svg" />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
-                      <Bot className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={cn(
-                    'rounded-2xl px-4 py-3 text-sm shadow-md transition-all duration-300',
-                    'prose prose-sm max-w-none break-words leading-relaxed',
-                    'w-fit',
-                    message.role === 'user' 
-                      ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-br-lg' 
-                      : 'bg-white/80 backdrop-blur-sm border border-white/30 rounded-bl-lg'
-                  )}
-                >
-                  <ReactMarkdown>
-                    {message.content as string}
-                  </ReactMarkdown>
-                  <div className={cn("text-xs mt-2 opacity-70", message.role === 'user' ? 'text-blue-100' : 'text-gray-500')}>
-                    {formatTime(message.timestamp)}
-                  </div>
+                <ReactMarkdown>
+                  {message.content as string}
+                </ReactMarkdown>
+                <div className={cn("text-xs mt-2 opacity-70", message.role === 'user' ? 'text-blue-100' : 'text-gray-500')}>
+                  {formatTime(message.timestamp)}
                 </div>
+              </div>
 
-                {message.role === 'user' && authUser && (
-                  <Avatar className="h-10 w-10 border-2 border-white shadow-md">
-                    <AvatarImage
-                      src={authUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.uid}&backgroundColor=65c9ff,b6e3f4,c0aede,d1d4f9,ffd5dc`}
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-400 text-white">
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex items-center gap-3 animate-fade-in">
-                 <Avatar className="h-10 w-10 border-2 border-white shadow-md">
-                    <AvatarImage src="/logo-icon.svg" />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
-                      <Bot className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                <div className="bg-white/80 backdrop-blur-sm border border-white/30 rounded-2xl rounded-bl-lg px-6 py-4 text-sm flex items-center gap-3 shadow-md">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                  </div>
+              {message.role === 'user' && authUser && (
+                <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                  <AvatarImage
+                    src={authUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.uid}&backgroundColor=65c9ff,b6e3f4,c0aede,d1d4f9,ffd5dc`}
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-400 text-white">
+                    <User className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex items-center gap-3 animate-fade-in">
+                <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                  <AvatarImage src="/logo-icon.svg" />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
+                    <Bot className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              <div className="bg-white/80 backdrop-blur-sm border border-white/30 rounded-2xl rounded-bl-lg px-6 py-4 text-sm flex items-center gap-3 shadow-md">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                 </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-        <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
-            {authUser && messages.length <= 1 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (
-                  <Button key={suggestion} variant="outline" size="sm" className="rounded-full h-8" onClick={() => setInput(suggestion.replace(/^[^\s]+\s/, ''))}>
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
-            )}
-            <div className="relative">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder={ authUser ? 'Ask about your orders...' : 'Please log in to chat' }
-                className="h-12 rounded-full border-2 border-gray-200 bg-white/80 pl-5 pr-24 text-base"
-                disabled={isLoading || !authUser}
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <Button type="button" size="icon" variant="ghost" onClick={handleMicClick} className={cn('rounded-full h-9 w-9', listening ? 'bg-red-100 text-red-600' : 'text-gray-500')} disabled={!authUser}>
-                  <Mic className="h-5 w-5" />
-                </Button>
-                <Button type="submit" size="icon" onClick={handleSend} disabled={isLoading || !input.trim() || !authUser} className="rounded-full h-9 w-9 bg-primary text-primary-foreground">
-                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-                </Button>
               </div>
             </div>
+          )}
+        </div>
+      </ScrollArea>
+      <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
+          {authUser && messages.length <= 1 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (
+                <Button key={suggestion} variant="outline" size="sm" className="rounded-full h-8" onClick={() => setInput(suggestion.replace(/^[^\s]+\s/, ''))}>
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          )}
+          <div className="relative">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder={ authUser ? 'Ask about your orders...' : 'Please log in to chat' }
+              className="h-12 rounded-full border-2 border-gray-200 bg-white/80 pl-5 pr-24 text-base"
+              disabled={isLoading || !authUser}
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <Button type="button" size="icon" variant="ghost" onClick={handleMicClick} className={cn('rounded-full h-9 w-9', listening ? 'bg-red-100 text-red-600' : 'text-gray-500')} disabled={!authUser}>
+                <Mic className="h-5 w-5" />
+              </Button>
+              <Button type="submit" size="icon" onClick={handleSend} disabled={isLoading || !input.trim() || !authUser} className="rounded-full h-9 w-9 bg-primary text-primary-foreground">
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
-      </div>
+        </div>
     </Card>
   );
 }
