@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useTransition, useCallback } from 'react';
@@ -8,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { SearchSuggestionsInput, SearchSuggestionsOutput } from '@/ai/flows/smart-search-suggestions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { products as allProducts } from '@/lib/data';
 
 // Debounce function
 const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
@@ -33,7 +33,10 @@ export function SmartSearchBar() {
       return;
     }
     try {
-      const payload: SearchSuggestionsInput = { searchQuery, searchHistory };
+      // Pass the full product list to the API
+      const productList = allProducts.map(p => p.name_en);
+      const payload: SearchSuggestionsInput = { searchQuery, searchHistory, productList };
+      
       const response = await fetch('/api/search-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
