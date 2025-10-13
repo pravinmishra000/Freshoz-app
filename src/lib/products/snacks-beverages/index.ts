@@ -9,7 +9,8 @@ import { SNACKS_PRODUCTS } from './snacks';
 import { WATER_JUICE_PRODUCTS } from './water-juice';
 
 export const ALL_SNACKS_BEVERAGES_PRODUCTS = [
-  ...BEVERAGES_PRODUCTS,
-  ...SNACKS_PRODUCTS,
-  ...WATER_JUICE_PRODUCTS
+  ...BEVERAGES_PRODUCTS.map(p => ({ ...p, category_id: 'cat-3' })),
+  ...SNACKS_PRODUCTS.map(p => ({ ...p, category_id: 'cat-3' })),
+  ...WATER_JUICE_PRODUCTS.map(p => ({ ...p, category_id: 'cat-3' })),
 ];
+  

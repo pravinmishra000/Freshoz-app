@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useTransition, useCallback, useEffect } from 'react';
+import { useState, useTransition, useCallback } from 'react';
 import { Search, Mic } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,28 +9,13 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
 
-import { ALL_DAIRY_BAKERY_PRODUCTS } from '@/lib/products/dairy-bakery';
-import { ALL_NON_VEG_PRODUCTS } from '@/lib/products/non-veg';
-import { ALL_VEGETABLES_FRUITS_PRODUCTS } from '@/lib/products/vegetables-fruits';
-import { ALL_SNACKS_BEVERAGES_PRODUCTS } from '@/lib/products/snacks-beverages';
-import { ALL_STAPLES_GROCERY_PRODUCTS } from '@/lib/products/staples-grocery';
-import { CATEGORIES } from '@/lib/data';
-import type { Product } from '@/lib/types';
-
-
-const allProducts = [
-  ...ALL_DAIRY_BAKERY_PRODUCTS,
-  ...ALL_NON_VEG_PRODUCTS,
-  ...ALL_VEGETABLES_FRUITS_PRODUCTS,
-  ...ALL_SNACKS_BEVERAGES_PRODUCTS,
-  ...ALL_STAPLES_GROCERY_PRODUCTS
-];
-
-console.log(`📦 Total products loaded for search: ${allProducts.length}`);
+// ✅ SIMPLE IMPORT - Use from lib/data
+import { products as allProducts } from '@/lib/data';
 
 // Debounce function
 const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
   let timeout: NodeJS.Timeout;
+
   return (...args: Parameters<F>): Promise<ReturnType<F>> =>
     new Promise(resolve => {
       clearTimeout(timeout);
@@ -42,7 +26,7 @@ const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) =
 export function SmartSearchBar() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isListening, setIsListening] = useState(false);
@@ -54,10 +38,15 @@ export function SmartSearchBar() {
       return;
     }
     try {
+      const payload = { 
+        searchQuery: searchQuery, 
+        searchHistory: searchHistory 
+      };
+      
       const response = await fetch('/api/search-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ searchQuery, searchHistory }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -74,52 +63,59 @@ export function SmartSearchBar() {
 
   const debouncedGetSuggestions = useCallback(debounce(getSuggestions, 300), [getSuggestions]);
 
-  const handleRedirect = (product: Product) => {
-    const category = CATEGORIES.find(c => c.id === product.category_id);
-    const categorySlug = category ? category.slug : 'fresh-vegetables';
-    
-    // Clear search state before redirecting
-    setQuery('');
-    setFilteredProducts([]);
-    setSuggestions([]);
-
-    router.push(`/products/category/${categorySlug}?highlight=${product.id}`);
-  };
-
-
-  const performSearch = (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-        setFilteredProducts([]);
-        return;
-    }
-
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const filtered = allProducts.filter(product =>
-      product.name_en.toLowerCase().includes(lowerCaseQuery) ||
-      (product.name_hi && product.name_hi.toLowerCase().includes(lowerCaseQuery)) ||
-      (product.category && product.category.toLowerCase().includes(lowerCaseQuery)) ||
-      (product.tags && product.tags.some(tag => tag.toLowerCase().includes(lowerCaseQuery)))
-    );
-
-    // If exactly one product matches, redirect to its page.
-    if (filtered.length === 1) {
-      handleRedirect(filtered[0]);
-    } else {
-      setFilteredProducts(filtered);
-    }
-  };
-  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
     startTransition(() => {
       debouncedGetSuggestions(newQuery);
-      if (newQuery.length > 1) {
-        performSearch(newQuery);
-      } else {
-        setFilteredProducts([]);
-      }
     });
+  };
+
+  // ✅ PRODUCT SEARCH FUNCTION
+  const performSearch = (searchQuery: string) => {
+    console.log(`🔍 Searching products for: ${searchQuery}`);
+    
+    const filtered = allProducts.filter(product =>
+      product.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.name_hi?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    setFilteredProducts(filtered);
+    console.log(`✅ Found ${filtered.length} products for: ${searchQuery}`);
+  };
+
+  // ✅ PRODUCT CLICK HANDLER - Navigate to category page using slug
+  const handleProductClick = (product: any) => {
+    console.log(`📍 Product clicked: ${product.name_en}`);
+    
+    // Find category from your CATEGORIES array
+    const category = CATEGORIES.find(cat => cat.id === product.category_id);
+    
+    if (category) {
+      // Navigate to category page with product highlight
+      router.push(`/categories/${category.slug}?highlight=${encodeURIComponent(product.name_en)}`);
+    } else {
+      // Fallback: Navigate to all products with search
+      router.push(`/products?search=${encodeURIComponent(product.name_en)}`);
+    }
+    
+    // Clear search results
+    setQuery('');
+    setFilteredProducts([]);
+    setSuggestions([]);
+  };
+
+  // ✅ CUSTOM PRODUCT CARD WRAPPER
+  const CustomProductCard = ({ product }: { product: any }) => {
+    return (
+      <div 
+        className="cursor-pointer hover:scale-105 transition-transform duration-200"
+        onClick={() => handleProductClick(product)}
+      >
+        <ProductCard product={product} />
+      </div>
+    );
   };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -145,19 +141,8 @@ export function SmartSearchBar() {
         const voiceQuery = 'tomato';
         setQuery(voiceQuery);
         performSearch(voiceQuery);
-      }, 2000);
+      }, 3000);
   }
-
-  const CustomProductCard = ({ product }: { product: Product }) => {
-    return (
-      <div 
-        className="cursor-pointer hover:scale-105 transition-transform duration-200"
-        onClick={() => handleRedirect(product)}
-      >
-        <ProductCard product={product} />
-      </div>
-    );
-  };
 
   return (
     <div className="relative w-full">
@@ -184,7 +169,7 @@ export function SmartSearchBar() {
         </div>
       </form>
       
-      {suggestions.length > 0 && query.length > 1 && (
+      {suggestions.length > 0 && (
         <Card className="glass-card absolute top-full mt-2 w-full overflow-hidden z-50">
           <CardContent className="p-2">
             <ul className="space-y-1">
@@ -203,27 +188,32 @@ export function SmartSearchBar() {
         </Card>
       )}
 
-      {filteredProducts.length > 0 && query.length > 1 && (
-        <div className="fixed inset-0 top-36 bg-background z-40 overflow-y-auto px-4 pb-24">
-            <h3 className="text-lg font-semibold mb-4 mt-4">
-                Search Results for "{query}" ({filteredProducts.length})
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filteredProducts.map((product) => (
-                <CustomProductCard 
-                    key={product.id} 
-                    product={product}
-                />
-                ))}
-            </div>
+      {/* ✅ PRODUCT SEARCH RESULTS */}
+      {filteredProducts.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-4">
+            Search Results for "{query}" ({filteredProducts.length} products)
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredProducts.map((product) => (
+              <CustomProductCard 
+                key={product.id} 
+                product={product}
+              />
+            ))}
+          </div>
         </div>
       )}
 
-      {query.length > 1 && filteredProducts.length === 0 && !isPending && (
-        <div className="fixed inset-0 top-36 bg-background z-40 flex items-center justify-center">
-            <p className="text-center text-muted-foreground">No products found for "{query}"</p>
+      {/* No products found message */}
+      {query && filteredProducts.length === 0 && (
+        <div className="mt-6 text-center text-muted-foreground">
+          No products found for "{query}"
         </div>
       )}
     </div>
   );
 }
+
+// ✅ ADD CATEGORIES IMPORT AT THE BOTTOM
+import { CATEGORIES } from '@/lib/data';

@@ -6,7 +6,9 @@ export * from './vegetables';
 import { FRUITS_PRODUCTS } from './fruits';
 import { VEGETABLES_PRODUCTS } from './vegetables';
 
+
+
 export const ALL_VEGETABLES_FRUITS_PRODUCTS = [
-  ...FRUITS_PRODUCTS,
-  ...VEGETABLES_PRODUCTS
+  ...VEGETABLES_PRODUCTS.map(p => ({ ...p, category_id: 'cat-1' })),
+  ...FRUITS_PRODUCTS.map(p => ({ ...p, category_id: 'cat-6' })),
 ];

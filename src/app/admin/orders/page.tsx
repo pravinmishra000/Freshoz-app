@@ -1,20 +1,36 @@
 
+'use client';
+
 import { AdminOrderList } from '@/components/admin/AdminOrderList';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { auth } from '@/lib/firebase/server';
+import { auth } from '@/lib/firebase/client';
 import { getUser } from '@/services/firestoreService';
 import { redirect } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from 'react';
 
-export default async function AdminOrdersPage() {
-  const user = await auth.currentUser;
-  if (!user) {
-    redirect('/login');
-  }
+export default function AdminOrdersPage() {
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+        const user = await new Promise((resolve) => {
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                unsubscribe();
+                resolve(user);
+            });
+        });
 
-  const appUser = await getUser(user.uid);
-  if (appUser?.role !== 'admin') {
-    redirect('/');
-  }
+        if (!user) {
+            redirect('/login');
+        } else {
+            const appUser = await getUser((user as any).uid);
+            if (appUser?.role !== 'admin') {
+                redirect('/');
+            }
+        }
+    };
+    checkAuth();
+  }, []);
 
   return (
     <div className="space-y-6">

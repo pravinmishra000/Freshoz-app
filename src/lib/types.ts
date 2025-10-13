@@ -191,7 +191,7 @@ export interface Promotion {
   title: string;
   description: string;
   imageUrl: string;
-  imageHint: string;
+  imageHint?: string;
 }
 
 

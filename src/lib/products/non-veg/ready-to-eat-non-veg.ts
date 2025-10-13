@@ -1,6 +1,6 @@
 import { Product } from '../../types';
 
-export const READY_TO_EAT_PRODUCTS: Product[] = [
+export const READY_TO_EAT_NON_VEG_PRODUCTS: Product[] = [
   {
     id: 'rte-1',
     name_en: 'Chicken Biryani',

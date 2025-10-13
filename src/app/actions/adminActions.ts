@@ -13,14 +13,21 @@ import {
 } from '@/services/firestoreService';
 import type { Order, OrderStatus, Product, ProductInput } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/lib/firebase/server';
+import { auth } from '@/lib/firebase/client';
 import { sendPushNotification } from '@/services/notificationService';
+import { onAuthStateChanged } from 'firebase/auth';
 
 
 async function verifyAdmin() {
-    const user = await auth.currentUser;
+    const user = await new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        });
+    });
+
     if (!user) throw new Error('Authentication required.');
-    const appUser = await getUser(user.uid);
+    const appUser = await getUser((user as any).uid);
     if (appUser?.role !== 'admin') throw new Error('Unauthorized: Admin access required.');
 }
 

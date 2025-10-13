@@ -9,7 +9,7 @@ import { BAKERY_PRODUCTS } from './bakery';
 import { FROZEN_PRODUCTS } from './frozen';
 
 export const ALL_DAIRY_BAKERY_PRODUCTS = [
-  ...DAIRY_PRODUCTS,
-  ...BAKERY_PRODUCTS,
-  ...FROZEN_PRODUCTS
+  ...DAIRY_PRODUCTS.map(p => ({ ...p, category_id: 'cat-2' })), // category id for Dairy & Bakery
+  ...BAKERY_PRODUCTS.map(p => ({ ...p, category_id: 'cat-2' })),
+  ...FROZEN_PRODUCTS.map(p => ({ ...p, category_id: 'cat-2' }))
 ];
