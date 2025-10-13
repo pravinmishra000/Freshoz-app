@@ -180,10 +180,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     ) : authUser ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Avatar className="cursor-pointer">
-                            <AvatarImage key={appUser?.photoURL} src={appUser?.photoURL || `https://picsum.photos/seed/user-avatar/40/40`} data-ai-hint="person face"/>
-                            <AvatarFallback>{appUser?.displayName?.[0].toUpperCase() ?? 'U'}</AvatarFallback>
-                          </Avatar>
+                          <Button variant="ghost" size="icon" className="glass-icon-button">
+                            <ShoppingCart className="h-5 w-5 text-positive" />
+                          </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>My Account</DropdownMenuLabel>
