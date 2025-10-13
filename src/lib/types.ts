@@ -483,11 +483,6 @@ export interface Rider {
     fcmToken?: string;
 }
 
-export interface EarningPeriod {
-  day: string;
-  earnings: number;
-}
-
 export interface Transaction {
   id:string;
   status: 'Completed' | 'Pending' | 'Failed';

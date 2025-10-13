@@ -6,9 +6,7 @@ import { AuthProvider } from '@/lib/firebase/auth-context';
 import { CartProvider } from '@/lib/cart/cart-context';
 import SplashScreen from '@/components/freshoz/splash-screen';
 import Script from 'next/script';
-import React from 'react';
 
-// ✅ Font optimization
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
   subsets: ['latin'],
@@ -16,26 +14,17 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-// ✅ Metadata setup
 export const metadata: Metadata = {
-  title: 'Freshoz — Fresh & Fast Grocery Delivery',
-  description: 'Fresh groceries delivered fast to your doorstep with Freshoz.',
-  keywords: ['Freshoz', 'groceries', 'delivery', 'Blinkit alternative', 'Sultanganj', 'Bhagalpur'],
-  authors: [{ name: 'Revin Industries' }],
-  viewport: 'width=device-width, initial-scale=1',
+  title: 'Freshoz-fresh',
+  description: 'Fresh groceries delivered to your door.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   return (
     <html lang="en">
       <head>
-        {/* ✅ Favicon & Fonts */}
         <link
           rel="icon"
           href="https://firebasestorage.googleapis.com/v0/b/freshoz-fresh-fast.firebasestorage.app/o/brand%2FPNG%2Flogo-all-size%2Flogo-transparent-128x128.png?alt=media&token=06ed7ff4-43d2-418b-9472-21d8ff33bab8"
@@ -47,22 +36,18 @@ export default function RootLayout({
           rel="stylesheet"
         />
 
-        {/* ✅ Google Maps API Script — safe & async load */}
+        {/* Google Maps JS API (lazy load, client-side) */}
         {googleMapsApiKey && (
           <Script
-            id="google-maps-script"
             src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`}
-            async
-            defer
             strategy="afterInteractive"
           />
         )}
       </head>
-
-      <body className={`${inter.variable} ${poppins.variable} font-body antialiased bg-white text-gray-900`}>
+      <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
         <SplashScreen />
-        
-        {/* ✅ Recaptcha container for Firebase or OTP auth */}
+
+        {/* Recaptcha container */}
         <div id="recaptcha-container"></div>
 
         <AuthProvider>

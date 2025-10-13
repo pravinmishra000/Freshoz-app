@@ -1,5 +1,5 @@
 
-import type { Product, Promotion, EarningPeriod, Transaction, Order, Category } from './types';
+import type { Product, Promotion, Transaction, Order, Category } from './types';
 import { 
   Carrot, 
   Milk, 
@@ -217,16 +217,6 @@ export const promotions: Promotion[] = [
   }
 ];
 
-export const earningsData: EarningPeriod[] = [
-  { day: 'Mon', earnings: 120 },
-  { day: 'Tue', earnings: 150 },
-  { day: 'Wed', earnings: 170 },
-  { day: 'Thu', earnings: 130 },
-  { day: 'Fri', earnings: 210 },
-  { day: 'Sat', earnings: 250 },
-  { day: 'Sun', earnings: 180 },
-];
-
 export const transactions: Transaction[] = [
   { id: '#3210', status: 'Completed', amount: 25.0, date: '2023-10-26' },
   { id: '#3209', status: 'Completed', amount: 15.0, date: '2023-10-26' },
@@ -260,4 +250,3 @@ export const orders: Partial<Order>[] = [
       updatedAt: new Date('2023-10-25T15:15:00Z'),
     }
   ];
-
