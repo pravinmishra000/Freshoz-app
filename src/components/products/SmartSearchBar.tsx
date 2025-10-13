@@ -74,18 +74,18 @@ export function SmartSearchBar() {
 
   const debouncedGetSuggestions = useCallback(debounce(getSuggestions, 300), [getSuggestions]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = e.target.value;
-    setQuery(newQuery);
-    startTransition(() => {
-      debouncedGetSuggestions(newQuery);
-      if (newQuery.length > 1) {
-        performSearch(newQuery);
-      } else {
-        setFilteredProducts([]);
-      }
-    });
+  const handleRedirect = (product: Product) => {
+    const category = CATEGORIES.find(c => c.id === product.category_id);
+    const categorySlug = category ? category.slug : 'fresh-vegetables';
+    
+    // Clear search state before redirecting
+    setQuery('');
+    setFilteredProducts([]);
+    setSuggestions([]);
+
+    router.push(`/products/category/${categorySlug}?highlight=${product.id}`);
   };
+
 
   const performSearch = (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -100,29 +100,26 @@ export function SmartSearchBar() {
       (product.category && product.category.toLowerCase().includes(lowerCaseQuery)) ||
       (product.tags && product.tags.some(tag => tag.toLowerCase().includes(lowerCaseQuery)))
     );
-    setFilteredProducts(filtered);
+
+    // If exactly one product matches, redirect to its page.
+    if (filtered.length === 1) {
+      handleRedirect(filtered[0]);
+    } else {
+      setFilteredProducts(filtered);
+    }
   };
   
-  const handleProductClick = (product: Product) => {
-    const category = CATEGORIES.find(c => c.id === product.category_id);
-    const categorySlug = category ? category.slug : 'fresh-vegetables';
-    
-    router.push(`/products/category/${categorySlug}?highlight=${product.id}`);
-
-    setQuery('');
-    setFilteredProducts([]);
-    setSuggestions([]);
-  };
-
-  const CustomProductCard = ({ product }: { product: Product }) => {
-    return (
-      <div 
-        className="cursor-pointer hover:scale-105 transition-transform duration-200"
-        onClick={() => handleProductClick(product)}
-      >
-        <ProductCard product={product} />
-      </div>
-    );
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+    startTransition(() => {
+      debouncedGetSuggestions(newQuery);
+      if (newQuery.length > 1) {
+        performSearch(newQuery);
+      } else {
+        setFilteredProducts([]);
+      }
+    });
   };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -150,6 +147,17 @@ export function SmartSearchBar() {
         performSearch(voiceQuery);
       }, 2000);
   }
+
+  const CustomProductCard = ({ product }: { product: Product }) => {
+    return (
+      <div 
+        className="cursor-pointer hover:scale-105 transition-transform duration-200"
+        onClick={() => handleRedirect(product)}
+      >
+        <ProductCard product={product} />
+      </div>
+    );
+  };
 
   return (
     <div className="relative w-full">
