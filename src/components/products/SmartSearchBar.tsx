@@ -10,7 +10,9 @@ import { useRouter } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
 
 // ✅ SIMPLE IMPORT - Use from lib/data
-import { products as allProducts } from '@/lib/data';
+import { products as allProducts, CATEGORIES } from '@/lib/data';
+import type { Product } from '@/lib/types';
+
 
 // Debounce function
 const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
@@ -26,7 +28,7 @@ const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) =
 export function SmartSearchBar() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isPending, startTransition] = useTransition();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isListening, setIsListening] = useState(false);
@@ -71,7 +73,22 @@ export function SmartSearchBar() {
     });
   };
 
-  // ✅ PRODUCT SEARCH FUNCTION
+  const handleRedirect = (product: Product) => {
+    console.log(`📍 Product clicked: ${product.name_en}`);
+    
+    const category = CATEGORIES.find(cat => cat.id === product.category_id);
+    
+    if (category) {
+      router.push(`/products/category/${category.slug}?highlight=${encodeURIComponent(product.name_en)}`);
+    } else {
+      router.push(`/products?search=${encodeURIComponent(product.name_en)}`);
+    }
+    
+    setQuery('');
+    setFilteredProducts([]);
+    setSuggestions([]);
+  };
+
   const performSearch = (searchQuery: string) => {
     console.log(`🔍 Searching products for: ${searchQuery}`);
     
@@ -81,37 +98,21 @@ export function SmartSearchBar() {
       product.category?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     
+    if (filtered.length === 1) {
+        handleRedirect(filtered[0]);
+        return;
+    }
+
     setFilteredProducts(filtered);
     console.log(`✅ Found ${filtered.length} products for: ${searchQuery}`);
   };
 
-  // ✅ PRODUCT CLICK HANDLER - Navigate to category page using slug
-  const handleProductClick = (product: any) => {
-    console.log(`📍 Product clicked: ${product.name_en}`);
-    
-    // Find category from your CATEGORIES array
-    const category = CATEGORIES.find(cat => cat.id === product.category_id);
-    
-    if (category) {
-      // Navigate to category page with product highlight
-      router.push(`/categories/${category.slug}?highlight=${encodeURIComponent(product.name_en)}`);
-    } else {
-      // Fallback: Navigate to all products with search
-      router.push(`/products?search=${encodeURIComponent(product.name_en)}`);
-    }
-    
-    // Clear search results
-    setQuery('');
-    setFilteredProducts([]);
-    setSuggestions([]);
-  };
 
-  // ✅ CUSTOM PRODUCT CARD WRAPPER
   const CustomProductCard = ({ product }: { product: any }) => {
     return (
       <div 
         className="cursor-pointer hover:scale-105 transition-transform duration-200"
-        onClick={() => handleProductClick(product)}
+        onClick={() => handleRedirect(product)}
       >
         <ProductCard product={product} />
       </div>
@@ -188,7 +189,6 @@ export function SmartSearchBar() {
         </Card>
       )}
 
-      {/* ✅ PRODUCT SEARCH RESULTS */}
       {filteredProducts.length > 0 && (
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-4">
@@ -205,7 +205,6 @@ export function SmartSearchBar() {
         </div>
       )}
 
-      {/* No products found message */}
       {query && filteredProducts.length === 0 && (
         <div className="mt-6 text-center text-muted-foreground">
           No products found for "{query}"
@@ -214,6 +213,3 @@ export function SmartSearchBar() {
     </div>
   );
 }
-
-// ✅ ADD CATEGORIES IMPORT AT THE BOTTOM
-import { CATEGORIES } from '@/lib/data';

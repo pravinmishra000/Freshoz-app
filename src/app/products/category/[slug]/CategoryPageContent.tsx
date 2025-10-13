@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Product, Category } from '@/lib/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { products as allProductsData, CATEGORIES } from '@/lib/data';
@@ -12,14 +11,17 @@ import { Loader2, Menu } from 'lucide-react';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
 
 const DEFAULT_CATEGORY_SLUG = 'fresh-vegetables';
 
 export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   const router = useRouter();
-  
+  const searchParams = useSearchParams();
+  const highlightProductName = searchParams.get('highlight');
+
   const slug = initialSlug || DEFAULT_CATEGORY_SLUG;
-  
+
   const [category, setCategory] = useState<Category | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,12 +37,19 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
       );
       setFilteredProducts(products);
     } else {
-      // If slug is invalid, redirect to a default category
       router.replace(`/products/category/${DEFAULT_CATEGORY_SLUG}`);
       return;
     }
     setIsLoading(false);
   }, [slug, router]);
+
+  // Scroll to highlighted product on load
+  useEffect(() => {
+    if (highlightProductName) {
+      const el = document.getElementById(highlightProductName);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [highlightProductName]);
 
   if (isLoading || !category) {
     return (
@@ -55,7 +64,7 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   return (
     <AppShell>
       <div className="container mx-auto py-4 md:py-8">
-        {/* Mobile Category Button - Only visible on mobile */}
+        {/* Mobile Category Button */}
         <div className="block md:hidden mb-4">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
@@ -80,17 +89,13 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          
-          {/* Left Side: Category List - Hidden on mobile */}
+          {/* Left Side: Category List */}
           <aside className="hidden md:block w-1/4 md:w-1/5 lg:w-1/6">
-             <div className="sticky top-24">
-                <CategorySidebar 
-                    categories={CATEGORIES} 
-                    activeSlug={slug}
-                />
-             </div>
+            <div className="sticky top-24">
+              <CategorySidebar categories={CATEGORIES} activeSlug={slug} />
+            </div>
           </aside>
-          
+
           {/* Right Side: Product Grid */}
           <main className="w-full md:w-3/4 md:w-4/5 lg:w-5/6">
             <Card className="mb-6 border-0 bg-transparent shadow-none">
@@ -102,9 +107,23 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
 
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+                {filteredProducts.map((product) => {
+                  const isHighlighted = highlightProductName && product.name_en === highlightProductName;
+                  return (
+                    <div
+                      key={product.id}
+                      id={product.name_en}
+                      className={cn(
+                        "transition-transform duration-200",
+                        isHighlighted
+                          ? "ring-2 ring-offset-2 ring-primary rounded-lg"
+                          : "hover:scale-105 cursor-pointer"
+                      )}
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-10 glass-card">
