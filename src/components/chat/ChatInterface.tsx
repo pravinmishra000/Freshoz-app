@@ -34,7 +34,7 @@ export function ChatInterface() {
   const [listening, setListening] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const recognitionRef = useRef<any>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -73,6 +73,11 @@ export function ChatInterface() {
     }
   }, [isClient]);
 
+  // Auto scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
   const handleMicClick = () => {
     if (!recognitionRef.current) return;
     if (listening) {
@@ -98,12 +103,18 @@ export function ChatInterface() {
     try {
       const userId = authUser ? authUser.uid : 'guest';
       
+      // Genkit integration - replace mock API with actual Genkit flow
       const response = await fetch('/api/support-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId, message: input } as SupportChatInput),
+        body: JSON.stringify({ 
+          userId, 
+          message: input,
+          // Add Genkit specific parameters if needed
+          flow: 'customer-support-chat'
+        } as SupportChatInput),
       });
 
       if (!response.ok) {
@@ -136,23 +147,6 @@ export function ChatInterface() {
       setIsLoading(false);
     }
   };
-
-  const scrollToBottom = useCallback(() => {
-    if (scrollAreaRef.current) {
-        const scrollContainer = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
-        if (scrollContainer) {
-            setTimeout(() => {
-                scrollContainer.scrollTop = scrollContainer.scrollHeight;
-            }, 100);
-        }
-    }
-}, []);
-
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -227,8 +221,9 @@ export function ChatInterface() {
         </CardTitle>
       </CardHeader>
 
-      <div className="flex-1 flex flex-col overflow-hidden chat-container">
-        <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollAreaRef}>
+      {/* FIXED: Proper chat layout with working scroll */}
+      <div className="flex-1 flex flex-col min-h-0"> {/* Important: min-h-0 for flex children */}
+        <ScrollArea className="flex-1 p-4 md:p-6">
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -239,7 +234,7 @@ export function ChatInterface() {
                 )}
               >
                 {message.role === 'model' && (
-                  <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                  <Avatar className="h-10 w-10 border-2 border-white shadow-md flex-shrink-0">
                     <AvatarImage src="/logo-icon.svg" />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
                       <Bot className="h-5 w-5" />
@@ -250,7 +245,7 @@ export function ChatInterface() {
                   className={cn(
                     'rounded-2xl px-4 py-3 text-sm shadow-md transition-all duration-300',
                     'prose prose-sm max-w-none break-words leading-relaxed',
-                    'w-fit',
+                    'max-w-[85%]', // Limit message width
                     message.role === 'user' 
                       ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-br-lg' 
                       : 'bg-white/80 backdrop-blur-sm border border-white/30 rounded-bl-lg'
@@ -265,7 +260,7 @@ export function ChatInterface() {
                 </div>
 
                 {message.role === 'user' && authUser && (
-                  <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                  <Avatar className="h-10 w-10 border-2 border-white shadow-md flex-shrink-0">
                     <AvatarImage
                       src={authUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.uid}&backgroundColor=65c9ff,b6e3f4,c0aede,d1d4f9,ffd5dc`}
                     />
@@ -278,7 +273,7 @@ export function ChatInterface() {
             ))}
             {isLoading && (
               <div className="flex items-center gap-3 animate-fade-in">
-                 <Avatar className="h-10 w-10 border-2 border-white shadow-md">
+                 <Avatar className="h-10 w-10 border-2 border-white shadow-md flex-shrink-0">
                     <AvatarImage src="/logo-icon.svg" />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-400 text-white">
                       <Bot className="h-5 w-5" />
@@ -293,9 +288,13 @@ export function ChatInterface() {
                 </div>
               </div>
             )}
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
-        <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4">
+
+        {/* Input area - fixed at bottom */}
+        <div className="border-t border-white/20 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-lg p-4 flex-shrink-0">
             {authUser && messages.length <= 1 && (
               <div className="flex flex-wrap gap-2 mb-3">
                 {[ "🚚 Where's my order?", "⏰ Delivery time?", "💰 Current offers" ].map((suggestion) => (

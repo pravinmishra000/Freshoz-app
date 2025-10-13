@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/lib/firebase/auth-context';
@@ -218,23 +219,35 @@ export default function LoginPage() {
     let title = `${action} Failed`;
     let description = 'An unexpected error occurred. Please try again.';
 
-    if (typeof error.message === 'string') {
-        if (error.code === 'auth/network-request-failed') {
-            title = 'Network Error';
-            description = 'Please check your internet connection.';
-        } else if (error.code === 'auth/requests-from-referer-are-blocked' || error.message.includes('403')) {
-            title = 'Domain Not Authorized';
-            description = 'This app\'s URL is not authorized for Firebase. Please check API key restrictions in Google Cloud Console.';
-        } else if (error.message.includes('reCAPTCHA')) {
-            title = 'Security Verification Failed';
-            description = 'Please refresh the page and try again.';
-        } else if (error.code === 'auth/invalid-credential') {
-             description = 'Invalid email or password. Please check your credentials.';
+    if (error?.code) {
+        switch (error.code) {
+            case 'auth/network-request-failed':
+                title = 'Network Error';
+                description = 'Please check your internet connection and try again.';
+                break;
+            case 'auth/requests-from-referer-are-blocked':
+            case 'auth/unauthorized-domain':
+                title = 'Domain Not Authorized';
+                description = "This app's URL is not authorized for Firebase. Please check API key restrictions in Google Cloud Console.";
+                break;
+            case 'auth/invalid-verification-code':
+                description = 'The OTP you entered is incorrect. Please try again.';
+                break;
+            case 'auth/invalid-credential':
+                 description = 'Invalid email or password. Please check your credentials and try again.';
+                break;
+            case 'auth/too-many-requests':
+                description = 'Too many attempts. Please try again later.';
+                break;
+            default:
+                description = error.message;
+                break;
         }
-         else {
-            description = error.message;
-        }
+    } else if (error?.message?.includes('reCAPTCHA')) {
+        title = 'Security Verification Failed';
+        description = 'Please refresh the page and try again. If the problem persists, check your ad blocker.';
     }
+    
     toast({ variant: 'destructive', title, description });
   };
 
@@ -399,3 +412,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
