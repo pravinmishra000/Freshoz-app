@@ -19,7 +19,7 @@ export default function ChatPage() {
               </div>
           </CardHeader>
         </Card>
-        <div className="flex-1 overflow-hidden rounded-2xl">
+        <div className="flex-1 rounded-2xl overflow-hidden">
           <ChatInterface />
         </div>
       </div>
