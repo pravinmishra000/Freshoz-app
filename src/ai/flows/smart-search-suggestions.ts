@@ -10,11 +10,11 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import { products as allProducts } from '@/lib/data';
 
 const SearchSuggestionsInputSchema = z.object({
   searchQuery: z.string().describe('The current search query entered by the user.'),
   searchHistory: z.array(z.string()).describe('The user\'s recent search history.'),
-  productList: z.array(z.string()).describe('A list of available products in the store.'),
 });
 export type SearchSuggestionsInput = z.infer<typeof SearchSuggestionsInputSchema>;
 
@@ -26,6 +26,8 @@ export type SearchSuggestionsOutput = z.infer<typeof SearchSuggestionsOutputSche
 export async function generateSearchSuggestions(input: SearchSuggestionsInput): Promise<SearchSuggestionsOutput> {
   return smartSearchSuggestionsFlow(input);
 }
+
+const productList = allProducts.map(p => p.name_en);
 
 const prompt = ai.definePrompt({
   name: 'smartSearchSuggestionsPrompt',
@@ -68,12 +70,12 @@ const smartSearchSuggestionsFlow = ai.defineFlow(
   },
   async input => {
     // To reduce the size of the prompt, let's filter the product list
-    const filteredProductList = input.productList.filter(productName => 
+    const filteredProductList = productList.filter(productName => 
       productName.toLowerCase().includes(input.searchQuery.toLowerCase())
     );
     
     // If the filtered list is too small, use a larger portion of the original list
-    const productContext = filteredProductList.length > 5 ? filteredProductList : input.productList.slice(0, 100);
+    const productContext = filteredProductList.length > 5 ? filteredProductList : productList.slice(0, 100);
 
     const response = await prompt({
       ...input,

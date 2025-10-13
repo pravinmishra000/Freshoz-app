@@ -1,7 +1,6 @@
 
 import { generateSearchSuggestions } from '@/ai/flows/smart-search-suggestions';
 import { NextResponse, type NextRequest } from 'next/server';
-import { products } from '@/lib/data';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,13 +13,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    const productList = products.map(p => p.name_en);
 
+    // The AI flow will now get the product list itself.
     const result = await generateSearchSuggestions({
       searchQuery,
       searchHistory: searchHistory || [],
-      productList: productList,
     });
 
     return NextResponse.json(result);
@@ -28,7 +25,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('[SEARCH_SUGGESTIONS_API_ERROR]', error);
     return NextResponse.json(
-      { suggestions: [] },
+      { suggestions: [], error: error.message },
       { status: 500 }
     );
   }
