@@ -1,86 +1,123 @@
 'use server';
 
-/**
- * @fileOverview A flow for generating smart search suggestions based on user input.
- *
- * - generateSearchSuggestions - A function that generates search suggestions.
- * - SearchSuggestionsInput - The input type for the generateSearchSuggestions function.
- * - SearchSuggestionsOutput - The return type for the generateSearchSuggestions function.
- */
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
-import {ai} from '@/ai/genkit';
-import {z} from 'zod';
-import { products as allProducts } from '@/lib/data';
+// ✅ CORRECT PRODUCT IMPORTS - Use the same as SmartSearchBar
+import { ALL_DAIRY_BAKERY_PRODUCTS } from '@/lib/products/dairy-bakery';
+import { ALL_NON_VEG_PRODUCTS } from '@/lib/products/non-veg';
+import { ALL_VEGETABLES_FRUITS_PRODUCTS } from '@/lib/products/vegetables-fruits';
+import { ALL_SNACKS_BEVERAGES_PRODUCTS } from '@/lib/products/snacks-beverages';
+import { ALL_STAPLES_GROCERY_PRODUCTS } from '@/lib/products/staples-grocery';
 
-const SearchSuggestionsInputSchema = z.object({
-  searchQuery: z.string().describe('The current search query entered by the user.'),
-  searchHistory: z.array(z.string()).describe('The user\'s recent search history.'),
-});
-export type SearchSuggestionsInput = z.infer<typeof SearchSuggestionsInputSchema>;
-
-const SearchSuggestionsOutputSchema = z.object({
-  suggestions: z.array(z.string()).describe('An array of suggested search queries.'),
-});
-export type SearchSuggestionsOutput = z.infer<typeof SearchSuggestionsOutputSchema>;
-
-export async function generateSearchSuggestions(input: SearchSuggestionsInput): Promise<SearchSuggestionsOutput> {
-  return smartSearchSuggestionsFlow(input);
-}
+// Combine ALL products
+const allProducts = [
+  ...ALL_DAIRY_BAKERY_PRODUCTS,
+  ...ALL_NON_VEG_PRODUCTS,
+  ...ALL_VEGETABLES_FRUITS_PRODUCTS,
+  ...ALL_SNACKS_BEVERAGES_PRODUCTS,
+  ...ALL_STAPLES_GROCERY_PRODUCTS
+];
 
 const productList = allProducts.map(p => p.name_en);
 
-const prompt = ai.definePrompt({
-  name: 'smartSearchSuggestionsPrompt',
-  input: {schema: SearchSuggestionsInputSchema},
-  output: {schema: SearchSuggestionsOutputSchema},
-  prompt: `You are an AI assistant for an online grocery store called Freshoz. Your task is to provide smart, relevant search suggestions.
-
-Context:
-- The user is searching for groceries.
-- The suggestions should be highly relevant to an Indian grocery context.
-- Use the provided product list as the primary source of truth for what is available.
-
-User's current search query: {{{searchQuery}}}
-
-User's recent search history:
-{{#if searchHistory}}
-{{#each searchHistory}}- {{{this}}}
-{{/each}}
-{{else}}No search history available.{{/if}}
-
-Available Products:
-{{#each productList}}- {{{this}}}
-{{/each}}
-
-Based on all this information, provide a list of 3 to 5 highly relevant suggested search queries that the user might be interested in. The suggestions should be short and direct.
-- Prioritize suggestions that are substrings or completions of the user's query and exist in the product list.
-- Also suggest related items from the product list.
-- If the query is a typo for a product in the list, suggest the correct spelling.
-- Do not suggest products that are not in the provided product list.
-
-Provide only the list of suggestions.
-`, 
+const SearchSuggestionsInputSchema = z.object({
+  searchQuery: z.string(),
+  searchHistory: z.array(z.string()),
+  productList: z.array(z.string()).optional(),
 });
 
-const smartSearchSuggestionsFlow = ai.defineFlow(
-  {
-    name: 'smartSearchSuggestionsFlow',
-    inputSchema: SearchSuggestionsInputSchema,
-    outputSchema: SearchSuggestionsOutputSchema,
-  },
-  async input => {
-    // To reduce the size of the prompt, let's filter the product list
-    const filteredProductList = productList.filter(productName => 
-      productName.toLowerCase().includes(input.searchQuery.toLowerCase())
-    );
-    
-    // If the filtered list is too small, use a larger portion of the original list
-    const productContext = filteredProductList.length > 5 ? filteredProductList : productList.slice(0, 100);
+const SearchSuggestionsOutputSchema = z.object({
+  suggestions: z.array(z.string()),
+});
 
-    const response = await prompt({
-      ...input,
-      productList: productContext
-    });
-    return response.output!;
+// ✅ SIMPLE & RELIABLE NON-AI SOLUTION
+export async function generateSearchSuggestions(input: SearchSuggestionsInput): Promise<SearchSuggestionsOutput> {
+  try {
+    const query = input.searchQuery.toLowerCase().trim();
+    
+    console.log(`[Search] Query: "${query}"`);
+
+    // Hindi-English mapping for common grocery items
+    const queryMap: {[key: string]: string} = {
+      'tamatar': 'tomato', 'tamato': 'tomato', 'tamater': 'tomato',
+      'aloo': 'potato', 'alu': 'potato',
+      'pyaaz': 'onion', 'pyaz': 'onion',
+      'doodh': 'milk',
+      'double roti': 'bread', 'pav': 'bread',
+      'chawal': 'rice',
+      'dal': 'lentils', 'daal': 'lentils',
+      'atta': 'flour', 'aata': 'flour',
+      'cheeni': 'sugar', 'shakkar': 'sugar',
+      'namak': 'salt',
+      'palak': 'spinach',
+      'gobhi': 'cauliflower',
+      'baingan': 'brinjal', 'begun': 'brinjal',
+      'kheera': 'cucumber', 'kakdi': 'cucumber',
+      'adrak': 'ginger',
+      'lahsun': 'garlic'
+    };
+
+    // Find English equivalent
+    let searchTerm = query;
+    for (const [hindi, english] of Object.entries(queryMap)) {
+      if (query.includes(hindi)) {
+        searchTerm = english;
+        console.log(`[Search] Hindi detected: "${hindi}" → "${english}"`);
+        break;
+      }
+    }
+
+    // Get matching products
+    const matchingProducts = productList.filter(product =>
+      product.toLowerCase().includes(searchTerm)
+    );
+
+    console.log(`[Search] Found ${matchingProducts.length} products for "${searchTerm}"`);
+
+    // If no direct matches, try broader search
+    let suggestions = matchingProducts.slice(0, 5);
+    
+    if (suggestions.length === 0) {
+      // Try partial matches
+      suggestions = productList
+        .filter(product => {
+          const productLower = product.toLowerCase();
+          return searchTerm.split(' ').some(word => 
+            word.length > 2 && productLower.includes(word)
+          );
+        })
+        .slice(0, 3);
+    }
+
+    // If still no matches, return the query itself
+    if (suggestions.length === 0) {
+      suggestions = [input.searchQuery];
+    }
+
+    console.log(`[Search] Final suggestions:`, suggestions);
+    return { suggestions };
+    
+  } catch (error) {
+    console.error('[SearchSuggestions Error]', error);
+    
+    // Simple fallback
+    const fallback = productList
+      .filter(p => p.toLowerCase().includes(input.searchQuery.toLowerCase()))
+      .slice(0, 3);
+    
+    return { 
+      suggestions: fallback.length > 0 ? fallback : [input.searchQuery]
+    };
   }
-);
+}
+
+// Define flow if needed elsewhere
+export const smartSearchSuggestionsFlow = ai.defineFlow({
+  name: 'smartSearchSuggestionsFlow',
+  inputSchema: SearchSuggestionsInputSchema,
+  outputSchema: SearchSuggestionsOutputSchema,
+}, generateSearchSuggestions);
+
+export type SearchSuggestionsInput = z.infer<typeof SearchSuggestionsInputSchema>;
+export type SearchSuggestionsOutput = z.infer<typeof SearchSuggestionsOutputSchema>;

@@ -1,18 +1,37 @@
+
 'use client';
 
-import { useState, useTransition, useCallback } from 'react';
+import { useState, useTransition, useCallback, useEffect } from 'react';
 import { Search, Mic } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import type { SearchSuggestionsInput, SearchSuggestionsOutput } from '@/ai/flows/smart-search-suggestions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { products as allProducts } from '@/lib/data';
+import { useRouter } from 'next/navigation';
+import { ProductCard } from '@/components/products/ProductCard';
+
+import { ALL_DAIRY_BAKERY_PRODUCTS } from '@/lib/products/dairy-bakery';
+import { ALL_NON_VEG_PRODUCTS } from '@/lib/products/non-veg';
+import { ALL_VEGETABLES_FRUITS_PRODUCTS } from '@/lib/products/vegetables-fruits';
+import { ALL_SNACKS_BEVERAGES_PRODUCTS } from '@/lib/products/snacks-beverages';
+import { ALL_STAPLES_GROCERY_PRODUCTS } from '@/lib/products/staples-grocery';
+import { CATEGORIES } from '@/lib/data';
+import type { Product } from '@/lib/types';
+
+
+const allProducts = [
+  ...ALL_DAIRY_BAKERY_PRODUCTS,
+  ...ALL_NON_VEG_PRODUCTS,
+  ...ALL_VEGETABLES_FRUITS_PRODUCTS,
+  ...ALL_SNACKS_BEVERAGES_PRODUCTS,
+  ...ALL_STAPLES_GROCERY_PRODUCTS
+];
+
+console.log(`📦 Total products loaded for search: ${allProducts.length}`);
 
 // Debounce function
 const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
   let timeout: NodeJS.Timeout;
-
   return (...args: Parameters<F>): Promise<ReturnType<F>> =>
     new Promise(resolve => {
       clearTimeout(timeout);
@@ -23,9 +42,11 @@ const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) =
 export function SmartSearchBar() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isPending, startTransition] = useTransition();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isListening, setIsListening] = useState(false);
+  const router = useRouter();
 
   const getSuggestions = useCallback(async (searchQuery: string) => {
     if (searchQuery.length < 2) {
@@ -33,21 +54,17 @@ export function SmartSearchBar() {
       return;
     }
     try {
-      // Pass the full product list to the API
-      const productList = allProducts.map(p => p.name_en);
-      const payload: SearchSuggestionsInput = { searchQuery, searchHistory, productList };
-      
       const response = await fetch('/api/search-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ searchQuery, searchHistory }),
       });
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
-      const result: SearchSuggestionsOutput = await response.json();
+      const result = await response.json();
       setSuggestions(result.suggestions);
     } catch (error) {
       console.error("Failed to get search suggestions:", error);
@@ -62,7 +79,50 @@ export function SmartSearchBar() {
     setQuery(newQuery);
     startTransition(() => {
       debouncedGetSuggestions(newQuery);
+      if (newQuery.length > 1) {
+        performSearch(newQuery);
+      } else {
+        setFilteredProducts([]);
+      }
     });
+  };
+
+  const performSearch = (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+        setFilteredProducts([]);
+        return;
+    }
+
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const filtered = allProducts.filter(product =>
+      product.name_en.toLowerCase().includes(lowerCaseQuery) ||
+      (product.name_hi && product.name_hi.toLowerCase().includes(lowerCaseQuery)) ||
+      (product.category && product.category.toLowerCase().includes(lowerCaseQuery)) ||
+      (product.tags && product.tags.some(tag => tag.toLowerCase().includes(lowerCaseQuery)))
+    );
+    setFilteredProducts(filtered);
+  };
+  
+  const handleProductClick = (product: Product) => {
+    const category = CATEGORIES.find(c => c.id === product.category_id);
+    const categorySlug = category ? category.slug : 'fresh-vegetables';
+    
+    router.push(`/products/category/${categorySlug}?highlight=${product.id}`);
+
+    setQuery('');
+    setFilteredProducts([]);
+    setSuggestions([]);
+  };
+
+  const CustomProductCard = ({ product }: { product: Product }) => {
+    return (
+      <div 
+        className="cursor-pointer hover:scale-105 transition-transform duration-200"
+        onClick={() => handleProductClick(product)}
+      >
+        <ProductCard product={product} />
+      </div>
+    );
   };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,15 +130,25 @@ export function SmartSearchBar() {
     if(query) {
       setSearchHistory(prev => [query, ...prev.slice(0, 4)]);
       setSuggestions([]);
-      // Here you would typically trigger a search result page navigation
-      console.log(`Searching for: ${query}`);
+      performSearch(query);
     }
   };
   
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion);
+    setSuggestions([]);
+    setSearchHistory(prev => [suggestion, ...prev.slice(0, 4)]);
+    performSearch(suggestion);
+  };
+
   const handleVoiceSearch = () => {
       setIsListening(true);
-      // Placeholder for voice search logic
-      setTimeout(() => setIsListening(false), 3000);
+      setTimeout(() => {
+        setIsListening(false);
+        const voiceQuery = 'tomato';
+        setQuery(voiceQuery);
+        performSearch(voiceQuery);
+      }, 2000);
   }
 
   return (
@@ -105,19 +175,15 @@ export function SmartSearchBar() {
           </Button>
         </div>
       </form>
-      {suggestions.length > 0 && (
+      
+      {suggestions.length > 0 && query.length > 1 && (
         <Card className="glass-card absolute top-full mt-2 w-full overflow-hidden z-50">
           <CardContent className="p-2">
             <ul className="space-y-1">
               {suggestions.map((suggestion, index) => (
                 <li key={index}>
                   <button
-                    onClick={() => {
-                        setQuery(suggestion);
-                        setSuggestions([]);
-                        setSearchHistory(prev => [suggestion, ...prev.slice(0, 4)]);
-                        console.log(`Searching for: ${suggestion}`);
-                    }}
+                    onClick={() => handleSuggestionClick(suggestion)}
                     className="w-full rounded-md p-3 text-left hover:bg-accent/10"
                   >
                     {suggestion}
@@ -127,6 +193,28 @@ export function SmartSearchBar() {
             </ul>
           </CardContent>
         </Card>
+      )}
+
+      {filteredProducts.length > 0 && query.length > 1 && (
+        <div className="fixed inset-0 top-36 bg-background z-40 overflow-y-auto px-4 pb-24">
+            <h3 className="text-lg font-semibold mb-4 mt-4">
+                Search Results for "{query}" ({filteredProducts.length})
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredProducts.map((product) => (
+                <CustomProductCard 
+                    key={product.id} 
+                    product={product}
+                />
+                ))}
+            </div>
+        </div>
+      )}
+
+      {query.length > 1 && filteredProducts.length === 0 && !isPending && (
+        <div className="fixed inset-0 top-36 bg-background z-40 flex items-center justify-center">
+            <p className="text-center text-muted-foreground">No products found for "{query}"</p>
+        </div>
       )}
     </div>
   );
