@@ -23,7 +23,6 @@ import {
 
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/icons/Logo';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -181,7 +180,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="glass-icon-button">
-                            <ShoppingCart className="h-5 w-5 text-positive" />
+                            <User className="h-5 w-5 text-positive" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
