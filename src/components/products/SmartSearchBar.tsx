@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useTransition, useCallback } from 'react';
+import { useState, useTransition, useCallback, useEffect, useRef } from 'react';
 import { Search, Mic } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,9 +10,9 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
 
-// ✅ SIMPLE IMPORT - Use from lib/data
 import { products as allProducts, CATEGORIES } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 
 // Debounce function
@@ -25,6 +26,13 @@ const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) =
     });
 };
 
+declare global {
+    interface Window {
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
+    }
+}
+
 export function SmartSearchBar() {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -33,6 +41,40 @@ export function SmartSearchBar() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isListening, setIsListening] = useState(false);
   const router = useRouter();
+  const recognitionRef = useRef<any>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        
+        recognition.onresult = (event: any) => {
+            const voiceQuery = event.results[0][0].transcript;
+            setQuery(voiceQuery);
+            performSearch(voiceQuery);
+        };
+        
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error', event.error);
+            toast({
+                variant: 'destructive',
+                title: 'Voice Search Error',
+                description: 'Could not recognize speech. Please try again.',
+            });
+            setIsListening(false);
+        };
+        
+        recognitionRef.current = recognition;
+    }
+  }, [toast]);
+
 
   const getSuggestions = useCallback(async (searchQuery: string) => {
     if (searchQuery.length < 2) {
@@ -40,10 +82,7 @@ export function SmartSearchBar() {
       return;
     }
     try {
-      const payload = { 
-        searchQuery: searchQuery, 
-        searchHistory: searchHistory 
-      };
+      const payload = { searchQuery, searchHistory };
       
       const response = await fetch('/api/search-suggestions', {
         method: 'POST',
@@ -75,15 +114,12 @@ export function SmartSearchBar() {
 
   const handleRedirect = (product: Product) => {
     console.log(`📍 Product clicked: ${product.name_en}`);
-    
     const category = CATEGORIES.find(cat => cat.id === product.category_id);
-    
     if (category) {
       router.push(`/products/category/${category.slug}?highlight=${encodeURIComponent(product.name_en)}`);
     } else {
       router.push(`/products?search=${encodeURIComponent(product.name_en)}`);
     }
-    
     setQuery('');
     setFilteredProducts([]);
     setSuggestions([]);
@@ -136,13 +172,29 @@ export function SmartSearchBar() {
   };
 
   const handleVoiceSearch = () => {
-      setIsListening(true);
-      setTimeout(() => {
-        setIsListening(false);
-        const voiceQuery = 'tomato';
-        setQuery(voiceQuery);
-        performSearch(voiceQuery);
-      }, 3000);
+      if (!recognitionRef.current) {
+          toast({
+              variant: 'destructive',
+              title: 'Feature Not Supported',
+              description: 'Your browser does not support voice search.',
+          });
+          return;
+      }
+
+      if (isListening) {
+          recognitionRef.current.stop();
+      } else {
+          try {
+              recognitionRef.current.start();
+          } catch(err) {
+              console.error("Voice search start error:", err);
+              toast({
+                variant: 'destructive',
+                title: 'Permission Denied',
+                description: 'Please allow microphone access to use voice search.',
+            });
+          }
+      }
   }
 
   return (
@@ -205,7 +257,7 @@ export function SmartSearchBar() {
         </div>
       )}
 
-      {query && filteredProducts.length === 0 && (
+      {query && !isPending && filteredProducts.length === 0 && suggestions.length === 0 && (
         <div className="mt-6 text-center text-muted-foreground">
           No products found for "{query}"
         </div>
