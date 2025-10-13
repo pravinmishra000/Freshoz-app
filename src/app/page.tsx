@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/firebase/auth-context';
-import { ChatWidget } from '@/components/chat/ChatWidget';
 
 
 export default function HomePage() {
@@ -64,8 +63,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Chat Widget */}
-      <ChatWidget />
     </div>
   );
 }
