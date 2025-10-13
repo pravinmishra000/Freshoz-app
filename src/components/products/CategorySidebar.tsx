@@ -33,8 +33,6 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
         <div className="space-y-3 pr-2">
             {categories.map((category) => {
             const isActive = category.slug === activeSlug;
-            // Robust check for a valid Firebase Storage image URL
-            const hasRealImage = category.image && category.image.includes('firebasestorage.googleapis.com');
             
             return (
                 <Link
@@ -51,19 +49,9 @@ export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps
                     )}
                 >
                     <div className="relative aspect-square w-full mb-2 flex items-center justify-center">
-                    {hasRealImage ? (
-                        <Image
-                            src={category.image!}
-                            alt={category.name_en}
-                            fill
-                            sizes="(max-width: 768px) 20vw, 10vw"
-                            className="object-contain rounded-md"
-                        />
-                    ) : (
                         <span className="text-4xl">
                           {getCategoryEmoji(category.id)}
                         </span>
-                    )}
                     </div>
                     <p className={cn(
                         'text-xs font-semibold',
