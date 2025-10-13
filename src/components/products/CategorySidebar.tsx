@@ -14,18 +14,9 @@ interface CategorySidebarProps {
 }
 
 export function CategorySidebar({ categories, activeSlug }: CategorySidebarProps) {
-  // Hard-coded emoji mapping based on category IDs
+  // Always return the cart emoji as requested.
   const getCategoryEmoji = (categoryId: string) => {
-    const emojiMap: { [key: string]: string } = {
-      'cat-1': '🥦', // Fresh Vegetables
-      'cat-6': '🍎', // Fresh Fruits  
-      'cat-2': '🥛', // Dairy & Bakery
-      'cat-4': '🌾', // Staples & Grocery
-      'cat-5': '🍗', // Non-Veg
-      'cat-3': '☕',  // Beverages
-    };
-    
-    return emojiMap[categoryId] || '🛒';
+    return '🛒';
   };
 
   return (
