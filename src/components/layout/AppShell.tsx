@@ -78,7 +78,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   
   const isAdmin = appUser?.role === 'admin';
   const isLoginPage = pathname === '/login';
-  const isHomePage = pathname === '/products' || pathname === '/';
+  
+  // More specific check for the main product discovery page
+  const isHomePage = pathname === '/products';
 
   // If it's the login page, render children without the shell
   if (isLoginPage) {
