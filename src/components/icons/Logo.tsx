@@ -16,6 +16,7 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
           fill
           className="relative z-10 rounded-full object-contain"
           priority={true}
+          sizes="50px"
         />
       </div>
       <div className="flex flex-col">
@@ -24,8 +25,6 @@ export function Logo(props: SVGProps<SVGSVGElement> & { width?: number; height?:
           height={32}
           width={150}
           {...props}
-          width={undefined}
-          height={undefined}
         >
           <defs>
             <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
