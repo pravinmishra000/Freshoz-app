@@ -11,6 +11,15 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { Loader2 } from 'lucide-react';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
 import { cn } from '@/lib/utils';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 
 const DEFAULT_CATEGORY_SLUG = 'fresh-vegetables';
 
@@ -62,7 +71,7 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   return (
     <AppShell>
       <div className="container mx-auto py-4 md:py-8">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+        <div className="flex flex-row gap-4 md:gap-8">
           {/* Left Side: Category List (Always Visible) */}
           <aside className="w-1/4 md:w-1/5 lg:w-1/6">
             <div className="sticky top-24">
