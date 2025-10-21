@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { HelpCircle } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
-import { SupportTabs } from './SupportTabs';
+import SupportTabs from './SupportTabs';
 
 export const metadata = {
   title: "Help & Support | Freshoz",
