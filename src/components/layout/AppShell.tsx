@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import type { ReactNode } from 'react';
@@ -62,8 +61,7 @@ const customerNavItems = [
   { href: '/offers', label: 'Offers & Discounts', icon: Tag },
   { href: '/wallet', label: 'Wallet', icon: Wallet },
   { href: '/savings', label: 'Savings Hub', icon: Coins },
-  { href: '/chat', label: 'Help & Support', icon: MessageSquare },
-  { href: '/faq', label: 'FAQ', icon: HelpCircle }, // Added FAQ Link
+  { href: '/support', label: 'Help & Support', icon: HelpCircle },
 ];
 
 // Admin navigation items
