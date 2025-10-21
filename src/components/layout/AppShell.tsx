@@ -18,7 +18,8 @@ import {
   ShoppingCart,
   LayoutGrid,
   Coins,
-  Heart // Added Heart icon for Wishlist
+  Heart,
+  HelpCircle // Added HelpCircle icon
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -62,6 +63,7 @@ const customerNavItems = [
   { href: '/wallet', label: 'Wallet', icon: Wallet },
   { href: '/savings', label: 'Savings Hub', icon: Coins },
   { href: '/chat', label: 'Help & Support', icon: MessageSquare },
+  { href: '/faq', label: 'FAQ', icon: HelpCircle }, // Added FAQ Link
 ];
 
 // Admin navigation items
