@@ -56,7 +56,7 @@ export default function SupportHubPage() {
             </Card>
 
             <Tabs defaultValue="faq" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="sticky top-0 bg-background z-10 grid w-full grid-cols-3">
                     <TabsTrigger value="faq">FAQ</TabsTrigger>
                     <TabsTrigger value="chat">AI Chat Support</TabsTrigger>
                     <TabsTrigger value="contact">Contact Us</TabsTrigger>
