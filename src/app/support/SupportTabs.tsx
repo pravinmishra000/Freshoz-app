@@ -1,7 +1,14 @@
 "use client"
 
 import { AppShell } from "@/components/layout/AppShell"
-import SupportTabs from "@/components/support/SupportTabs"
+
+export function SupportTabs() {
+  return (
+    <div>
+      {/* Your Tabs UI */}
+    </div>
+  )
+}
 
 export default function SupportHubPage() {
   return (

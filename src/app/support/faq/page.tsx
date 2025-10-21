@@ -6,19 +6,21 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { HelpCircle, Search } from "lucide-react"
+import { HelpCircle, Search, MessageSquare, Phone } from "lucide-react"
+import Link from 'next/link'
 import { useState, useEffect } from "react"
 
 export default function FaqPage() {
   const [search, setSearch] = useState("")
-  const [debouncedSearch, setDebouncedSearch] = useState(search)
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedSearch(search), 300)
-    return () => clearTimeout(handler)
-  }, [search])
+    const handler = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
 
   const faqData = [
     {
@@ -26,25 +28,26 @@ export default function FaqPage() {
       questions: [
         { question: "How do I track my order?", answer: "Go to ‘My Orders’ → select your order → tap ‘Track’. Real-time updates shown." },
         { question: "Can I change delivery address?", answer: "Once order is placed, address can't be changed. Cancel & reorder within 2 mins." },
+        { question: "How long does delivery take?", answer: "Most Freshoz orders arrive within 90 minutes of placing, depending on your location." },
       ]
     },
     {
       category: "Returns & Refunds",
       questions: [
-        { question: "How do I raise a return request?", answer: "Go to Order → ‘Return Item’. Upload image if required. Refund processed in 24–48 hrs." },
-        { question: "Which items are returnable?", answer: "Non-perishable products returnable in 7 days. Perishables not returnable." },
+        { question: "How do I raise a return request?", answer: "Go to the order details, tap “Request Return/Refund”, upload photo proof if needed, and submit." },
+        { question: "Which items are not returnable?", answer: "Perishable products like milk, bread, fruits, and vegetables are generally not returnable unless they are damaged or spoiled upon arrival." },
       ]
     },
     {
       category: "Payments & Wallet",
       questions: [
-        { question: "Payment failed but money deducted?", answer: "Amount usually auto-refunded within 3–5 days. Contact support if not received." },
+        { question: "Payment failed but money deducted?", answer: "Amount usually auto-refunded by your bank within 3–5 business days. Contact support if not received." },
       ]
     },
     {
       category: "Account & App",
       questions: [
-        { question: "Login OTP not working?", answer: "Check network/SIM. Request ‘Resend OTP’ or contact support." },
+        { question: "What if my OTP or login fails?", answer: "Tap “Help” on the login screen to retry verification or contact AI Support." },
       ]
     },
   ]
@@ -67,7 +70,7 @@ export default function FaqPage() {
             <HelpCircle className="h-10 w-10 text-primary" />
           </div>
           <CardTitle className="text-3xl font-bold text-primary">
-            Help & Support Center
+            Frequently Asked Questions
           </CardTitle>
           <p className="text-muted-foreground">
             Find answers to your questions or connect with support.
@@ -79,7 +82,7 @@ export default function FaqPage() {
         <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <input
           type="search"
-          placeholder="Search FAQs (refund, delivery, login...)"
+          placeholder="Search FAQs (e.g., refund, delivery, login...)"
           className="w-full rounded-full border-2 py-3 pl-12 pr-4 text-base bg-background/80"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -87,7 +90,9 @@ export default function FaqPage() {
       </div>
 
       {filteredData.length === 0 ? (
-        <p className="text-center text-muted-foreground">No results found.</p>
+        <Card className="glass-card text-center py-10">
+          <p className="text-muted-foreground">No results found for "{debouncedSearch}".</p>
+        </Card>
       ) : filteredData.map((category, i) => (
         <Card key={i} className="mb-6 glass-card">
           <CardHeader>
@@ -105,6 +110,26 @@ export default function FaqPage() {
           </CardContent>
         </Card>
       ))}
+
+      <Card className="mt-8 glass-card">
+        <CardHeader className="text-center">
+            <CardTitle>Still need help?</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild className="w-full sm:w-auto" variant="outline">
+                <Link href="/support/chat">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Chat with Support
+                </Link>
+            </Button>
+            <Button asChild className="w-full sm:w-auto" variant="outline">
+                <Link href="/support/contact">
+                    <Phone className="mr-2 h-4 w-4" />
+                    Call / Email
+                </Link>
+            </Button>
+        </CardContent>
+      </Card>
     </div>
   )
 }
