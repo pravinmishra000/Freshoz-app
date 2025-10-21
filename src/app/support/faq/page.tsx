@@ -1,4 +1,3 @@
-
 "use client"
 
 import {
@@ -10,11 +9,21 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { HelpCircle, Search, MessageSquare } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export default function FaqPage() {
   const [search, setSearch] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   const faqData = [
     {
@@ -82,8 +91,8 @@ export default function FaqPage() {
   const filteredData = faqData.map(category => ({
     ...category,
     questions: category.questions.filter(q =>
-      q.question.toLowerCase().includes(search.toLowerCase()) ||
-      q.answer.toLowerCase().includes(search.toLowerCase())
+      q.question.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      q.answer.toLowerCase().includes(debouncedSearch.toLowerCase())
     ),
   })).filter(c => c.questions.length > 0)
 
