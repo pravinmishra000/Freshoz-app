@@ -15,7 +15,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
 import DailyDishBanner from '@/components/promotional/DailyDishBanner';
 
