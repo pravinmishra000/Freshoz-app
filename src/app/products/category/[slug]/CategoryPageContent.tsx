@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,10 +8,8 @@ import { ProductCard } from '@/components/products/ProductCard';
 import { products as allProductsData, CATEGORIES } from '@/lib/data';
 import { AppShell } from '@/components/layout/AppShell';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Menu } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const DEFAULT_CATEGORY_SLUG = 'fresh-vegetables';
@@ -25,7 +24,6 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -64,40 +62,17 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   return (
     <AppShell>
       <div className="container mx-auto py-4 md:py-8">
-        {/* Mobile Category Button */}
-        <div className="block md:hidden mb-4">
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Menu className="h-4 w-4" />
-                Categories
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0">
-              <SheetTitle className="sr-only">Categories</SheetTitle>
-              <SheetDescription className="sr-only">
-                Browse product categories
-              </SheetDescription>
-              <div className="p-4 border-b bg-primary/5">
-                <h3 className="text-lg font-semibold text-primary">All Categories</h3>
-              </div>
-              <div className="p-4 h-[calc(100vh-80px)] overflow-y-auto">
-                <CategorySidebar categories={CATEGORIES} activeSlug={slug} />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          {/* Left Side: Category List */}
-          <aside className="hidden md:block w-1/4 md:w-1/5 lg:w-1/6">
+          {/* Left Side: Category List (Always Visible) */}
+          <aside className="w-1/4 md:w-1/5 lg:w-1/6">
             <div className="sticky top-24">
+              <h3 className="text-lg font-semibold text-primary mb-4 hidden md:block">All Categories</h3>
               <CategorySidebar categories={CATEGORIES} activeSlug={slug} />
             </div>
           </aside>
 
           {/* Right Side: Product Grid */}
-          <main className="w-full md:w-3/4 md:w-4/5 lg:w-5/6">
+          <main className="w-3/4 md:w-4/5 lg:w-5/6">
             <Card className="mb-6 border-0 bg-transparent shadow-none">
               <CardHeader className="p-0">
                 <CardTitle className="font-headline text-2xl md:text-4xl font-bold text-primary">{category.name_en}</CardTitle>

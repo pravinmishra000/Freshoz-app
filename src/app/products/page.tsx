@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,7 +23,6 @@ export default function ProductsPage() {
   const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [bestDeals, setBestDeals] = useState<Product[]>([]);
-  const [sheetOpen, setSheetOpen] = useState(false);
   
   const activeCategory = pathname.includes('/products/category/')
     ? pathname.split('/').pop()
@@ -56,109 +56,98 @@ export default function ProductsPage() {
 
   return (
     <AppShell>
-      <main className="container mx-auto">
-        {/* Mobile Category Button - Only on main products page */}
-        <div className="block md:hidden mb-4 pt-2">
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Menu className="h-4 w-4" />
-                Categories
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0">
-              <SheetTitle className="sr-only">Categories</SheetTitle>
-              <SheetDescription className="sr-only">
-                Browse product categories
-              </SheetDescription>
-              <div className="p-4 border-b bg-primary/5">
-                <h3 className="text-lg font-semibold text-primary">All Categories</h3>
-              </div>
-              <div className="p-4 h-[calc(100vh-80px)] overflow-y-auto">
-                <CategorySidebar 
-                  categories={CATEGORIES} 
-                  activeSlug={activeCategory}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-
-        {/* Promotions Carousel */}
-        <section className="my-4 md:my-6">
-          <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
-            <CarouselContent>
-              {promotions.map((promo) => (
-                <CarouselItem key={promo.id}>
-                  <div className="relative h-48 md:h-auto md:aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
-                    <Image 
-                      src={promo.imageUrl} 
-                      alt={promo.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="w-full h-full object-cover" 
-                    />
-                    <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-4 md:p-6">
-                      <h3 className="text-white text-xl md:text-2xl font-bold">{promo.title}</h3>
-                      <p className="text-white/90 text-sm md:text-base">{promo.description}</p>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </section>
-
-        {/* New Category Section Design */}
-        <section className="my-8 md:my-12">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-                {CATEGORIES.map((category) => {
-                    const Icon = categoryIcons[category.slug] || ShoppingCart;
-                    const style = categoryStyles[category.slug] || 'bg-gray-200';
-                    return (
-                        <Link
-                            key={category.id}
-                            href={`/products/category/${category.slug}`}
-                            className={cn(
-                                "rounded-xl flex flex-col items-center justify-center p-3 md:p-4 text-center group transition-transform duration-300 ease-out hover:scale-105 active:scale-95 shadow-md hover:shadow-xl",
-                                style
-                            )}
-                        >
-                             <div className={cn(
-                                "p-2 md:p-3 rounded-full bg-white/30 mb-2 transition-all duration-300"
-                            )}>
-                                <Icon className="h-5 w-5 md:h-7 md:w-7" />
-                            </div>
-                            <span className="text-xs md:text-sm font-semibold">
-                                {category.name_en}
-                            </span>
-                        </Link>
-                    );
-                })}
+      <div className="container mx-auto py-4 md:py-8">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+          {/* Left Side: Category List (Always Visible) */}
+          <aside className="w-full md:w-1/5 lg:w-1/6">
+            <div className="sticky top-24">
+              <h3 className="text-lg font-semibold text-primary mb-4 hidden md:block">All Categories</h3>
+              <CategorySidebar 
+                categories={CATEGORIES} 
+                activeSlug={activeCategory}
+              />
             </div>
-        </section>
+          </aside>
 
-        {/* Best Deals Section */}
-        <section className="my-8 md:my-12">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Best Deals</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
-            {bestDeals.map((product) => (
-                <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
+          {/* Right Side: Main Content */}
+          <main className="w-full md:w-4/5 lg:w-5/6">
+            {/* Promotions Carousel */}
+            <section className="mb-4 md:mb-6">
+              <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
+                <CarouselContent>
+                  {promotions.map((promo) => (
+                    <CarouselItem key={promo.id}>
+                      <div className="relative h-48 md:h-auto md:aspect-[2/1] w-full overflow-hidden rounded-2xl shadow-lg">
+                        <Image 
+                          src={promo.imageUrl} 
+                          alt={promo.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="w-full h-full object-cover" 
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex flex-col justify-end p-4 md:p-6">
+                          <h3 className="text-white text-xl md:text-2xl font-bold">{promo.title}</h3>
+                          <p className="text-white/90 text-sm md:text-base">{promo.description}</p>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </section>
 
-        {/* Popular Products Grid */}
-        <section className="my-8 md:my-12">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Popular Products</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
-            {products.slice(0, 10).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
-      </main>
+            {/* New Category Section Design */}
+            <section className="my-8 md:my-12">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Shop by Category</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+                    {CATEGORIES.map((category) => {
+                        const Icon = categoryIcons[category.slug] || ShoppingCart;
+                        const style = categoryStyles[category.slug] || 'bg-gray-200';
+                        return (
+                            <Link
+                                key={category.id}
+                                href={`/products/category/${category.slug}`}
+                                className={cn(
+                                    "rounded-xl flex flex-col items-center justify-center p-3 md:p-4 text-center group transition-transform duration-300 ease-out hover:scale-105 active:scale-95 shadow-md hover:shadow-xl",
+                                    style
+                                )}
+                            >
+                                <div className={cn(
+                                    "p-2 md:p-3 rounded-full bg-white/30 mb-2 transition-all duration-300"
+                                )}>
+                                    <Icon className="h-5 w-5 md:h-7 md:w-7" />
+                                </div>
+                                <span className="text-xs md:text-sm font-semibold">
+                                    {category.name_en}
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </div>
+            </section>
+
+            {/* Best Deals Section */}
+            <section className="my-8 md:my-12">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Best Deals</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+                {bestDeals.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </section>
+
+            {/* Popular Products Grid */}
+            <section className="my-8 md:my-12">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">Popular Products</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4">
+                {products.slice(0, 10).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
 
       {/* ✅ Daily Dish Banner - AppShell ke andar add karein */}
       <DailyDishBanner />
