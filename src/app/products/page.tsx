@@ -57,40 +57,10 @@ export default function ProductsPage() {
   return (
     <AppShell>
       <div className="container mx-auto py-4 md:py-8">
-        {/* Mobile Category Selector */}
-        <div className="md:hidden mb-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="w-full">
-                <Menu className="mr-2 h-4 w-4" />
-                All Categories
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[80vw] max-w-xs">
-              <SheetHeader>
-                <SheetTitle>Shop by Category</SheetTitle>
-              </SheetHeader>
-              <div className="py-4">
-                <CategorySidebar categories={CATEGORIES} activeSlug={activeCategory} />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          {/* Left Side: Category List (Desktop Only) */}
-          <aside className="w-full hidden md:block md:w-1/5 lg:w-1/6">
-            <div className="sticky top-24">
-              <h3 className="text-lg font-semibold text-primary mb-4">All Categories</h3>
-              <CategorySidebar 
-                categories={CATEGORIES} 
-                activeSlug={activeCategory}
-              />
-            </div>
-          </aside>
-
-          {/* Right Side: Main Content */}
-          <main className="w-full md:w-4/5 lg:w-5/6">
+          {/* Main Content Area */}
+          <main className="w-full">
             {/* Promotions Carousel */}
             <section className="mb-4 md:mb-6">
               <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
