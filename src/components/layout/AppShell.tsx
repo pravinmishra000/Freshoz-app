@@ -160,10 +160,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <header className="glass-app-bar sticky top-0 z-20 flex h-auto flex-col items-center gap-2 border-b p-4 backdrop-blur-sm sm:px-6">
             <div className="flex w-full items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="lg:hidden">
-                    <SidebarTrigger className="glass-icon-button !h-12 !w-12" />
-                  </div>
-                  {!isHomePage && <BackButton />}
+                  <SidebarTrigger className="glass-icon-button !h-12 !w-12 lg:hidden" />
+                  {!isHomePage && <div className="hidden sm:block"><BackButton /></div>}
                 </div>
 
                 <div className="flex flex-1 items-center justify-end gap-2">
@@ -171,17 +169,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <SmartSearchBar />
                   </div>
                   <div className="flex items-center gap-2">
-                    <Link href="/wallet">
-                        <Button variant="ghost" size="icon" className="glass-icon-button">
-                            <Wallet className="h-5 w-5 text-positive" />
-                        </Button>
-                    </Link>
+                    <div className="block lg:hidden">
+                        <CartSheet />
+                    </div>
                     {loading ? (
                       <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
                     ) : authUser ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="glass-icon-button">
+                          <Button variant="ghost" size="icon" className="glass-icon-button hidden sm:inline-flex">
                             <User className="h-5 w-5 text-positive" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -210,7 +206,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     ) : (
-                      <Button asChild variant="outline" className="bg-primary/10 border-primary/20 hover:bg-primary/20">
+                      <Button asChild variant="outline" className="bg-primary/10 border-primary/20 hover:bg-primary/20 hidden sm:inline-flex">
                         <Link href="/login">
                           <User className="mr-2 h-4 w-4 text-positive" />
                           <span className="text-primary font-semibold">Login</span>
@@ -236,35 +232,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           {!isAdmin && <CartToast />}
           {!isAdmin && <FreshozBuddy />}
         </SidebarInset>
-
-        {/* Mobile Bottom Navigation */}
-        {!isAdmin && (
-           <nav className="fixed bottom-4 left-1/2 z-30 -translate-x-1/2 md:hidden">
-            <div className="glass-card flex items-center justify-around gap-2 rounded-full p-2">
-              {[ 
-                { href: '/products', label: 'Home', icon: Home },
-                { href: '/categories', label: 'Categories', icon: LayoutGrid },
-                { href: '/wishlist', label: 'Wishlist', icon: Heart },
-                { href: '/offers', label: 'Offers', icon: Tag },
-                { href: '/checkout', label: 'Cart', icon: ShoppingCart },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex h-12 w-12 flex-col items-center justify-center rounded-full text-sm font-medium transition-colors',
-                    checkActive(item.href)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent/50'
-                  )}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span className="sr-only">{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </nav>
-        )}
       </div>
     </SidebarProvider>
   );
