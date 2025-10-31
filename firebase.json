@@ -1,5 +1,29 @@
 {
+  "functions": {
+    "source": ".",
+    "runtime": "nodejs20"
+  },
+  "hosting": {
+    "source": ".",
+    "frameworksBackend": {
+      "region": "us-central1"
+    }
+  },
   "storage": {
-    "rules": "rules_version = '2';"
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }

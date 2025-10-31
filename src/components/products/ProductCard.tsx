@@ -1,10 +1,19 @@
-
 'use client';
 
 import { useState } from 'react';
 import type { Product, ProductVariant } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus, Sprout, Wheat, Drumstick, Milk, Coffee, AlertTriangle, Leaf } from 'lucide-react';
+import {
+  Plus,
+  Minus,
+  Sprout,
+  Wheat,
+  Drumstick,
+  Milk,
+  Coffee,
+  AlertTriangle,
+  Leaf,
+} from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -14,7 +23,10 @@ interface ProductCardProps {
   product: Product;
 }
 
-const categoryStyles: { [key: string]: { emoji: string; color: string; icon: React.ElementType } } = {
+const categoryStyles: Record<
+  string,
+  { emoji: string; color: string; icon: React.ElementType }
+> = {
   'cat-1': { emoji: '🥦', color: 'bg-green-100', icon: Sprout },
   'cat-6': { emoji: '🍎', color: 'bg-red-100', icon: Sprout },
   'cat-2': { emoji: '🥛', color: 'bg-blue-100', icon: Milk },
@@ -26,9 +38,11 @@ const categoryStyles: { [key: string]: { emoji: string; color: string; icon: Rea
 export function ProductCard({ product }: ProductCardProps) {
   const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const { toast } = useToast();
-  
+
+  // ✅ Safe handling of variants
+  const variants = product.variants ?? [];
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    (product.variants && product.variants.length > 0) ? product.variants[0] : null
+    variants.length > 0 ? variants[0] : null
   );
 
   const currentPrice = selectedVariant?.price ?? product.price;
@@ -37,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const currentVariantId = selectedVariant?.id ?? 'default';
 
   const cartItemId = `${product.id}-${currentVariantId}`;
-  const itemInCart = cartItems.find(item => item.id === cartItemId);
+  const itemInCart = cartItems.find((item) => item.id === cartItemId);
 
   const handleAddToCart = () => {
     if (!currentPackSize) return;
@@ -73,12 +87,19 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const discount = currentMrp > currentPrice 
-    ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
-    : 0;
+  const discount =
+    currentMrp > currentPrice
+      ? Math.round(((currentMrp - currentPrice) / currentMrp) * 100)
+      : 0;
 
-  const hasRealImage = product.image && product.image.includes('firebasestorage.googleapis.com');
-  const categoryStyle = categoryStyles[product.category_id || ''] || { emoji: '🛒', color: 'bg-gray-100', icon: Sprout };
+  const hasRealImage =
+    product.image && product.image.includes('firebasestorage.googleapis.com');
+  const categoryStyle =
+    categoryStyles[product.category_id || ''] || {
+      emoji: '🛒',
+      color: 'bg-gray-100',
+      icon: Sprout,
+    };
 
   const getProductEmoji = () => {
     const name = product.name_en.toLowerCase();
@@ -86,7 +107,7 @@ export function ProductCard({ product }: ProductCardProps) {
     if (name.includes('cheese') || name.includes('paneer')) return '🧀';
     if (name.includes('ghee')) return '🧈';
     return categoryStyle.emoji;
-  }
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm flex flex-col overflow-hidden h-full">
@@ -98,18 +119,22 @@ export function ProductCard({ product }: ProductCardProps) {
             fill
             sizes="(max-width: 768px) 50vw, 33vw"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            unoptimized={true}
+            unoptimized
           />
         ) : (
-          <div className={cn(
-            "w-full h-full flex flex-col items-center justify-center text-center p-2",
-            categoryStyle.color
-          )}>
+          <div
+            className={cn(
+              'w-full h-full flex flex-col items-center justify-center text-center p-2',
+              categoryStyle.color
+            )}
+          >
             <p className="text-5xl mb-2">{getProductEmoji()}</p>
-            <p className="text-base font-semibold text-primary">{product.name_en}</p>
+            <p className="text-base font-semibold text-primary truncate">
+              {product.name_en}
+            </p>
           </div>
         )}
-       
+
         {discount > 0 && (
           <div className="absolute top-2 left-2 bg-positive text-white px-2 py-1 rounded-md text-xs font-bold">
             {discount}% OFF
@@ -122,37 +147,43 @@ export function ProductCard({ product }: ProductCardProps) {
             <AlertTriangle className="h-4 w-4 text-white" />
           </div>
         )}
-        
+
         {product.is_veg === true && (
           <div className="absolute top-2 right-2 rounded-full bg-green-500 p-1">
             <Leaf className="h-4 w-4 text-white" />
           </div>
         )}
       </div>
+
       <div className="flex flex-1 flex-col p-2 md:p-3">
         <div className="flex-grow">
-          {product.variants && product.variants.length > 1 ? (
+          {variants.length > 1 ? (
             <select
               value={selectedVariant?.id}
               onChange={(e) => {
-                const newVariant = product.variants?.find(v => v.id === e.target.value) || null;
+                const newVariant =
+                  variants.find((v) => v.id === e.target.value) || null;
                 setSelectedVariant(newVariant);
               }}
               className="w-full text-xs text-muted-foreground border-none p-0 focus:ring-0 mb-1 bg-transparent"
             >
-              {product.variants.map(variant => (
+              {variants.map((variant) => (
                 <option key={variant.id} value={variant.id}>
                   {variant.pack_size}
                 </option>
               ))}
             </select>
           ) : (
-            <p className="text-xs text-muted-foreground mb-1">{currentPackSize}</p>
+            <p className="text-xs text-muted-foreground mb-1">
+              {currentPackSize}
+            </p>
           )}
 
-          <h3 className="font-semibold text-base md:text-lg text-foreground leading-tight line-clamp-2">{product.name_en}</h3>
+          <h3 className="font-semibold text-base md:text-lg text-foreground leading-tight line-clamp-2">
+            {product.name_en}
+          </h3>
         </div>
-        
+
         <div className="mt-2 flex items-center justify-between">
           <div className="flex flex-col items-start">
             {currentMrp > currentPrice && (
@@ -164,22 +195,34 @@ export function ProductCard({ product }: ProductCardProps) {
               ₹{currentPrice.toFixed(0)}
             </p>
           </div>
-          
+
           <div>
             {itemInCart ? (
               <div className="flex items-center justify-center rounded-lg border-2 border-destructive text-destructive font-bold bg-destructive/10">
-                <Button size="icon" variant="ghost" onClick={handleDecrement} className="h-8 w-8 text-destructive hover:bg-destructive/20">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleDecrement}
+                  className="h-8 w-8 text-destructive hover:bg-destructive/20"
+                >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="text-base tabular-nums px-1">{itemInCart.quantity}</span>
-                <Button size="icon" variant="ghost" onClick={handleIncrement} className="h-8 w-8 text-destructive hover:bg-destructive/20">
+                <span className="text-base tabular-nums px-1">
+                  {itemInCart.quantity}
+                </span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleIncrement}
+                  className="h-8 w-8 text-destructive hover:bg-destructive/20"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
-              <Button 
+              <Button
                 variant="outline"
-                className="border-2 border-destructive text-destructive bg-transparent hover:bg-destructive/10 hover:text-destructive font-bold text-base px-6 h-9" 
+                className="border-2 border-destructive text-destructive bg-transparent hover:bg-destructive/10 hover:text-destructive font-bold text-base px-6 h-9"
                 onClick={handleAddToCart}
               >
                 <span>Add</span>

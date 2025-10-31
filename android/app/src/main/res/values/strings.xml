@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Freshoz-fresh</string>
+    <string name="title_activity_main">Freshoz-fresh</string>
+    <string name="package_name">com.freshoz.app</string>
+    <string name="custom_url_scheme">com.freshoz.app</string>
+</resources>

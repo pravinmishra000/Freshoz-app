@@ -11,15 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { Loader2 } from 'lucide-react';
 import { CategorySidebar } from '@/components/products/CategorySidebar';
 import { cn } from '@/lib/utils';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
+import { MobileCategorySelector } from '@/components/products/MobileCategorySelector';
 
 const DEFAULT_CATEGORY_SLUG = 'fresh-vegetables';
 
@@ -50,7 +42,6 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
     setIsLoading(false);
   }, [slug, router]);
 
-  // Scroll to highlighted product on load
   useEffect(() => {
     if (highlightProductName) {
       const el = document.getElementById(highlightProductName);
@@ -71,26 +62,31 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
   return (
     <AppShell>
       <div className="container mx-auto py-4 md:py-8">
-        <div className="flex flex-row gap-4 md:gap-8">
-          {/* Left Side: Category List (Always Visible) */}
-          <aside className="w-1/4 md:w-1/5 lg:w-1/6">
+        <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
+          {/* Left Side: Category List (Hidden on mobile) */}
+          <aside className="hidden md:block">
             <div className="sticky top-24">
-              <h3 className="text-lg font-semibold text-primary mb-4 hidden md:block">All Categories</h3>
+              <h3 className="text-lg font-semibold text-primary mb-4">All Categories</h3>
               <CategorySidebar categories={CATEGORIES} activeSlug={slug} />
             </div>
           </aside>
 
           {/* Right Side: Product Grid */}
-          <main className="w-3/4 md:w-4/5 lg:w-5/6">
+          <main>
             <Card className="mb-6 border-0 bg-transparent shadow-none">
               <CardHeader className="p-0">
-                <CardTitle className="font-headline text-2xl md:text-4xl font-bold text-primary">{category.name_en}</CardTitle>
+                <div className="flex items-center justify-between gap-4 mb-2">
+                    <CardTitle className="font-headline text-2xl md:text-4xl font-bold text-primary">{category.name_en}</CardTitle>
+                    <div className="md:hidden">
+                        <MobileCategorySelector categories={CATEGORIES} activeSlug={slug} />
+                    </div>
+                </div>
                 <CardDescription className="hidden md:block">{category.description}</CardDescription>
               </CardHeader>
             </Card>
 
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                 {filteredProducts.map((product) => {
                   const isHighlighted = highlightProductName && product.name_en === highlightProductName;
                   return (
@@ -98,10 +94,10 @@ export function CategoryPageContent({ slug: initialSlug }: { slug: string }) {
                       key={product.id}
                       id={product.name_en}
                       className={cn(
-                        "transition-transform duration-200",
+                        "transition-transform duration-300",
                         isHighlighted
                           ? "ring-2 ring-offset-2 ring-primary rounded-lg"
-                          : "hover:scale-105 cursor-pointer"
+                          : "hover:scale-105"
                       )}
                     >
                       <ProductCard product={product} />
