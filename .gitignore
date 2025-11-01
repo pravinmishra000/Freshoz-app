@@ -7,3 +7,9 @@ project.zip
 *.tmp
 *.cache
 
+
+# Ignore large build and dependency folders
+.firebase/
+node_modules/
+*.zip
+*.pack
