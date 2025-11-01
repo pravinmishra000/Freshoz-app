@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',   // ✅ For full dynamic + backend support
+  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },

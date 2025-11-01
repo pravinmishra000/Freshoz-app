@@ -7,12 +7,15 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "NODE_ENV=production next build",
+    "build:web": "next build && next export -o out",
+    "build:android": "npm run build:web && npx cap sync android",
+    "build:ios": "npm run build:web && npx cap sync ios",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@capacitor/core": "^6.0.0",
+    "@capacitor/core": "^6.2.1",
     "@genkit-ai/googleai": "^1.14.1",
     "@genkit-ai/next": "^1.14.1",
     "@hookform/resolvers": "^4.1.3",
@@ -68,7 +71,7 @@
   },
   "devDependencies": {
     "@capacitor/android": "^6.0.0",
-    "@capacitor/cli": "^6.0.0",
+    "@capacitor/cli": "^6.2.1",
     "@capacitor/ios": "^6.0.0",
     "@types/google.maps": "^3.55.11",
     "@types/node": "^20",
