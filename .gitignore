@@ -2,7 +2,9 @@ node_modules/
 .next/
 out/
 dist/
-project.zip
+.firebase/
+*.pack
+*.zip
 *.log
 *.tmp
 *.cache
@@ -13,3 +15,12 @@ project.zip
 node_modules/
 *.zip
 *.pack
+
+# Environment and local config
+.env
+.env.local
+.env.production
+.env.developme
+node_modules/
+build/
+*.mp4
